@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/drawable/calendar_day_background.xml" value="0.264" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/drawable/key_for_password.xml" value="0.163" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/drawable/person_image_email.xml" value="0.163" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/drawable/round_buttons.xml" value="0.163" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/drawable/round_buttons_white.xml" value="0.264" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/drawable/sample_circle.xml" value="0.264" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/drawable/sample_three_icons.xml" value="0.264" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/font/gill_sans.xml" value="0.28802083333333334" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/layout-large/activity_main.xml" value="0.275" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/layout/activity_login.xml" value="0.22" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/layout/activity_main.xml" value="0.35260416666666666" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/layout/firm_login.xml" value="0.22" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/layout/loading.xml" value="0.25885416666666666" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/layout/spinnerdropdownview.xml" value="0.21153846153846154" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/mipmap-anydpi-v26/Logo.xml" value="0.163" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/LauditorV3/app/src/main/res/mipmap-anydpi-v26/trans_logo.xml" value="0.163" />
+        <entry key="..\:/Users/Rajendra/AndroidStudioProjects/lauditorv3_android/app/src/main/res/layout/spinnerdropdownview.xml" value="0.36666666666666664" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <dimen name="Login_header">40dp</dimen>
+    <dimen name="normal_size">20dp</dimen>
+    <dimen name="minimum_size">15dp</dimen>
+</resources>

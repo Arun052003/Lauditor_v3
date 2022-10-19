@@ -1,0 +1,26 @@
+package com.digicoffer.lauditor.common;
+
+public class Constants {
+    public static String base_URL = "http://10.0.2.2:8011/consumer/";
+    public static String TOKEN = "";
+    public static String NAME = "";
+    public static String PROBIZ_TYPE = "";
+    public static Boolean ISPRODUCTION = false;
+    public static String PROF_URL = ISPRODUCTION ? "https://api.digicoffer.com/professional/" : "https://apidev1.digicoffer.com/professional/";
+    public static String BIZ_URL = ISPRODUCTION ? "https://api.digicoffer.com/business/" : "https://apidev.digicoffer.com/business/";
+    //    public static String PROF_URL = "http://10.0.2.2:8011/professional/";
+//    public static String BIZ_URL = "http://10.0.2.2:8011/business/";
+//    public static String PROF_URL = "http://10.0.2.2:8011/professional/";
+//    public static String BIZ_URL = "http://10.0.2.2:8011/business/";
+//    public static String base_URL = "";
+    //    public static String base_URL = "https://apidev.digicoffer.com/business/";
+    public static String USER_ID ="";
+    public static String FIRM_NAME ="";
+    public static boolean IS_ADMIN = true;
+    public static String UID ="";
+    public static String COUNT = "";
+    public static String VERSION = ISPRODUCTION? "1.0.2" : "1.0.8";
+    //    public static String XMPP_DOMAIN = "dev.chat.digisecitus.com";
+    public static String XMPP_DOMAIN = ISPRODUCTION ? "chat.digicoffer.com" : "devchat.digicoffer.com";
+    public static String DOWNLOAD_VIEWFILE_TAG = "DOWNLOAD_VIEWFILE";
+}

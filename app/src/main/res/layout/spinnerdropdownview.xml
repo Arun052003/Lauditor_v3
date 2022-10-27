@@ -13,16 +13,17 @@
         android:padding="2dp"
         android:text="data"
         android:textColor="#000000"
-        android:textSize="14dp" />
+        android:textSize="14sp" />
 
-<!--    <ImageView-->
-<!--        android:id="@+id/GfG_full_logo"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
+    <ImageView
+        android:id="@+id/GfG_full_logo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+      
 
-<!--        -->
 
-<!--        />-->
+
+        />
 
 
 

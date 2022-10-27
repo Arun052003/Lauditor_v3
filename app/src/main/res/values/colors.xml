@@ -11,6 +11,9 @@
     <color name="Primary_new">#004D87</color>
     <color name="Primary_new_one">#1476B0</color>
     <color name="Blue_text_color">#004D87</color>
+    <color name="grey_text_color">#EEEEEE</color>
+    <color name="dashboard_background_color">#004D87</color>
+    <color name="dashboard_background_shadow_color">#00000066</color>
 
 
 </resources>

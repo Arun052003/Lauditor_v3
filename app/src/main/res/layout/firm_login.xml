@@ -12,6 +12,7 @@
         android:id="@+id/topView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+
         android:background="@color/Primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="5:1"
@@ -93,20 +94,20 @@
             <!--                </TextView>-->
 
 
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/sp_firm"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:drawablePadding="5dp"
-                    android:background="@drawable/round_buttons_white"
-                    android:fontFamily="sans-serif-condensed"
-                    android:hint="Firm Name"
-                    android:imeOptions="actionDone"
-                    android:inputType="textEmailAddress"
-                    android:singleLine="true"
-                    android:text=""
-                    android:textColorHint="@color/black"
-                    tools:ignore="HardcodedText,RtlHardcoded" />
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/sp_firm"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@drawable/round_buttons_white"
+                android:drawablePadding="5dp"
+                android:fontFamily="sans-serif-condensed"
+                android:hint="Firm Name"
+                android:imeOptions="actionDone"
+                android:inputType="textEmailAddress"
+                android:singleLine="true"
+                android:text=""
+                android:textColorHint="@color/black"
+                tools:ignore="HardcodedText,RtlHardcoded,SpeakableTextPresentCheck" />
 
 
             <com.google.android.material.textfield.TextInputLayout

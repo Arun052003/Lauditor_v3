@@ -4,6 +4,8 @@ import static java.security.AccessController.getContext;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -11,9 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.digicoffer.lauditor.Dashboard.Dashboard;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -56,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
         tv_matter.setVisibility(View.GONE);
         tv_more = findViewById(R.id.tv_more);
         tv_more.setVisibility(View.GONE);
+        Fragment fragment = new Dashboard();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.id_framelayout, fragment);
+        ft.commit();
         isAllFabsVisible = false;
         mAddFab.shrink();
         mAddFab.setOnClickListener(new View.OnClickListener() {

@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     Animation fabOpen, fabClose, rotateForward, rotateBackward;
     FloatingActionButton fab_relationships,fab_documents,fab_timesheet,fab_matter,fab_more;
     TextView tv_relations,tv_documents,tv_timesheet,tv_matter,tv_more;
+  public   androidx.appcompat.widget.LinearLayoutCompat ll_bottom_menu;
     Boolean isAllFabsVisible;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         fab_relationships.setVisibility(View.GONE);
         fab_documents = findViewById(R.id.fb_documents);
         fab_documents.setVisibility(View.GONE);
+        ll_bottom_menu = findViewById(R.id.ll_bottom_menu);
         fab_matter = findViewById(R.id.fb_matter);
         fab_matter.setVisibility(View.GONE);
         fab_timesheet  = findViewById(R.id.fb_timesheets);

@@ -77,7 +77,66 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     try {
-                        animateFab();
+//                        animateFab();
+                        iv_close_menu.setVisibility(View.VISIBLE);
+                        iv_open_menu.setVisibility(View.GONE);
+//            mAddFab.setIcon(ContextCompat.getDrawable(MainActivity.this, R.drawable.up_arrow));
+//                    mAddFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_full_sad));
+                        fab_relationships.setVisibility(View.VISIBLE);
+                        fab_relationships.startAnimation(fabOpen);
+                        fab_documents.setVisibility(View.VISIBLE);
+                        fab_documents.startAnimation(fabOpen);
+                        fab_matter.setVisibility(View.VISIBLE);
+                        fab_matter.startAnimation(fabOpen);
+                        fab_timesheet.setVisibility(View.VISIBLE);
+                        fab_timesheet.startAnimation(fabOpen);
+                        fab_more.setVisibility(View.VISIBLE);
+                        fab_more.startAnimation(fabOpen);
+                        tv_relations.setVisibility(View.VISIBLE);
+//            tv_relations.setLayoutParams(lp);
+//            tv_relations.startAnimation(fabOpen);
+                        tv_documents.setVisibility(View.VISIBLE);
+//            tv_documents.startAnimation(fabOpen);
+                        tv_timesheet.setVisibility(View.VISIBLE);
+//            tv_timesheet.startAnimation(fabOpen);
+                        tv_matter.setVisibility(View.VISIBLE);
+//            tv_matter.startAnimation(fabOpen);
+                        tv_more.setVisibility(View.VISIBLE);
+                    } catch (Exception e) {
+                        Log.e("Error", "Error" + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            });
+            iv_close_menu.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        iv_open_menu.setVisibility(View.VISIBLE);
+                        iv_close_menu.setVisibility(View.GONE);
+//            mAddFab.setIcon(ContextCompat.getDrawable(MainActivity.this, R.drawable.down_arrow));
+                        fab_relationships.setVisibility(View.GONE);
+                        fab_relationships.startAnimation(fabClose);
+                        fab_documents.setVisibility(View.GONE);
+                        fab_documents.startAnimation(fabClose);
+                        fab_matter.setVisibility(View.GONE);
+                        fab_matter.startAnimation(fabClose);
+                        fab_timesheet.setVisibility(View.GONE);
+                        fab_timesheet.startAnimation(fabClose);
+                        fab_more.setVisibility(View.GONE);
+                        fab_more.startAnimation(fabClose);
+                        tv_relations.setVisibility(View.GONE);
+//            tv_relations.startAnimation(fabClose);
+                        tv_documents.setVisibility(View.GONE);
+//            tv_documents.startAnimation(fabClose);
+                        tv_timesheet.setVisibility(View.GONE);
+//            tv_timesheet.startAnimation(fabClose);
+                        tv_matter.setVisibility(View.GONE);
+//            tv_matter.startAnimation(fabClose);
+                        tv_more.setVisibility(View.GONE);
+//            tv_more.startAnimation(fabClose);
+//            mAddFab.shrink();
+//                        isAllFabsVisible = false;
 
                     } catch (Exception e) {
                         Log.e("Error", "Error" + e.getMessage());
@@ -109,61 +168,14 @@ public class MainActivity extends AppCompatActivity {
 //                LinearLayout.LayoutParams(tv_relations.getWidth(),tv_relations.getHeight());
 //        lp.setMargins(0,0,165,15);
         if (!isAllFabsVisible) {
-            iv_open_menu.startAnimation(rotateForward);
-//            iv_close_menu.setVisibility(View.VISIBLE);
-//            iv_open_menu.setVisibility(View.GONE);
-//            mAddFab.setIcon(ContextCompat.getDrawable(MainActivity.this, R.drawable.up_arrow));
-//                    mAddFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_full_sad));
-            fab_relationships.setVisibility(View.VISIBLE);
-            fab_relationships.startAnimation(fabOpen);
-            fab_documents.setVisibility(View.VISIBLE);
-            fab_documents.startAnimation(fabOpen);
-            fab_matter.setVisibility(View.VISIBLE);
-            fab_matter.startAnimation(fabOpen);
-            fab_timesheet.setVisibility(View.VISIBLE);
-            fab_timesheet.startAnimation(fabOpen);
-            fab_more.setVisibility(View.VISIBLE);
-            fab_more.startAnimation(fabOpen);
-            tv_relations.setVisibility(View.VISIBLE);
-//            tv_relations.setLayoutParams(lp);
-//            tv_relations.startAnimation(fabOpen);
-            tv_documents.setVisibility(View.VISIBLE);
-//            tv_documents.startAnimation(fabOpen);
-            tv_timesheet.setVisibility(View.VISIBLE);
-//            tv_timesheet.startAnimation(fabOpen);
-            tv_matter.setVisibility(View.VISIBLE);
-//            tv_matter.startAnimation(fabOpen);
-            tv_more.setVisibility(View.VISIBLE);
+//            iv_open_menu.startAnimation(rotateForward);
+
 //            tv_more.startAnimation(fabOpen);
 //                    mAddFab.extend();
             isAllFabsVisible = true;
         } else {
-            iv_open_menu.startAnimation(rotateBackward);
-            iv_open_menu.setVisibility(View.VISIBLE);
-            iv_close_menu.setVisibility(View.GONE);
-//            mAddFab.setIcon(ContextCompat.getDrawable(MainActivity.this, R.drawable.down_arrow));
-            fab_relationships.setVisibility(View.GONE);
-            fab_relationships.startAnimation(fabClose);
-            fab_documents.setVisibility(View.GONE);
-            fab_documents.startAnimation(fabClose);
-            fab_matter.setVisibility(View.GONE);
-            fab_matter.startAnimation(fabClose);
-            fab_timesheet.setVisibility(View.GONE);
-            fab_timesheet.startAnimation(fabClose);
-            fab_more.setVisibility(View.GONE);
-            fab_more.startAnimation(fabClose);
-            tv_relations.setVisibility(View.GONE);
-//            tv_relations.startAnimation(fabClose);
-            tv_documents.setVisibility(View.GONE);
-//            tv_documents.startAnimation(fabClose);
-            tv_timesheet.setVisibility(View.GONE);
-//            tv_timesheet.startAnimation(fabClose);
-            tv_matter.setVisibility(View.GONE);
-//            tv_matter.startAnimation(fabClose);
-            tv_more.setVisibility(View.GONE);
-//            tv_more.startAnimation(fabClose);
-//            mAddFab.shrink();
-            isAllFabsVisible = false;
+//            iv_open_menu.startAnimation(rotateBackward);
+
         }
 
     }

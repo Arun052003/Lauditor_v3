@@ -60,7 +60,7 @@ public class Dashboard extends Fragment {
         dateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
         date = dateFormat.format(calendar.getTime());
         try {
-            mainActivity = (MainActivity) getActivity();
+//            mainActivity = (MainActivity) getActivity();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,21 +108,21 @@ public class Dashboard extends Fragment {
         rv_myday.setLayoutManager(new LinearLayoutManager(getActivity()));
         rv_myday.setAdapter(new DashboardAdapter(itemArrayList));
         rv_myday.scrollToPosition(-1);
-        rv_myday.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                try {
-                    if (dy>0 && mainActivity.ll_bottom_menu.getVisibility() == View.VISIBLE){
-                        mainActivity.ll_bottom_menu.setVisibility(View.GONE);
-                    }else if (dy<0 && mainActivity.ll_bottom_menu.getVisibility() != View.VISIBLE){
-                        mainActivity.ll_bottom_menu.setVisibility(View.VISIBLE);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
+//        rv_myday.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                try {
+//                    if (dy>0 && mainActivity.ll_bottom_menu.getVisibility() == View.VISIBLE){
+//                        mainActivity.ll_bottom_menu.setVisibility(View.GONE);
+//                    }else if (dy<0 && mainActivity.ll_bottom_menu.getVisibility() != View.VISIBLE){
+//                        mainActivity.ll_bottom_menu.setVisibility(View.VISIBLE);
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        });
     }
 }

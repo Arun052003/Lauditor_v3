@@ -107,6 +107,7 @@ public class Dashboard extends Fragment {
         itemArrayList.add(new Item(4,emailModel));
         rv_myday.setLayoutManager(new LinearLayoutManager(getActivity()));
         rv_myday.setAdapter(new DashboardAdapter(itemArrayList));
+        rv_myday.scrollToPosition(-1);
         rv_myday.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {

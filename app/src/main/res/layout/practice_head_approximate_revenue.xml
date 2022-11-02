@@ -36,7 +36,7 @@
             android:textSize="@dimen/twenty_dp" />
 
         <TextView
-            android:id="@+id/tv_requests_count"
+            android:id="@+id/tv_revenue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

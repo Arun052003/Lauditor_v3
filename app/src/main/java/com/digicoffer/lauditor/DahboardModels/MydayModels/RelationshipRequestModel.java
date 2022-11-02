@@ -1,4 +1,4 @@
-package com.digicoffer.lauditor.DahboardModels;
+package com.digicoffer.lauditor.DahboardModels.MydayModels;
 
 public class RelationshipRequestModel {
 

@@ -56,7 +56,7 @@
             android:gravity="center"
             android:text="1"
             android:textColor="@color/white"
-            android:textSize="@dimen/normal_size" />
+            android:textSize="@dimen/Fifteen_dp" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -69,7 +69,7 @@
         android:layout_marginTop="8dp"
         android:fontFamily="sans-serif-condensed-medium"
         android:text="Adobe Creative Cloud"
-        android:textSize="@dimen/normal_size"
+        android:textSize="@dimen/Fifteen_dp"
         android:textColor="@color/green_count_color"
         app:layout_constraintBottom_toTopOf="@id/tv_email_message"
         app:layout_constraintEnd_toStartOf="@id/guideline7"

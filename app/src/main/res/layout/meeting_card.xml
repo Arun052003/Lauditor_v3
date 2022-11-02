@@ -55,7 +55,7 @@
                 android:gravity="center"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:background="@drawable/round_buttons_meeting_card"
-                android:textSize="@dimen/normal_size"
+                android:textSize="@dimen/Fifteen_dp"
                 android:textColor="@color/white"
                 android:text="1"
                 />

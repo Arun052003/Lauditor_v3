@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextClock;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,21 +14,17 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.digicoffer.lauditor.DahboardModels.ClientChatModel;
-import com.digicoffer.lauditor.DahboardModels.EmailModel;
+import com.digicoffer.lauditor.DahboardModels.MydayModels.ClientChatModel;
+import com.digicoffer.lauditor.DahboardModels.MydayModels.EmailModel;
 import com.digicoffer.lauditor.DahboardModels.Item;
-import com.digicoffer.lauditor.DahboardModels.MeetingModel;
-import com.digicoffer.lauditor.DahboardModels.RelationshipRequestModel;
-import com.digicoffer.lauditor.DahboardModels.TeamChatModel;
+import com.digicoffer.lauditor.DahboardModels.MydayModels.MeetingModel;
+import com.digicoffer.lauditor.DahboardModels.MydayModels.RelationshipRequestModel;
+import com.digicoffer.lauditor.DahboardModels.MydayModels.TeamChatModel;
+import com.digicoffer.lauditor.DahboardModels.PracticeHeadModels.PracticeModel;
 import com.digicoffer.lauditor.MainActivity;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import org.minidns.record.A;
-import org.pgpainless.key.selection.key.util.And;
-
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -77,7 +72,7 @@ public class Dashboard extends Fragment {
         itemArrayList.clear();
 
         try {
-            loadRecyclerview();
+            loadMyDayData();
         } catch (Exception e) {
             Log.e("Error","Info"+e.getMessage());
         }
@@ -85,9 +80,8 @@ public class Dashboard extends Fragment {
         return v;
     }
 
-    private void loadRecyclerview() {
-        //Meetings
-        MeetingModel meetingModel = new MeetingModel(5,"9:00am to 9:00pm","Meeting with Tripati");
+    private void loadMyDayData(){
+        MeetingModel meetingModel = new MeetingModel(5,"9:00am to 9:00pm","Meeting with Rajendra");
         itemArrayList.add(new Item(0,meetingModel));
 
         //RelationshipRequest
@@ -105,8 +99,39 @@ public class Dashboard extends Fragment {
         //Email
         EmailModel emailModel = new EmailModel("Adobe Creative Cloud","New ways to spice up your creativity","Mon Feb 28, 11:37 PM(11 hours ago)",5);
         itemArrayList.add(new Item(4,emailModel));
+        loadRecyclerview();
+    }
+
+    private void loadKPIdata(){
+//        for (int i=0;i<=8;i++){
+            PracticeModel practiceModel_tbh = new PracticeModel(800,72,0);
+            itemArrayList.add(new Item(0,practiceModel_tbh));
+//        }
+
+
+        PracticeModel practiceModel_nbh = new PracticeModel(140,28,0);
+        itemArrayList.add(new Item(1,practiceModel_nbh));
+        PracticeModel practiceModel_ar = new PracticeModel(10000,0,0);
+        itemArrayList.add(new Item(2,practiceModel_ar));
+        PracticeModel practiceModel_abr = new PracticeModel(200,0,0);
+        itemArrayList.add(new Item(3,practiceModel_abr));
+        PracticeModel practiceModel_ts = new PracticeModel(30,3,27);
+        itemArrayList.add(new Item(4,practiceModel_ts));
+        PracticeModel practiceModel_matter = new PracticeModel(128,4,0);
+        itemArrayList.add(new Item(5,practiceModel_matter));
+        PracticeModel practiceModel_usl = new PracticeModel(4,0,0);
+        itemArrayList.add(new Item(6,practiceModel_usl));
+        PracticeModel practiceModel_cr = new PracticeModel(128,4,3);
+        itemArrayList.add(new Item(7,practiceModel_cr));
+        loadRecyclerview();
+
+    }
+
+    private void loadRecyclerview() {
+        //Meetings
+
         rv_myday.setLayoutManager(new LinearLayoutManager(getActivity()));
-        rv_myday.setAdapter(new DashboardAdapter(itemArrayList));
+        rv_myday.setAdapter(new MyDayAdapter(itemArrayList));
         rv_myday.scrollToPosition(-1);
 //        rv_myday.addOnScrollListener(new RecyclerView.OnScrollListener() {
 //            @Override

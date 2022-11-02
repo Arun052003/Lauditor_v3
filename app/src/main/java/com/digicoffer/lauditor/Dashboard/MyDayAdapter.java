@@ -8,53 +8,57 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.digicoffer.lauditor.DahboardModels.ClientChatModel;
-import com.digicoffer.lauditor.DahboardModels.EmailModel;
+import com.digicoffer.lauditor.DahboardModels.MydayModels.ClientChatModel;
+import com.digicoffer.lauditor.DahboardModels.MydayModels.EmailModel;
 import com.digicoffer.lauditor.DahboardModels.Item;
-import com.digicoffer.lauditor.DahboardModels.MeetingModel;
-import com.digicoffer.lauditor.DahboardModels.RelationshipRequestModel;
-import com.digicoffer.lauditor.DahboardModels.TeamChatModel;
+import com.digicoffer.lauditor.DahboardModels.MydayModels.MeetingModel;
+import com.digicoffer.lauditor.DahboardModels.MydayModels.RelationshipRequestModel;
+import com.digicoffer.lauditor.DahboardModels.MydayModels.TeamChatModel;
 import com.digicoffer.lauditor.R;
 
 import java.util.ArrayList;
 
-public class DashboardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class MyDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<Item> items;
 
-    public DashboardAdapter(ArrayList<Item> items) {
+    public MyDayAdapter(ArrayList<Item> items) {
         this.items = items;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
+                //0=meeting_card
             if (viewType == 0) {
                 return new MeetingHolder(LayoutInflater.from(parent.getContext()).inflate(
                         R.layout.meeting_card,
                         parent,
                         false
                 ));
-            } else if (viewType == 1) {
-                return new MeetingHolder(LayoutInflater.from(parent.getContext()).inflate(
+            }//1=relationship_request_card
+            else if (viewType == 1) {
+                return new RelationshipRequestHolder(LayoutInflater.from(parent.getContext()).inflate(
                         R.layout.relationship_request_card,
                         parent,
                         false
                 ));
-            } else if (viewType == 2) {
-                return new MeetingHolder(LayoutInflater.from(parent.getContext()).inflate(
+            }//2=client_chat_card
+            else if (viewType == 2) {
+                return new ClientChatHolder(LayoutInflater.from(parent.getContext()).inflate(
                         R.layout.client_chat_card,
                         parent,
                         false
                 ));
-            } else if (viewType == 3) {
-                return new MeetingHolder(LayoutInflater.from(parent.getContext()).inflate(
+            }//3=team_chat_card
+            else if (viewType == 3) {
+                return new TeamChatHolder(LayoutInflater.from(parent.getContext()).inflate(
                         R.layout.team_chat_card,
                         parent,
                         false
                 ));
-            } else {
-                return new MeetingHolder(LayoutInflater.from(parent.getContext()).inflate(
+            }//4=email_card
+            else {
+                return new EmailHolder(LayoutInflater.from(parent.getContext()).inflate(
                         R.layout.email_card,
                         parent,
                         false

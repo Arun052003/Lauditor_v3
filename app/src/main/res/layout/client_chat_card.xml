@@ -56,7 +56,7 @@
             android:gravity="center"
             android:text="1"
             android:textColor="@color/white"
-            android:textSize="@dimen/normal_size" />
+            android:textSize="@dimen/Fifteen_dp" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

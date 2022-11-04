@@ -1,11 +1,13 @@
 package com.digicoffer.lauditor.Dashboard;
 
 import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextClock;
 
 import androidx.annotation.NonNull;
@@ -37,8 +39,9 @@ public class Dashboard extends Fragment {
     private Calendar calendar;
     private SimpleDateFormat dateFormat;
     private String date;
+    private Button bt_MyDay,bt_KPI;
     MainActivity mainActivity;
-
+    private static String KPI_DATA ="";
     private RecyclerView rv_myday;
     ArrayList<Item> itemArrayList = new ArrayList<>();
     @Override
@@ -50,31 +53,60 @@ public class Dashboard extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.dashboard_screen, container, false);
-        calendar = Calendar.getInstance();
-        dateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
-        date = dateFormat.format(calendar.getTime());
+
+          View v = inflater.inflate(R.layout.dashboard_screen, container, false);
         try {
+          calendar = Calendar.getInstance();
+          dateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
+          date = dateFormat.format(calendar.getTime());
+          try {
 //            mainActivity = (MainActivity) getActivity();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Date date_new = AndroidUtils.stringToDateTimeDefault(date, "MMM dd YYYY HH:mm:ss aa");
-        String time = AndroidUtils.getDateToString(date_new,"HH:mm");
-        String date = AndroidUtils.getDateToString(date_new,"MMM dd YYYY");
-        String am_pm = AndroidUtils.getDateToString(date_new,"aa");
-        tv_am_pm = v.findViewById(R.id.am_pm);
-        tv_time = v.findViewById(R.id.time);
-        tv_date_time = v.findViewById(R.id.tv_date);
-        rv_myday = v.findViewById(R.id.rv_myday);
-        itemArrayList.clear();
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+          bt_KPI = v.findViewById(R.id.bt_kpi);
+          bt_MyDay = v.findViewById(R.id.bt_Myday);
+          bt_MyDay.setBackgroundColor(getContext().getResources().getColor(R.color.grey_color_dark));
+          Date date_new = AndroidUtils.stringToDateTimeDefault(date, "MMM dd YYYY HH:mm:ss aa");
+          String time = AndroidUtils.getDateToString(date_new, "HH:mm");
+          String date = AndroidUtils.getDateToString(date_new, "MMM dd YYYY");
+          String am_pm = AndroidUtils.getDateToString(date_new, "aa");
+          tv_am_pm = v.findViewById(R.id.am_pm);
+          tv_time = v.findViewById(R.id.time);
+          tv_date_time = v.findViewById(R.id.tv_date);
+          rv_myday = v.findViewById(R.id.rv_myday);
+          itemArrayList.clear();
 
-        try {
-            load_Admin_data();
-        } catch (Exception e) {
-            Log.e("Error","Info"+e.getMessage());
-        }
+          try {
+              bt_MyDay.setOnClickListener(new View.OnClickListener() {
+                  @Override
+                  public void onClick(View view) {
+                      itemArrayList.clear();
+                      KPI_DATA = "";
+                      bt_MyDay.setBackgroundColor(getContext().getResources().getColor(R.color.grey_color_dark));
+                      bt_KPI.setBackgroundColor(getContext().getResources().getColor(R.color.white));
+                      loadMyDayData();
+                  }
+              });
+              bt_KPI.setOnClickListener(new View.OnClickListener() {
+                  @Override
+                  public void onClick(View view) {
+                      KPI_DATA = "";
+                      itemArrayList.clear();
+                      bt_MyDay.setBackgroundColor(getContext().getResources().getColor(R.color.white));
+                      bt_KPI.setBackgroundColor(getContext().getResources().getColor(R.color.grey_color_dark));
+                      load_Admin_data();
+                  }
+              });
+              loadMyDayData();
+          } catch (Exception e) {
+              Log.e("Error", "Info" + e.getMessage());
+          }
 
+
+      } catch (Resources.NotFoundException e) {
+          e.printStackTrace();
+      }
         return v;
     }
 
@@ -97,7 +129,9 @@ public class Dashboard extends Fragment {
         //Email
         EmailModel emailModel = new EmailModel("Adobe Creative Cloud","New ways to spice up your creativity","Mon Feb 28, 11:37 PM(11 hours ago)",5);
         itemArrayList.add(new Item(4,emailModel));
-        loadRecyclerview();
+        MyDayAdapter adminKPIAdapter = new MyDayAdapter(itemArrayList);
+        KPI_DATA = "MyDay";
+        loadRecyclerview(KPI_DATA);
     }
 
 
@@ -120,7 +154,8 @@ public class Dashboard extends Fragment {
         itemArrayList.add(new Item(6,practiceModel_usl));
         PracticeModel practiceModel_cr = new PracticeModel(128,4,3);
         itemArrayList.add(new Item(7,practiceModel_cr));
-        loadRecyclerview();
+        KPI_DATA = "PH KPI";
+        loadRecyclerview(KPI_DATA);
 
     }
  private void loadSuperKPIdata(){
@@ -141,7 +176,8 @@ public class Dashboard extends Fragment {
      itemArrayList.add(new Item(6,practiceModel_usl));
      PracticeModel practiceModel_cr = new PracticeModel(128,4,3);
      itemArrayList.add(new Item(7,practiceModel_cr));
-     loadRecyclerview();
+     KPI_DATA = "SU KPI";
+     loadRecyclerview( KPI_DATA);
  }
     private void load_TM_KPI_data(){
         PracticeModel practiceModel_tbh = new PracticeModel(800,72,0);
@@ -154,7 +190,8 @@ public class Dashboard extends Fragment {
         itemArrayList.add(new Item(3,practiceModel_abr));
         PracticeModel practiceModel_ts = new PracticeModel(30,3,27);
         itemArrayList.add(new Item(4,practiceModel_ts));
-        loadRecyclerview();
+        KPI_DATA = "TM KPI";
+        loadRecyclerview(KPI_DATA);
     }
     private void load_Admin_data(){
         PracticeModel practiceModel_tbh = new PracticeModel(800,72,0);
@@ -167,29 +204,24 @@ public class Dashboard extends Fragment {
         itemArrayList.add(new Item(3,practiceModel_abr));
         PracticeModel practiceModel_ts = new PracticeModel(30,3,27);
         itemArrayList.add(new Item(4,practiceModel_ts));
-        loadRecyclerview();
+
+        loadRecyclerview(KPI_DATA);
     }
-    private void loadRecyclerview() {
+    private void loadRecyclerview(String data) {
         //Meetings
 
         rv_myday.setLayoutManager(new LinearLayoutManager(getActivity()));
-        rv_myday.setAdapter(new AdminKPIAdapter(itemArrayList));
+        if (data=="MyDay"){
+            rv_myday.setAdapter(new MyDayAdapter(itemArrayList));
+        }else if (data == "PH KPI"){
+            rv_myday.setAdapter(new PracticeHeadKPIAdapter(itemArrayList));
+        }else if(data == "TM KPI"){
+            rv_myday.setAdapter(new TeamMemberKPIAdapter(itemArrayList));
+        }else if(data == "SU KPI"){
+            rv_myday.setAdapter(new SuperUserKPIAdapter(itemArrayList));
+        }else{
+            rv_myday.setAdapter(new AdminKPIAdapter(itemArrayList));
+        }
         rv_myday.scrollToPosition(-1);
-//        rv_myday.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//                try {
-//                    if (dy>0 && mainActivity.ll_bottom_menu.getVisibility() == View.VISIBLE){
-//                        mainActivity.ll_bottom_menu.setVisibility(View.GONE);
-//                    }else if (dy<0 && mainActivity.ll_bottom_menu.getVisibility() != View.VISIBLE){
-//                        mainActivity.ll_bottom_menu.setVisibility(View.VISIBLE);
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//        });
-    }
+}
 }

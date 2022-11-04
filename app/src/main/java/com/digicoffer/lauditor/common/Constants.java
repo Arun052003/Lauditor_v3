@@ -6,6 +6,7 @@ public class Constants {
     public static String NAME = "";
     public static String PROBIZ_TYPE = "";
     public static Boolean ISPRODUCTION = false;
+//    public static String MyDay_KPI =
     public static String PROF_URL = ISPRODUCTION ? "https://api.digicoffer.com/professional/" : "https://apidev1.digicoffer.com/professional/";
     public static String BIZ_URL = ISPRODUCTION ? "https://api.digicoffer.com/business/" : "https://apidev.digicoffer.com/business/";
     //    public static String PROF_URL = "http://10.0.2.2:8011/professional/";

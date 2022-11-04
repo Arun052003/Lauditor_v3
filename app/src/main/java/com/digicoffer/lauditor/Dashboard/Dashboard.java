@@ -59,8 +59,6 @@ public class Dashboard extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
         Date date_new = AndroidUtils.stringToDateTimeDefault(date, "MMM dd YYYY HH:mm:ss aa");
         String time = AndroidUtils.getDateToString(date_new,"HH:mm");
         String date = AndroidUtils.getDateToString(date_new,"MMM dd YYYY");
@@ -72,7 +70,7 @@ public class Dashboard extends Fragment {
         itemArrayList.clear();
 
         try {
-            loadMyDayData();
+            load_Admin_data();
         } catch (Exception e) {
             Log.e("Error","Info"+e.getMessage());
         }
@@ -102,13 +100,12 @@ public class Dashboard extends Fragment {
         loadRecyclerview();
     }
 
+
     private void loadKPIdata(){
 //        for (int i=0;i<=8;i++){
             PracticeModel practiceModel_tbh = new PracticeModel(800,72,0);
             itemArrayList.add(new Item(0,practiceModel_tbh));
 //        }
-
-
         PracticeModel practiceModel_nbh = new PracticeModel(140,28,0);
         itemArrayList.add(new Item(1,practiceModel_nbh));
         PracticeModel practiceModel_ar = new PracticeModel(10000,0,0);
@@ -126,12 +123,57 @@ public class Dashboard extends Fragment {
         loadRecyclerview();
 
     }
-
+ private void loadSuperKPIdata(){
+     PracticeModel practiceModel_tbh = new PracticeModel(800,72,0);
+     itemArrayList.add(new Item(0,practiceModel_tbh));
+//        }
+     PracticeModel practiceModel_nbh = new PracticeModel(140,28,0);
+     itemArrayList.add(new Item(1,practiceModel_nbh));
+     PracticeModel practiceModel_ar = new PracticeModel(10000,0,0);
+     itemArrayList.add(new Item(2,practiceModel_ar));
+     PracticeModel practiceModel_abr = new PracticeModel(200,0,0);
+     itemArrayList.add(new Item(3,practiceModel_abr));
+     PracticeModel practiceModel_ts = new PracticeModel(30,3,27);
+     itemArrayList.add(new Item(4,practiceModel_ts));
+     PracticeModel practiceModel_matter = new PracticeModel(128,4,0);
+     itemArrayList.add(new Item(5,practiceModel_matter));
+     PracticeModel practiceModel_usl = new PracticeModel(4,0,0);
+     itemArrayList.add(new Item(6,practiceModel_usl));
+     PracticeModel practiceModel_cr = new PracticeModel(128,4,3);
+     itemArrayList.add(new Item(7,practiceModel_cr));
+     loadRecyclerview();
+ }
+    private void load_TM_KPI_data(){
+        PracticeModel practiceModel_tbh = new PracticeModel(800,72,0);
+        itemArrayList.add(new Item(0,practiceModel_tbh));
+        PracticeModel practiceModel_nbh = new PracticeModel(140,28,0);
+        itemArrayList.add(new Item(1,practiceModel_nbh));
+        PracticeModel practiceModel_ar = new PracticeModel(10000,0,0);
+        itemArrayList.add(new Item(2,practiceModel_ar));
+        PracticeModel practiceModel_abr = new PracticeModel(200,0,0);
+        itemArrayList.add(new Item(3,practiceModel_abr));
+        PracticeModel practiceModel_ts = new PracticeModel(30,3,27);
+        itemArrayList.add(new Item(4,practiceModel_ts));
+        loadRecyclerview();
+    }
+    private void load_Admin_data(){
+        PracticeModel practiceModel_tbh = new PracticeModel(800,72,0);
+        itemArrayList.add(new Item(0,practiceModel_tbh));
+        PracticeModel practiceModel_nbh = new PracticeModel(140,28,0);
+        itemArrayList.add(new Item(1,practiceModel_nbh));
+        PracticeModel practiceModel_ar = new PracticeModel(10000,0,0);
+        itemArrayList.add(new Item(2,practiceModel_ar));
+        PracticeModel practiceModel_abr = new PracticeModel(200,0,0);
+        itemArrayList.add(new Item(3,practiceModel_abr));
+        PracticeModel practiceModel_ts = new PracticeModel(30,3,27);
+        itemArrayList.add(new Item(4,practiceModel_ts));
+        loadRecyclerview();
+    }
     private void loadRecyclerview() {
         //Meetings
 
         rv_myday.setLayoutManager(new LinearLayoutManager(getActivity()));
-        rv_myday.setAdapter(new MyDayAdapter(itemArrayList));
+        rv_myday.setAdapter(new AdminKPIAdapter(itemArrayList));
         rv_myday.scrollToPosition(-1);
 //        rv_myday.addOnScrollListener(new RecyclerView.OnScrollListener() {
 //            @Override

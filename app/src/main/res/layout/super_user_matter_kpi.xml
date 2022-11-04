@@ -60,7 +60,7 @@
                 android:fontFamily="sans-serif-condensed-light"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="Closed"
+                android:text="Total"
                 android:textColor="@color/Blue_text_color"
                 android:textSize="@dimen/thirty_dp" />
 
@@ -78,19 +78,42 @@
                 android:textSize="@dimen/Fifteen_dp" />
 
             <TextView
-                android:id="@+id/tv_closed_members_count"
+                android:id="@+id/tv_total_matters_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
 
                 android:fontFamily="sans-serif-condensed-light"
                 android:padding="5dp"
-                android:text="128"
+                android:text="132"
                 android:textColor="@color/green_count_color"
                 android:textSize="@dimen/Fifty_dp">
 
             </TextView>
+            <TextView
+                android:id="@+id/tv_total_legal_matter_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
 
+                android:fontFamily="sans-serif-condensed-medium"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="60 Legal"
+                android:textColor="@color/black"
+                android:textSize="@dimen/Fifteen_dp" />
+            <TextView
+                android:id="@+id/tv_total_general_matter_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+
+                android:fontFamily="sans-serif-condensed-medium"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="72 General"
+                android:textColor="@color/black"
+                android:textSize="@dimen/Fifteen_dp" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -128,20 +151,43 @@
                 android:textSize="@dimen/Fifteen_dp" />
 
             <TextView
-                android:id="@+id/tv_active_members_count"
+                android:id="@+id/tv_active_matters_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
 
                 android:fontFamily="sans-serif-condensed-light"
                 android:padding="5dp"
-                android:text="4"
+                android:text="32"
                 android:textColor="@color/green_count_color"
                 android:textSize="@dimen/Fifty_dp">
 
             </TextView>
 
+            <TextView
+                android:id="@+id/tv_active_legal_matter_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
 
+                android:fontFamily="sans-serif-condensed-medium"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="10 Legal"
+                android:textColor="@color/black"
+                android:textSize="@dimen/Fifteen_dp" />
+            <TextView
+                android:id="@+id/tv_active_general_matter_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+
+                android:fontFamily="sans-serif-condensed-medium"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="22 General"
+                android:textColor="@color/black"
+                android:textSize="@dimen/Fifteen_dp" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.appcompat.widget.LinearLayoutCompat>

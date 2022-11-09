@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.digicoffer.lauditor.Dashboard.Dashboard;
+import com.digicoffer.lauditor.Groups.Groups;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
             fab_timesheet.setVisibility(View.GONE);
             fab_more = findViewById(R.id.fb_more);
             fab_more.setVisibility(View.GONE);
+
 //            tv_relations = findViewById(R.id.tv_relationships);
 //            tv_relations.setVisibility(View.GONE);
 //            tv_documents = findViewById(R.id.tv_documents);
@@ -73,6 +75,15 @@ public class MainActivity extends AppCompatActivity {
             ft.replace(R.id.id_framelayout, fragment);
             ft.commit();
             isAllFabsVisible = false;
+            fab_more.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Fragment fragment = new Groups();
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.id_framelayout, fragment);
+                    ft.commit();
+                }
+            });
             iv_open_menu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -92,16 +103,17 @@ public class MainActivity extends AppCompatActivity {
                         fab_timesheet.startAnimation(fabOpen);
                         fab_more.setVisibility(View.VISIBLE);
                         fab_more.startAnimation(fabOpen);
-                        tv_relations.setVisibility(View.VISIBLE);
-//            tv_relations.setLayoutParams(lp);
-//            tv_relations.startAnimation(fabOpen);
-                        tv_documents.setVisibility(View.VISIBLE);
-//            tv_documents.startAnimation(fabOpen);
-                        tv_timesheet.setVisibility(View.VISIBLE);
-//            tv_timesheet.startAnimation(fabOpen);
-                        tv_matter.setVisibility(View.VISIBLE);
-//            tv_matter.startAnimation(fabOpen);
-                        tv_more.setVisibility(View.VISIBLE);
+//                        tv_relations.setVisibility(View.VISIBLE);
+////            tv_relations.setLayoutParams(lp);
+////            tv_relations.startAnimation(fabOpen);
+//                        tv_documents.setVisibility(View.VISIBLE);
+////            tv_documents.startAnimation(fabOpen);
+//                        tv_timesheet.setVisibility(View.VISIBLE);
+////            tv_timesheet.startAnimation(fabOpen);
+//                        tv_matter.setVisibility(View.VISIBLE);
+////            tv_matter.startAnimation(fabOpen);
+//                        tv_more.setVisibility(View.VISIBLE);
+
                     } catch (Exception e) {
                         Log.e("Error", "Error" + e.getMessage());
                         e.printStackTrace();
@@ -125,15 +137,15 @@ public class MainActivity extends AppCompatActivity {
                         fab_timesheet.startAnimation(fabClose);
                         fab_more.setVisibility(View.GONE);
                         fab_more.startAnimation(fabClose);
-                        tv_relations.setVisibility(View.GONE);
-//            tv_relations.startAnimation(fabClose);
-                        tv_documents.setVisibility(View.GONE);
-//            tv_documents.startAnimation(fabClose);
-                        tv_timesheet.setVisibility(View.GONE);
-//            tv_timesheet.startAnimation(fabClose);
-                        tv_matter.setVisibility(View.GONE);
-//            tv_matter.startAnimation(fabClose);
-                        tv_more.setVisibility(View.GONE);
+//                        tv_relations.setVisibility(View.GONE);
+////            tv_relations.startAnimation(fabClose);
+//                        tv_documents.setVisibility(View.GONE);
+////            tv_documents.startAnimation(fabClose);
+//                        tv_timesheet.setVisibility(View.GONE);
+////            tv_timesheet.startAnimation(fabClose);
+//                        tv_matter.setVisibility(View.GONE);
+////            tv_matter.startAnimation(fabClose);
+//                        tv_more.setVisibility(View.GONE);
 //            tv_more.startAnimation(fabClose);
 //            mAddFab.shrink();
 //                        isAllFabsVisible = false;
@@ -144,19 +156,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
-//            mAddFab.shrink();
-//            mAddFab.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    try {
-//                        animateFab();
-//
-//                    } catch (Exception e) {
-//                        Log.e("Error", "Error" + e.getMessage());
-//                        e.printStackTrace();
-//                    }
-//                }
-//            });
+
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
         }

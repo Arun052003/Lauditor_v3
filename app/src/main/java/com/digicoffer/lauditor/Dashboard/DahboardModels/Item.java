@@ -1,8 +1,17 @@
-package com.digicoffer.lauditor.DahboardModels;
+package com.digicoffer.lauditor.Dashboard.DahboardModels;
 
 public class Item {
     private int type;
     private Object object;
+    private String Viewtype;
+
+    public String getViewtype() {
+        return Viewtype;
+    }
+
+    public void setViewtype(String viewtype) {
+        Viewtype = viewtype;
+    }
 
     public Item(int type, Object object) {
         this.type = type;

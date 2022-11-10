@@ -8,8 +8,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.digicoffer.lauditor.DahboardModels.Item;
-import com.digicoffer.lauditor.DahboardModels.PracticeHeadModels.PracticeModel;
+import com.digicoffer.lauditor.Dashboard.DahboardModels.Item;
+import com.digicoffer.lauditor.Dashboard.DahboardModels.PracticeHeadModels.PracticeModel;
 import com.digicoffer.lauditor.R;
 
 import java.util.ArrayList;

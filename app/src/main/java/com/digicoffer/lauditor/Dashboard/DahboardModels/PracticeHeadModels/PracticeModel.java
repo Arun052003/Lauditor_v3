@@ -1,4 +1,4 @@
-package com.digicoffer.lauditor.DahboardModels.PracticeHeadModels;
+package com.digicoffer.lauditor.Dashboard.DahboardModels.PracticeHeadModels;
 
 public class PracticeModel {
     int hours;

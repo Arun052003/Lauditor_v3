@@ -47,6 +47,7 @@
         <FrameLayout
             android:id="@+id/id_framelayout"
             android:layout_width="match_parent"
+            android:paddingBottom="50dp"
             android:background="@color/dashboard_background_color"
             android:layout_height="match_parent">
 

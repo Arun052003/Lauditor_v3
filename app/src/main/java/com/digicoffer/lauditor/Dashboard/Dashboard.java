@@ -16,13 +16,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.digicoffer.lauditor.DahboardModels.MydayModels.ClientChatModel;
-import com.digicoffer.lauditor.DahboardModels.MydayModels.EmailModel;
-import com.digicoffer.lauditor.DahboardModels.Item;
-import com.digicoffer.lauditor.DahboardModels.MydayModels.MeetingModel;
-import com.digicoffer.lauditor.DahboardModels.MydayModels.RelationshipRequestModel;
-import com.digicoffer.lauditor.DahboardModels.MydayModels.TeamChatModel;
-import com.digicoffer.lauditor.DahboardModels.PracticeHeadModels.PracticeModel;
+import com.digicoffer.lauditor.Dashboard.DahboardModels.MydayModels.ClientChatModel;
+import com.digicoffer.lauditor.Dashboard.DahboardModels.MydayModels.EmailModel;
+import com.digicoffer.lauditor.Dashboard.DahboardModels.Item;
+import com.digicoffer.lauditor.Dashboard.DahboardModels.MydayModels.MeetingModel;
+import com.digicoffer.lauditor.Dashboard.DahboardModels.MydayModels.RelationshipRequestModel;
+import com.digicoffer.lauditor.Dashboard.DahboardModels.MydayModels.TeamChatModel;
+import com.digicoffer.lauditor.Dashboard.DahboardModels.PracticeHeadModels.PracticeModel;
 import com.digicoffer.lauditor.MainActivity;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
@@ -95,7 +95,7 @@ public class Dashboard extends Fragment {
                       itemArrayList.clear();
                       bt_MyDay.setBackgroundColor(getContext().getResources().getColor(R.color.white));
                       bt_KPI.setBackgroundColor(getContext().getResources().getColor(R.color.grey_color_dark));
-                      load_Admin_data();
+                      load_TM_KPI_data();
                   }
               });
               loadMyDayData();
@@ -129,8 +129,8 @@ public class Dashboard extends Fragment {
         //Email
         EmailModel emailModel = new EmailModel("Adobe Creative Cloud","New ways to spice up your creativity","Mon Feb 28, 11:37 PM(11 hours ago)",5);
         itemArrayList.add(new Item(4,emailModel));
-        MyDayAdapter adminKPIAdapter = new MyDayAdapter(itemArrayList);
         KPI_DATA = "MyDay";
+
         loadRecyclerview(KPI_DATA);
     }
 
@@ -154,7 +154,7 @@ public class Dashboard extends Fragment {
         itemArrayList.add(new Item(6,practiceModel_usl));
         PracticeModel practiceModel_cr = new PracticeModel(128,4,3);
         itemArrayList.add(new Item(7,practiceModel_cr));
-        KPI_DATA = "PH KPI";
+        KPI_DATA = "PH_KPI";
         loadRecyclerview(KPI_DATA);
 
     }
@@ -176,7 +176,7 @@ public class Dashboard extends Fragment {
      itemArrayList.add(new Item(6,practiceModel_usl));
      PracticeModel practiceModel_cr = new PracticeModel(128,4,3);
      itemArrayList.add(new Item(7,practiceModel_cr));
-     KPI_DATA = "SU KPI";
+     KPI_DATA = "SU_KPI";
      loadRecyclerview( KPI_DATA);
  }
     private void load_TM_KPI_data(){
@@ -190,7 +190,7 @@ public class Dashboard extends Fragment {
         itemArrayList.add(new Item(3,practiceModel_abr));
         PracticeModel practiceModel_ts = new PracticeModel(30,3,27);
         itemArrayList.add(new Item(4,practiceModel_ts));
-        KPI_DATA = "TM KPI";
+        KPI_DATA = "TM_KPI";
         loadRecyclerview(KPI_DATA);
     }
     private void load_Admin_data(){
@@ -204,24 +204,16 @@ public class Dashboard extends Fragment {
         itemArrayList.add(new Item(3,practiceModel_abr));
         PracticeModel practiceModel_ts = new PracticeModel(30,3,27);
         itemArrayList.add(new Item(4,practiceModel_ts));
-
+        KPI_DATA = "Admin";
         loadRecyclerview(KPI_DATA);
     }
     private void loadRecyclerview(String data) {
         //Meetings
 
         rv_myday.setLayoutManager(new LinearLayoutManager(getActivity()));
-        if (data=="MyDay"){
-            rv_myday.setAdapter(new MyDayAdapter(itemArrayList));
-        }else if (data == "PH KPI"){
-            rv_myday.setAdapter(new PracticeHeadKPIAdapter(itemArrayList));
-        }else if(data == "TM KPI"){
-            rv_myday.setAdapter(new TeamMemberKPIAdapter(itemArrayList));
-        }else if(data == "SU KPI"){
-            rv_myday.setAdapter(new SuperUserKPIAdapter(itemArrayList));
-        }else{
-            rv_myday.setAdapter(new AdminKPIAdapter(itemArrayList));
-        }
+
+            rv_myday.setAdapter(new MyDayAdapter(itemArrayList,data));
+
         rv_myday.scrollToPosition(-1);
 }
 }

@@ -8,9 +8,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.digicoffer.lauditor.DahboardModels.Item;
-import com.digicoffer.lauditor.DahboardModels.MydayModels.MeetingModel;
-import com.digicoffer.lauditor.DahboardModels.PracticeHeadModels.PracticeModel;
+import com.digicoffer.lauditor.Dashboard.DahboardModels.Item;
+import com.digicoffer.lauditor.Dashboard.DahboardModels.PracticeHeadModels.PracticeModel;
 import com.digicoffer.lauditor.R;
 
 import java.util.ArrayList;
@@ -119,6 +118,8 @@ public class PracticeHeadKPIAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public int getItemViewType(int position) {
         return items.get(position).getType();
     }
+
+
     static class TBHholder extends RecyclerView.ViewHolder{
         private  TextView tv_billing_hours,tv_bh_percentage;
         public TBHholder(@NonNull View itemView) {

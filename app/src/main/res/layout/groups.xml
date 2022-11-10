@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".MainActivity">
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,9 +15,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
        android:paddingEnd="50dp"
+        android:paddingTop="@dimen/twenty_dp"
         android:paddingStart="50dp"
         android:orientation="horizontal"
-        android:padding="10dp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,11 +26,12 @@
         app:layout_constraintVertical_bias="0.0">
 
         <TextView
+            android:id="@+id/tv_create_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/button_left_background"
-            android:fontFamily="sans-serif-condensed"
+            android:fontFamily="sans-serif-condensed-medium"
             android:padding="10dp"
             android:text="@string/create_group"
             android:textColor="@color/black"
@@ -33,11 +40,12 @@
         </TextView>
 
         <TextView
+            android:id="@+id/tv_view_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/button_right_background"
-            android:fontFamily="sans-serif-condensed"
+            android:fontFamily="sans-serif-condensed-medium"
             android:padding="10dp"
             android:text="@string/view_group"
             android:textColor="@color/black"
@@ -141,15 +149,16 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/description"
                 app:boxBackgroundMode="none"
-
+                android:inputType="text|textMultiLine"
                 android:textColorHint="@color/black">
 
                 <!--this is the actual edit text which takes the input-->
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_text2"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/rectangle_grey_background"
+                    android:layout_height="match_parent"
+
+                  android:background="@drawable/rectangle_grey_background"
 
                      />
 
@@ -193,6 +202,7 @@
         app:layout_constraintVertical_bias="0.0">
 
         <TextView
+            android:id="@+id/add_tm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -206,6 +216,7 @@
         </TextView>
 
         <TextView
+            android:id="@+id/add_phead"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -228,37 +239,28 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="10dp"
-        android:padding="10dp"
+
         app:layout_constraintHorizontal_bias="0.914"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat1"
         app:layout_constraintVertical_bias="0.025">
 
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:buttonTint="@color/white"
-            android:background="@color/white"
-            android:layout_margin="5dp"
-            android:checked="false"
-
-
-            >
-
-        </androidx.appcompat.widget.AppCompatCheckBox>
-
-        <TextView
-            android:layout_width="wrap_content"
+        <CheckBox
+            android:id="@+id/chk_select_all"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="10dp"
-            android:layout_margin="5dp"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:textColor="@color/black"
-            android:textSize="@dimen/Fifteen_dp"
-            android:text="@string/select_all">
+            android:paddingEnd="20dp"
+            android:layout_margin="10dp"
+            android:text="@string/select_all"
+            android:buttonTint="@color/grey_color_dark"
+            android:background="@color/grey_text_color"
+            android:layout_gravity="center"
 
-        </TextView>
+            />
+
+
+
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.cardview.widget.CardView
@@ -282,12 +284,24 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="10dp"
+            android:paddingBottom="50dp"
             >
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="Select Head of the Practice"
+                android:textSize="@dimen/twenty_dp"
+                android:textColor="@color/Blue_text_color"
+                android:visibility="gone"
+                android:fontFamily="sans-serif-condensed">
+
+            </TextView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_selected_tm"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
                 android:orientation="vertical"
+
                 android:layout_margin="10dp"
                 />
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -334,3 +348,4 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

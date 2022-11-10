@@ -1,4 +1,4 @@
-package com.digicoffer.lauditor.DahboardModels.MydayModels;
+package com.digicoffer.lauditor.Dashboard.DahboardModels.MydayModels;
 
 public class EmailModel {
     String email_subject;

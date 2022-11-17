@@ -63,7 +63,7 @@
                 >
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
@@ -152,7 +152,7 @@
                         android:textSize="@dimen/Twelve_dp" />
 
                     <Spinner
-                        android:id="@+id/spinner"
+                        android:id="@+id/sp_action"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginStart="8dp"

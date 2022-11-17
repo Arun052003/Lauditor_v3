@@ -1,7 +1,10 @@
 package com.digicoffer.lauditor.Groups;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,12 +15,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.Groups.Adapters.GroupAdapters;
+import com.digicoffer.lauditor.Groups.Adapters.ViewGroupsAdpater;
 import com.digicoffer.lauditor.Groups.GroupModels.GroupModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.R;
@@ -30,7 +36,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.minidns.record.A;
+import org.pgpainless.key.selection.key.util.And;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,12 +46,18 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener {
     TextInputEditText et_search;
     TextView tv_create_group, tv_view_group, tv_add_tm, tv_practice_head;
     ArrayList<GroupModel> selectedTMArrayList = new ArrayList<GroupModel>();
+    public static String TM_TYPE = "";
     ArrayList<ViewGroupModel> viewGroupModelArrayList = new ArrayList<>();
+    ArrayList<GroupModel> assignGroupsList = new ArrayList<>();
     private CheckBox chk_select_all;
     CardView cv_groups, cv_details;
+    GroupAdapters adapter = null;
     AlertDialog progress_dialog;
+    AppCompatButton btn_cancel,btn_save;
+    TextInputEditText et_Search;
     LinearLayoutCompat ll_tm, ll_select_all, ll_buttons;
 
+    @SuppressLint("MissingInflatedId")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -54,6 +66,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener {
         rv_view_groups = v.findViewById(R.id.rv_view_group);
         et_search = v.findViewById(R.id.et_search);
         cv_groups = v.findViewById(R.id.cv_details);
+        et_Search = v.findViewById(R.id.et_search_tm);
         cv_details = v.findViewById(R.id.cv_details_2);
         ll_tm = v.findViewById(R.id.linearLayoutCompat1);
         ll_select_all = v.findViewById(R.id.ll_select_all);
@@ -62,6 +75,8 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener {
         tv_view_group = v.findViewById(R.id.tv_view_group);
         tv_add_tm = v.findViewById(R.id.add_tm);
         tv_practice_head = v.findViewById(R.id.add_phead);
+        btn_cancel = v.findViewById(R.id.btn_cancel);
+        btn_save = v.findViewById(R.id.btn_save);
         tv_create_group.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_view_group.setOnClickListener(new View.OnClickListener() {
@@ -116,6 +131,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener {
             }
         });
         chk_select_all = v.findViewById(R.id.chk_select_all);
+
         try {
             callMembersWebservice();
 //            loadRecylcerview();
@@ -149,67 +165,110 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener {
     }
 
     private void loadViewGroupsRecylerview() {
-//        viewGroupModelArrayList.add(new ViewGroupModel("Admin & Account Management"
-//                ,"joe carpenter","jan 02 2022"));
-//        viewGroupModelArrayList.add(new ViewGroupModel("Super User"
-//                ,"joe carpenter","jan 02 2022"));
-//        viewGroupModelArrayList.add(new ViewGroupModel("Litigation"
-//                ,"joe carpenter","jan 02 2022"));
-//        viewGroupModelArrayList.add(new ViewGroupModel("Family Law"
-//                ,"joe carpenter","jan 02 2022"));
+
         rv_view_groups.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        final ViewGroupsAdpater adapter = new ViewGroupsAdpater(viewGroupModelArrayList);
+        final ViewGroupsAdpater adapter = new ViewGroupsAdpater(viewGroupModelArrayList,getContext());
         rv_view_groups.setAdapter(adapter);
         rv_view_groups.setHasFixedSize(true);
     }
 
-    private void loadRecylcerview() {
-//        selectedTMArrayList.add(new GroupModel("Akash Kumar"));
-//        selectedTMArrayList.add(new GroupModel("Priyanka Chopra"));
-//        selectedTMArrayList.add(new GroupModel("Akhileswar"));
-//        selectedTMArrayList.add(new GroupModel("Dilshan"));
-//        selectedTMArrayList.add(new GroupModel("Sachin Tendulkar"));
-//        selectedTMArrayList.add(new GroupModel("Akash Kumar"));
-//        selectedTMArrayList.add(new GroupModel("Priyanka Chopra"));
-//        selectedTMArrayList.add(new GroupModel("Akhileswar"));
-//        selectedTMArrayList.add(new GroupModel("Dilshan"));
-//        selectedTMArrayList.add(new GroupModel("Sachin Tendulkar"));
-//        selectedTMArrayList.add(new GroupModel("Akash Kumar"));
-//        selectedTMArrayList.add(new GroupModel("Priyanka Chopra"));
-//        selectedTMArrayList.add(new GroupModel("Akhileswar"));
-//        selectedTMArrayList.add(new GroupModel("Dilshan"));
-//        selectedTMArrayList.add(new GroupModel("Sachin Tendulkar"));
+    private void loadRecylcerview(ArrayList<GroupModel> selectedTMArrayList, String tmType) {
+        if (tmType=="TM"){
+            tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+            tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+
+        }else{
+            tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+            tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+
+        }
+          rv_select_team_members.removeAllViews();
+
         rv_select_team_members.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        final GroupAdapters adapter = new GroupAdapters(selectedTMArrayList);
+        adapter    = new GroupAdapters(selectedTMArrayList);
         rv_select_team_members.setAdapter(adapter);
         rv_select_team_members.setHasFixedSize(true);
 //        rv_select_team_members.notify();
+        et_Search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                adapter.getFilter().filter(et_Search.getText().toString());
+            }
+
+        });
         chk_select_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-//                for (int i=0;i<adapter.getList_item().size();i++){
-//                    if (adapter.getList_item().get(i).isSelected()) {
                         adapter.selectOrDeselectAll(isChecked);
-//                    }
-//                    else
-//                    {
-//                        adapter.selectOrDeselectAll(false);
-//                    }
-//                }
-//                JSONArray selected_list = new JSONArray();
-//                for (int i=0;i<adapter.getList_item().size();i++){
-//                    GroupModel groupModel = adapter.getList_item().get(i);
+
+            }
+        });
+        btn_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                assignGroupHead(adapter.getList_item());
+            }
+        });
+//        btn_cancel.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                selectedTMArrayList.clear();
 //
-//                    if (groupModel.isChecked()){
-//
-//                    }else {
-//                        groupModel.setSelected(true);
-//                    }
-//                }
+//                callMembersWebservice();
+//            }
+//        });
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+                tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+                if (selectedTMArrayList.size()==0){
+                    AndroidUtils.showToast("No team Members selected",getContext());
+                }else
+                {
+                    adapter.selectOrDeselectAll(false);
+                    adapter.getList_item().clear();
+                    selectedTMArrayList.clear();
+                    rv_select_team_members.removeAllViews();
+                    callMembersWebservice();
+                }
+//                selectedTMArrayList.clear();
+
+//                adapter.getList_item().clear();
             }
         });
     }
+
+    private void assignGroupHead(ArrayList<GroupModel> list_item) {
+
+//        selectedTMArrayList.clear();
+
+        for (int i=0;i<list_item.size();i++){
+            GroupModel groupModel = list_item.get(i);
+            if (groupModel.isChecked()){
+                assignGroupsList.add(groupModel);
+            }
+        }
+        TM_TYPE = "GH";
+        if (assignGroupsList.size()!=0){
+            loadRecylcerview(assignGroupsList, TM_TYPE);
+        }else{
+            AndroidUtils.showToast("Please select atleast one team member",getContext());
+        }
+
+
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -247,7 +306,8 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener {
             groupModel.setName(jsonObject.getString("name"));
             selectedTMArrayList.add(groupModel);
         }
-        loadRecylcerview();
+        TM_TYPE = "TM";
+        loadRecylcerview(selectedTMArrayList,TM_TYPE);
 
     }
 

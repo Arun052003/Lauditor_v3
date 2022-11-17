@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 //            tv_matter.setVisibility(View.GONE);
 //            tv_more = findViewById(R.id.tv_more);
 //            tv_more.setVisibility(View.GONE);
-            Fragment fragment = new Dashboard();
+            Fragment fragment = new Groups();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.id_framelayout, fragment);
             ft.commit();

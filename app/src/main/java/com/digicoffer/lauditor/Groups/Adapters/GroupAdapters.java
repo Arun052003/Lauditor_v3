@@ -1,4 +1,4 @@
-package com.digicoffer.lauditor.Groups;
+package com.digicoffer.lauditor.Groups.Adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.digicoffer.lauditor.Groups.GroupModels.GroupItems;
 import com.digicoffer.lauditor.Groups.GroupModels.GroupModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
@@ -107,6 +106,7 @@ public class GroupAdapters extends RecyclerView.Adapter<GroupAdapters.ViewHolder
 //            if (itemsArrayList.get(i).isChecked()){
             if (isChecked){
                 list_item.get(i).setSelected(true);
+
             }else{
                 list_item.get(i).setSelected(false);
             }
@@ -122,6 +122,7 @@ public class GroupAdapters extends RecyclerView.Adapter<GroupAdapters.ViewHolder
 //            list_item.get(i).setChecked(isChecked);
 //            itemsArrayList.get(i).setChecked(isChecked);
         }
+
         notifyDataSetChanged();
     }
     public class ViewHolder extends RecyclerView.ViewHolder{

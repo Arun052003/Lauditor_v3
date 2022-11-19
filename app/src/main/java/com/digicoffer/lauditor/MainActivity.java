@@ -26,6 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
     ExtendedFloatingActionButton mAddFab;
+    ImageView iv_logo_dashboard;
     ImageButton iv_open_menu,iv_close_menu;
     Animation fabOpen, fabClose, rotateForward, rotateBackward;
     FloatingActionButton fab_relationships,fab_documents,fab_timesheet,fab_matter,fab_more;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
             fab_relationships.setVisibility(View.GONE);
             fab_documents = findViewById(R.id.fb_documents);
             fab_documents.setVisibility(View.GONE);
+            iv_logo_dashboard = findViewById(R.id.logo_dashboard);
             ll_bottom_menu = findViewById(R.id.ll_bottom_menu);
             fab_matter = findViewById(R.id.fb_matter);
             fab_matter.setVisibility(View.GONE);
@@ -70,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 //            tv_matter.setVisibility(View.GONE);
 //            tv_more = findViewById(R.id.tv_more);
 //            tv_more.setVisibility(View.GONE);
-            Fragment fragment = new Groups();
+            Fragment fragment = new Dashboard();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.id_framelayout, fragment);
             ft.commit();
@@ -82,27 +84,25 @@ public class MainActivity extends AppCompatActivity {
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.id_framelayout, fragment);
                     ft.commit();
+                    closeMenu();
+                }
+            });
+            iv_logo_dashboard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Fragment fragment = new Dashboard();
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.id_framelayout, fragment);
+                    ft.commit();
                 }
             });
             iv_open_menu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     try {
+                        openMenu();
 //                        animateFab();
-                        iv_close_menu.setVisibility(View.VISIBLE);
-                        iv_open_menu.setVisibility(View.GONE);
-//            mAddFab.setIcon(ContextCompat.getDrawable(MainActivity.this, R.drawable.up_arrow));
-//                    mAddFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_full_sad));
-                        fab_relationships.setVisibility(View.VISIBLE);
-                        fab_relationships.startAnimation(fabOpen);
-                        fab_documents.setVisibility(View.VISIBLE);
-                        fab_documents.startAnimation(fabOpen);
-                        fab_matter.setVisibility(View.VISIBLE);
-                        fab_matter.startAnimation(fabOpen);
-                        fab_timesheet.setVisibility(View.VISIBLE);
-                        fab_timesheet.startAnimation(fabOpen);
-                        fab_more.setVisibility(View.VISIBLE);
-                        fab_more.startAnimation(fabOpen);
+
 //                        tv_relations.setVisibility(View.VISIBLE);
 ////            tv_relations.setLayoutParams(lp);
 ////            tv_relations.startAnimation(fabOpen);
@@ -124,19 +124,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     try {
-                        iv_open_menu.setVisibility(View.VISIBLE);
-                        iv_close_menu.setVisibility(View.GONE);
-//            mAddFab.setIcon(ContextCompat.getDrawable(MainActivity.this, R.drawable.down_arrow));
-                        fab_relationships.setVisibility(View.GONE);
-                        fab_relationships.startAnimation(fabClose);
-                        fab_documents.setVisibility(View.GONE);
-                        fab_documents.startAnimation(fabClose);
-                        fab_matter.setVisibility(View.GONE);
-                        fab_matter.startAnimation(fabClose);
-                        fab_timesheet.setVisibility(View.GONE);
-                        fab_timesheet.startAnimation(fabClose);
-                        fab_more.setVisibility(View.GONE);
-                        fab_more.startAnimation(fabClose);
+                        closeMenu();
+
 //                        tv_relations.setVisibility(View.GONE);
 ////            tv_relations.startAnimation(fabClose);
 //                        tv_documents.setVisibility(View.GONE);
@@ -162,6 +151,40 @@ public class MainActivity extends AppCompatActivity {
         }
 //        Sup
     }
+
+    private void closeMenu() {
+        iv_open_menu.setVisibility(View.VISIBLE);
+        iv_close_menu.setVisibility(View.GONE);
+//            mAddFab.setIcon(ContextCompat.getDrawable(MainActivity.this, R.drawable.down_arrow));
+        fab_relationships.setVisibility(View.GONE);
+        fab_relationships.startAnimation(fabClose);
+        fab_documents.setVisibility(View.GONE);
+        fab_documents.startAnimation(fabClose);
+        fab_matter.setVisibility(View.GONE);
+        fab_matter.startAnimation(fabClose);
+        fab_timesheet.setVisibility(View.GONE);
+        fab_timesheet.startAnimation(fabClose);
+        fab_more.setVisibility(View.GONE);
+        fab_more.startAnimation(fabClose);
+    }
+
+    private void openMenu() {
+        iv_close_menu.setVisibility(View.VISIBLE);
+        iv_open_menu.setVisibility(View.GONE);
+//            mAddFab.setIcon(ContextCompat.getDrawable(MainActivity.this, R.drawable.up_arrow));
+//                    mAddFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_full_sad));
+        fab_relationships.setVisibility(View.VISIBLE);
+        fab_relationships.startAnimation(fabOpen);
+        fab_documents.setVisibility(View.VISIBLE);
+        fab_documents.startAnimation(fabOpen);
+        fab_matter.setVisibility(View.VISIBLE);
+        fab_matter.startAnimation(fabOpen);
+        fab_timesheet.setVisibility(View.VISIBLE);
+        fab_timesheet.startAnimation(fabOpen);
+        fab_more.setVisibility(View.VISIBLE);
+        fab_more.startAnimation(fabOpen);
+    }
+
     private void animateFab(){
 
 //        LinearLayout.LayoutParams lp = new

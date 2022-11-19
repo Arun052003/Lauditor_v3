@@ -50,6 +50,8 @@
                 android:fontFamily="sans-serif-condensed-medium"
                 android:gravity="start"
                 android:padding="5dp"
+                android:layout_margin="5dp"
+                android:paddingStart="5dp"
                 android:text="Draft website terms of service...."
                 android:textColor="@color/Blue_text_color"
                 android:textSize="@dimen/Fifteen_dp" />

@@ -43,24 +43,24 @@ public class ViewGroupsAdpater extends  RecyclerView.Adapter<ViewGroupsAdpater.V
             holder.tv_owner_name.setText(viewGroupModel.getOwner_name());
             holder.tv_date.setText(viewGroupModel.getCreated());
             holder.tv_description.setText(viewGroupModel.getDescription());
-            actions_List.clear();
-            actions_List.add("");
-        actions_List.add("Add|Remove");
-        actions_List.add("Edit Group");
-        actions_List.add("Update Group Members");
-        actions_List.add("Change Group Head");
-        actions_List.add("Group Activity Log");
-        final int listsize = actions_List.size() - 1;
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(mcontext,android.R.layout.simple_spinner_item, actions_List) {
-            @Override
-            public int getCount() {
-                return(listsize); // Truncate the list
-            }
-        };
-
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        holder.sp_action.setAdapter(dataAdapter);
-        holder.sp_action.setSelection(listsize);
+//            actions_List.clear();
+//            actions_List.add("");
+//        actions_List.add("Add|Remove");
+//        actions_List.add("Edit Group");
+//        actions_List.add("Update Group Members");
+//        actions_List.add("Change Group Head");
+//        actions_List.add("Group Activity Log");
+//        final int listsize = actions_List.size() - 1;
+//        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(mcontext,android.R.layout.simple_spinner_item, actions_List) {
+//            @Override
+//            public int getCount() {
+//                return(listsize); // Truncate the list
+//            }
+//        };
+//
+//        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        holder.sp_action.setAdapter(dataAdapter);
+//        holder.sp_action.setSelection(listsize);
 
     }
 

@@ -83,6 +83,15 @@ public class HttpExecuteTask extends AsyncTask<String, Integer, HttpResultDo> {
                     wr.flush();
                     wr.close();
                     break;
+                case PATCH:
+                    httpURLConnection.setRequestMethod("PATCH");
+                    httpURLConnection.setDoInput(true);
+                    DataOutputStream wr_patch = new DataOutputStream(httpURLConnection.getOutputStream());
+                    wr_patch.writeBytes("" + params[0]);
+                    wr_patch.flush();
+                    wr_patch.close();
+//                    httpURLConnection.connect();
+                    break;
                 case PUT:
                     httpURLConnection.setRequestMethod("PUT");
                     httpURLConnection.setDoInput(true);

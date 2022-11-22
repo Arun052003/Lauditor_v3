@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
 import com.digicoffer.lauditor.LoginActivity.FirmsDo;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common_objects.TimeZonesDO;
@@ -47,6 +48,9 @@ public class CommonSpinnerAdapter<Object> extends BaseAdapter {
         }
         if (listData instanceof TimeZonesDO){
             data = ((TimeZonesDO)listData).getNAME();
+        }
+        if (listData instanceof ActionModel){
+            data = ((ActionModel)listData).getName();
         }
         listTextView.setText(data);
 

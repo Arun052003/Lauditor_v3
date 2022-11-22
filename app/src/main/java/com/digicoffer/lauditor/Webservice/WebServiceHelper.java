@@ -11,7 +11,7 @@ public class WebServiceHelper  {
     }
 
     public enum RestMethodType {
-        GET, POST, PUT, DELETE
+        GET, POST, PUT, DELETE,PATCH
     }
 
 

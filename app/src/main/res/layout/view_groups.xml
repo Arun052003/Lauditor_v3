@@ -157,6 +157,8 @@
                         android:id="@+id/sp_action"
                         android:layout_width="40dp"
                         android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:backgroundTint="@color/white" />
                 </LinearLayout>
 

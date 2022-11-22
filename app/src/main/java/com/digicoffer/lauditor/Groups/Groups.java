@@ -381,6 +381,9 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener ,ViewG
                 }else if(httpResult.getRequestType().equals("Update Groups")){
                     ViewGroupsData();
                     AndroidUtils.showToast(result.getString("msg"),getContext());
+                }else if(httpResult.getRequestType().equals("Delete Groups")){
+                    ViewGroupsData();
+                    AndroidUtils.showToast(result.getString("msg"),getContext());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -462,19 +465,60 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener ,ViewG
 
     }
 
+    @Override
+    public void DeleteGroup(ViewGroupModel viewGroupModel) {
+        hideData();
+        tv_group_name.setText(viewGroupModel.getName());
+        tv_group_name.setEnabled(false);
+        tv_group_description.setText(viewGroupModel.getDescription());
+        tv_group_description.setEnabled(false);
+        btn_cancel_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                unhideData();
+                ViewGroupsData();
+            }
+        });
+        btn_update.setText(getContext().getResources().getString(R.string.assign));
+        btn_update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                unhideData();
+                if(tv_group_name.getText().toString().equals("")){
+                    tv_group_name.setError("Group name Required");
+                    AndroidUtils.showToast("Group name Required",getContext());
+//                        assignGroupsList.clear();
+                }else if(tv_group_description.getText().toString().equals("")){
+                    tv_group_description.setError("Description Required");
+                    AndroidUtils.showToast("Description Required",getContext());
+//                        assignGroupsList.clear();
+                }else {
+                    try{
+                        callDeleteGroups(viewGroupModel.getId());
+                    } catch (JSONException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+//                    ViewGroupsData();
+
+            }
+        });
+    }
+
+    private void callDeleteGroups(String id) throws JSONException{
+        try{
+            JSONObject postData = new JSONObject();
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.DELETE, "v3/group/"+id, "Delete Groups", postData.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void callUpdateGroups(String group_name, String description, String id) throws JSONException  {
         try{
         JSONObject postData = new JSONObject();
-        JSONArray members = new JSONArray();
-//        for (int i = 0; i < list_item.size(); i++) {
-//            GroupModel model = list_item.get(i);
-//            members.put(model.getId());
-//        }
         postData.put("name",group_name);
         postData.put("description",description);
-//        postData.put("groupHead",group_head);
-//        postData.put("members",members);
-//                AndroidUtils.showToast("Selected:"+members+" "+"GH"+group_head,getContext());
         WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PATCH, "v3/group/"+id, "Update Groups", postData.toString());
     } catch (Exception e) {
         e.printStackTrace();

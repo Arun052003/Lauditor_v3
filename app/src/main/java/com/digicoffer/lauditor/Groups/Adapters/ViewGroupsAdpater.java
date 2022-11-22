@@ -18,6 +18,7 @@ import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.EventListener;
 
@@ -26,6 +27,8 @@ public class ViewGroupsAdpater extends  RecyclerView.Adapter<ViewGroupsAdpater.V
     ArrayList<ActionModel> actions_List = new ArrayList<ActionModel>();
     InterfaceListener eventListener;
     Context mcontext;
+   private boolean isSpinnerInitial = true;
+
     int hidingItemIndex = 0;
     public ViewGroupsAdpater(ArrayList<ViewGroupModel> itemsArrayList,Context context,InterfaceListener eventListener) {
         this.itemsArrayList = itemsArrayList;
@@ -37,6 +40,7 @@ public class ViewGroupsAdpater extends  RecyclerView.Adapter<ViewGroupsAdpater.V
     public interface InterfaceListener {
         void EditGroup(ViewGroupModel viewGroupModel);
 
+        void DeleteGroup(ViewGroupModel viewGroupModel);
     }
     @NonNull
     @Override
@@ -54,20 +58,54 @@ public class ViewGroupsAdpater extends  RecyclerView.Adapter<ViewGroupsAdpater.V
             holder.tv_date.setText(viewGroupModel.getCreated());
             holder.tv_description.setText(viewGroupModel.getDescription());
             actions_List.clear();
-        actions_List.add(new ActionModel("Add|Remove"));
+//        actions_List.add(new ActionModel("Add|Remove"));
+        actions_List.add(new ActionModel("Choose Actions"));
         actions_List.add(new ActionModel("Edit Group"));
+        actions_List.add(new ActionModel("Delete"));
         actions_List.add(new ActionModel("Update Group Members"));
         actions_List.add(new ActionModel("Change Group Head"));
         actions_List.add(new ActionModel("Group Activity Log"));
         final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) mcontext, actions_List);
         holder.sp_action.setAdapter(spinner_adapter);
+//        holder.sp_action.setSelection(hidingItemIndex);
+//
+//// Post to avoid initial invocation
+//        holder.sp_action.post(new Runnable() {
+//            @Override public void run() {
+//                holder.sp_action.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                    @Override
+//                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//
+//                        // Only called when the user changes the selection
+//                    }
+//
+//                    @Override
+//                    public void onNothingSelected(AdapterView<?> parent) {
+//                    }
+//                });
+//            }
+//        });
+//        int initialSelectedPosition=holder.sp_action.getSelectedItemPosition();
+//        holder.sp_action.setSelection(initialSelectedPosition, false);
+
         holder.sp_action.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-               String name = actions_List.get(holder.sp_action.getSelectedItemPosition()).getName();
-               if (name.equals("Edit Group")){
-                   eventListener.EditGroup(viewGroupModel);
-               }
+
+            String name = actions_List.get(adapterView.getSelectedItemPosition()).getName();
+            if (name == "Edit Group"){
+                eventListener.EditGroup(viewGroupModel);
+            }else if(name == "Delete"){
+                eventListener.DeleteGroup(viewGroupModel);
+            }
+//            else if(name == ""){
+//                hideSpinnerDropDown(holder.sp_action);
+//            }
+
+
+//
+            // do your work...
+
             }
 
             @Override
@@ -87,7 +125,15 @@ public class ViewGroupsAdpater extends  RecyclerView.Adapter<ViewGroupsAdpater.V
 //        });
 
     }
-
+//    public static void hideSpinnerDropDown(Spinner spinner) {
+//        try {
+//            Method method = Spinner.class.getDeclaredMethod("onDetachedFromWindow");
+//            method.setAccessible(false);
+//            method.invoke(spinner);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
     @Override
     public int getItemCount() {
         return itemsArrayList.size();

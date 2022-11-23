@@ -152,14 +152,15 @@ public class GroupAdapters extends RecyclerView.Adapter<GroupAdapters.ViewHolder
 
     public void selectOrDeselectAll(boolean isChecked) {
         for (int i = 0; i < list_item.size(); i++) {
-//            if (itemsArrayList.get(i).isChecked()){
+
             if (isChecked){
                 list_item.get(i).setSelected(true);
 
-            }else{
+            }
+            else{
                 list_item.get(i).setSelected(false);
             }
-//
+
         }
 
         notifyDataSetChanged();

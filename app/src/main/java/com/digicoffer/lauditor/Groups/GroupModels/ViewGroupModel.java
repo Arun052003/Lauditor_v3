@@ -1,5 +1,7 @@
 package com.digicoffer.lauditor.Groups.GroupModels;
 
+import org.json.JSONArray;
+
 public class ViewGroupModel {
     String id;
     String name;
@@ -8,6 +10,33 @@ public class ViewGroupModel {
     String User_type;
     String owner_name;
     String date;
+    String group_id;
+    String Group_name;
+    JSONArray members;
+
+    public JSONArray getMembers() {
+        return members;
+    }
+
+    public void setMembers(JSONArray members) {
+        this.members = members;
+    }
+
+    public String getGroup_id() {
+        return group_id;
+    }
+
+    public void setGroup_id(String group_id) {
+        this.group_id = group_id;
+    }
+
+    public String getGroup_name() {
+        return Group_name;
+    }
+
+    public void setGroup_name(String group_name) {
+        Group_name = group_name;
+    }
 
     public String getId() {
         return id;

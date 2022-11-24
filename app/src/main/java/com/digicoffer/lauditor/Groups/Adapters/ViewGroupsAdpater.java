@@ -21,6 +21,8 @@ import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.ItemClickListener;
 import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 
 public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.ViewHolder> {
@@ -109,11 +111,17 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
             holder.rb_group_head.setText(viewGroupModel.getGroup_name());
             holder.rb_group_head.setChecked(position == selectedPosition);
             holder.rb_group_head.setTag(viewGroupModel.getGroup_id());
+//           for (int i=0;i<itemsArrayList.size();i++){
+//               if (itemsArrayList.get(i).getGroup_id().matches(itemsArrayList.get(i).getGroup_head_id())){
+//                   holder.rb_group_head.setChecked();
+//               }
+//           }
 //          holder.rb_group_head.
             holder.rb_group_head.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     if (b) {
+
                         selectedPosition = holder.getAdapterPosition();
                         itemClickListener.onClick(viewGroupModel.getGroup_id());
 //                        int copyOfLastCheckedPosition = selectedPosition;

@@ -13,6 +13,24 @@ public class ViewGroupModel {
     String group_id;
     String Group_name;
     JSONArray members;
+    String group_head_id;
+    String group_head_name;
+
+    public String getGroup_head_id() {
+        return group_head_id;
+    }
+
+    public void setGroup_head_id(String group_head_id) {
+        this.group_head_id = group_head_id;
+    }
+
+    public String getGroup_head_name() {
+        return group_head_name;
+    }
+
+    public void setGroup_head_name(String group_head_name) {
+        this.group_head_name = group_head_name;
+    }
 
     public JSONArray getMembers() {
         return members;

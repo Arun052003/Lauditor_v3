@@ -15,6 +15,24 @@ public class ViewGroupModel {
     JSONArray members;
     String group_head_id;
     String group_head_name;
+    private boolean isSelected;
+    boolean isChecked;
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
 
     public String getGroup_head_id() {
         return group_head_id;

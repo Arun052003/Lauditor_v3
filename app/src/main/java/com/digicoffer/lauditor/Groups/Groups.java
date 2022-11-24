@@ -47,6 +47,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     TextInputEditText et_search;
     TextInputLayout tv_selected_members;
     ItemClickListener itemClickListener;
+    ViewGroupModel new_viewGroupModel = null;
     ViewGroupsItemClickListener new_itemClickListener;
     String group_head = "";
     TextView tv_create_group, tv_view_group, tv_add_tm, tv_practice_head, tv_group_name, tv_group_description;
@@ -390,7 +391,15 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                     JSONObject data = result.getJSONObject("data");
                     JSONArray users = data.getJSONArray("users");
                     loadMembers(users);
-                } else if (httpResult.getRequestType().equals("Create Groups")) {
+
+                }
+                else if (httpResult.getRequestType().equals("Get Team Members")) {
+                    JSONObject data = result.getJSONObject("data");
+                    JSONArray users = data.getJSONArray("users");
+
+                    loadTeamMembers(users);
+
+                }else if (httpResult.getRequestType().equals("Create Groups")) {
 //                    JSONObject jsonObject = result.getJSONObject("msg");
                     ViewGroupsData();
                     AndroidUtils.showToast(result.getString("msg"), getContext());
@@ -415,6 +424,66 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             }
         }
     }
+
+    private void loadTeamMembers(JSONArray users) throws JSONException{
+        GroupModel groupModel;
+        selectedTMArrayList.clear();
+        for (int i = 0; i < users.length(); i++) {
+            JSONObject jsonObject = users.getJSONObject(i);
+            groupModel = new GroupModel();
+            groupModel.setId(jsonObject.getString("id"));
+            groupModel.setName(jsonObject.getString("name"));
+            selectedTMArrayList.add(groupModel);
+        }
+        TM_TYPE = "TM";
+        loadTeamRecyclerview(selectedTMArrayList,TM_TYPE);
+//        loadRecylcerview(selectedTMArrayList, TM_TYPE);
+    }
+
+    private void loadTeamRecyclerview(ArrayList<GroupModel> selectedTMArrayList, String tmType) {
+        rv_select_team_members.removeAllViews();
+        rv_select_team_members.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        adapter = new GroupAdapters(selectedTMArrayList, tmType, itemClickListener);
+        rv_select_team_members.setAdapter(adapter);
+        rv_select_team_members.setHasFixedSize(true);
+//        rv_select_team_members.notify();
+        et_Search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                adapter.getFilter().filter(et_Search.getText().toString());
+            }
+
+        });
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                unhideData();
+            }
+        });
+        btn_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String update_type = "UGM";
+                try {
+                    callUpdateGroups("", "", new_viewGroupModel.getId(), update_type,adapter.getList_item());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+//                callUpdateUGMWebservice(adapter.getList_item(););
+            }
+        });
+    }
+
+
 
     private void loadMembers(JSONArray users) throws JSONException {
         GroupModel groupModel;
@@ -495,7 +564,8 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
 //                        assignGroupsList.clear();
                 } else {
                     try {
-                        callUpdateGroups(tv_group_name.getText().toString().trim(), tv_group_description.getText().toString().trim(), viewGroupModel.getId());
+                        String update_type = "EG";
+                        callUpdateGroups(tv_group_name.getText().toString().trim(), tv_group_description.getText().toString().trim(), viewGroupModel.getId(),update_type, adapter.getList_item());
                     } catch (JSONException ex) {
                         ex.printStackTrace();
                     }
@@ -602,6 +672,25 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         }
     }
 
+    @Override
+    public void UGM(ViewGroupModel viewGroupModel) {
+        new_viewGroupModel = viewGroupModel;
+        hide_CGH_UGM_data();
+        callViewGroupMembersWebservice();
+//        callMembersWebservice();
+    }
+
+    private void callViewGroupMembersWebservice() {
+        try {
+            JSONObject postdata = new JSONObject();
+            progress_dialog = AndroidUtils.get_progress(getActivity());
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/member/groups", "Get Team Members", postdata.toString());
+        } catch (Exception e) {
+            if (progress_dialog != null && progress_dialog.isShowing())
+                AndroidUtils.dismiss_dialog(progress_dialog);
+        }
+    }
+
     private void callUpdateGroupHeadWebservice(String id, String group_head)throws JSONException {
         try {
             JSONObject postData = new JSONObject();
@@ -657,14 +746,37 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         }
     }
 
-    private void callUpdateGroups(String group_name, String description, String id) throws JSONException {
+    private void callUpdateGroups(String group_name, String description, String id, String update_type, ArrayList<GroupModel> list_item) throws JSONException {
 
         try {
+
             JSONObject postData = new JSONObject();
-            postData.put("name", group_name);
-            postData.put("description", description);
-            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PATCH, "v3/group/" + id, "Update Groups", postData.toString());
-        } catch (Exception e) {
+            JSONArray jsonArray = new JSONArray();
+            if(update_type=="EG") {
+                postData.put("name", group_name);
+                postData.put("description", description);
+                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PATCH, "v3/group/" + id, "Update Groups", postData.toString());
+
+            }else if(update_type=="UGM"){
+                for (int i = 0; i < list_item.size(); i++) {
+                    GroupModel model = list_item.get(i);
+                    if (model.isChecked()){
+                        jsonArray.put(model.getId());
+                    }
+                }
+                if (jsonArray.length()!=0){
+                    postData.put("members",jsonArray);
+                    WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PATCH, "v3/group/" + id, "Update Groups", postData.toString());
+
+                }else
+                {
+                    AndroidUtils.showToast("Please select atleast one team member",getContext());
+                }
+
+            }
+//            AndroidUtils.showToast(postData.toString(),getContext());
+            Log.i("TAG","Object:"+postData.toString()+":"+id);
+         } catch (Exception e) {
             e.printStackTrace();
         }
     }

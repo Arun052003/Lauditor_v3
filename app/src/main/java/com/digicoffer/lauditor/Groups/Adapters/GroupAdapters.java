@@ -35,7 +35,11 @@ public class GroupAdapters extends RecyclerView.Adapter<GroupAdapters.ViewHolder
         this.mTag = Tag;
         this.itemClickListener = itemClickListener;
     }
-
+    @Override
+    public void onViewRecycled(@NonNull ViewHolder holder) {
+        holder.cb_team_members.setOnCheckedChangeListener(null);
+        super.onViewRecycled(holder);
+    }
     @Override
     public int getItemViewType(int position) {
         return position;
@@ -59,20 +63,28 @@ public class GroupAdapters extends RecyclerView.Adapter<GroupAdapters.ViewHolder
     public void onBindViewHolder(@NonNull GroupAdapters.ViewHolder holder, int position) {
         final GroupModel groupModel = itemsArrayList.get(position);
         itemsArrayList = list_item;
+//        holder.cb_team_members.setOnCheckedChangeListener(null);
+//        holder.cb_team_members.setOnLongClickListener(null);
         if (mTag == "TM") {
+//            holder.set
             holder.cb_team_members.setChecked(itemsArrayList.get(position).isSelected());
             holder.cb_team_members.setTag(position);
+//            holder.cb_team_members.isChecked() = itemsArrayList.get(position).isChecked();
             holder.cb_team_members.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Integer pos = (Integer) holder.cb_team_members.getTag();
                     if (itemsArrayList.get(pos).isChecked()) {
                         itemsArrayList.get(pos).setChecked(false);
+//                        itemsArrayList.add(itemsArrayList.get(pos));
                     } else {
                         itemsArrayList.get(pos).setChecked(true);
+//                        itemsArrayList.remove(itemsArrayList.get(pos));
                     }
+
                 }
             });
+//            holder.cb_team_members.setChecked(true);
             holder.tv_tm_name.setText(groupModel.getName());
         }
         else{

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -52,13 +53,22 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
         void DeleteGroup(ViewGroupModel viewGroupModel);
 
         void CGH(ViewGroupModel viewGroupModel, ArrayList<ViewGroupModel> itemsArrayList);
-    }
 
+        void UGM(ViewGroupModel viewGroupModel);
+    }
+//    @Override
+//    public void onViewRecycled(@NonNull ViewHolder holder) {
+//        holder.cb_team_members.setOnCheckedChangeListener(null);
+//        super.onViewRecycled(holder);
+//    }
     @NonNull
     @Override
     public ViewGroupsAdpater.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (mTag == "VG") {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_groups, parent, false);
+            return new ViewGroupsAdpater.ViewHolder(itemView);
+        }else if(mTag == "UGM"){
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.select_team_members, parent, false);
             return new ViewGroupsAdpater.ViewHolder(itemView);
         } else {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.assign_group_head, parent, false);
@@ -96,9 +106,9 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
                         eventListener.DeleteGroup(viewGroupModel);
                     } else if (name == "Change Group Head") {
                         eventListener.CGH(viewGroupModel, itemsArrayList);
+                    }else if(name == "Update Group Members"){
+                        eventListener.UGM(viewGroupModel);
                     }
-
-
                 }
 
                 @Override
@@ -106,6 +116,22 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
 
                 }
             });
+        }
+        else if(mTag == "UGM"){
+            holder.cb_team_members.setChecked(itemsArrayList.get(position).isSelected());
+            holder.cb_team_members.setTag(position);
+            holder.cb_team_members.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Integer pos = (Integer) holder.cb_team_members.getTag();
+                    if (itemsArrayList.get(pos).isChecked()) {
+                        itemsArrayList.get(pos).setChecked(false);
+                    } else {
+                        itemsArrayList.get(pos).setChecked(true);
+                    }
+                }
+            });
+            holder.tv_tm_name.setText(viewGroupModel.getName());
         }
   else{
             holder.rb_group_head.setText(viewGroupModel.getGroup_name());
@@ -137,7 +163,6 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
             });
         }
 
-
     }
 
 
@@ -147,18 +172,21 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView tv_user_type, tv_owner_name, tv_date, tv_description;
+        private TextView tv_user_type, tv_owner_name, tv_date, tv_description,tv_tm_name;
         private Spinner sp_action;
+        private CheckBox cb_team_members;
         private RadioButton rb_group_head;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_user_type = itemView.findViewById(R.id.tv_group_name);
             tv_owner_name = itemView.findViewById(R.id.tv_group_head);
+            cb_team_members = itemView.findViewById(R.id.chk_selected);
             tv_date = itemView.findViewById(R.id.tv_date);
             tv_description = itemView.findViewById(R.id.tv_description);
             sp_action = itemView.findViewById(R.id.sp_action);
             rb_group_head = itemView.findViewById(R.id.rb_selected);
+            tv_tm_name = itemView.findViewById(R.id.tv_tm_name);
         }
     }
 }

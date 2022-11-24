@@ -38,9 +38,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:buttonTint="@color/white"
+            android:buttonTintMode="src_atop"
             android:layoutDirection="rtl"
             android:text=""
-            android:background="@color/grey_text_color"
+            android:padding="5dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:textColor="@color/black"
+            android:background="@drawable/rectangle_grey_background"
             android:layout_gravity="center"
 
             />

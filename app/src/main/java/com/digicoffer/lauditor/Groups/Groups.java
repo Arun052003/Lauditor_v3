@@ -38,6 +38,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pgpainless.key.selection.key.util.And;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +48,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     TextInputEditText et_search;
     TextInputLayout tv_selected_members;
     ItemClickListener itemClickListener;
+    ViewGroupsItemClickListener new_itemClickListener;
     String group_head = "";
     TextView tv_create_group, tv_view_group, tv_add_tm, tv_practice_head, tv_group_name, tv_group_description;
     ArrayList<GroupModel> selectedTMArrayList = new ArrayList<GroupModel>();
@@ -57,6 +59,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     private CheckBox chk_select_all;
     CardView cv_groups, cv_details;
     GroupAdapters adapter = null;
+    ViewGroupsAdpater adapter_view_groups = null;
     AlertDialog progress_dialog;
     AppCompatButton btn_cancel, btn_save, btn_cancel_edit, btn_update;
     TextInputEditText et_Search;
@@ -188,34 +191,35 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     }
 
     private void loadViewGroupsRecylerview(String TAG_TYPE) {
-      ViewGroupsAdpater adapter_view_groups = null;
+
 //        String mtag = "VG";
         if(TAG_TYPE == "VG") {
             rv_view_groups.setLayoutManager(new GridLayoutManager(getContext(), 1));
-            adapter_view_groups = new ViewGroupsAdpater(viewGroupModelArrayList, getContext(), this,TAG_TYPE, itemClickListener);
+            adapter_view_groups = new ViewGroupsAdpater(viewGroupModelArrayList, getContext(), this,TAG_TYPE, new_itemClickListener);
             rv_view_groups.setAdapter(adapter_view_groups);
             rv_view_groups.setHasFixedSize(true);
         }
         else{
-            rv_view_groups.setLayoutManager(new GridLayoutManager(getContext(), 1));
-            adapter_view_groups = new ViewGroupsAdpater(viewGroupMembersList, getContext(), this, TAG_TYPE, itemClickListener);
-            rv_view_groups.setAdapter(adapter_view_groups);
-            rv_view_groups.setHasFixedSize(true);
-            ViewGroupsAdpater finalAdapter_view_groups = adapter_view_groups;
-            itemClickListener = new ItemClickListener() {
-                @Override
-                public void onClick(String s) {
-                    rv_view_groups.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            finalAdapter_view_groups.notifyDataSetChanged();
-                            group_head = s;
-//                        AndroidUtils.showToast("Selected:"+s, getContext());
-                        }
-                    });
-                }
-            };
+            rv_select_team_members.setLayoutManager(new GridLayoutManager(getContext(), 1));
+            adapter_view_groups = new ViewGroupsAdpater(viewGroupMembersList, getContext(), this, TAG_TYPE, new_itemClickListener);
+            rv_select_team_members.setAdapter(adapter_view_groups);
+            rv_select_team_members.setHasFixedSize(true);
+//            ViewGroupsAdpater finalAdapter_view_groups = adapter_view_groups;
+
         }
+        new_itemClickListener = new ViewGroupsItemClickListener() {
+            @Override
+            public void onClick(String s) {
+                rv_view_groups.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter_view_groups.notifyDataSetChanged();
+                        group_head = s;
+//                        AndroidUtils.showToast("Selected:"+s, getContext());
+                    }
+                });
+            }
+        };
 
     }
 
@@ -394,6 +398,9 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                 } else if (httpResult.getRequestType().equals("Delete Groups")) {
                     ViewGroupsData();
                     AndroidUtils.showToast(result.getString("msg"), getContext());
+                }else if (httpResult.getRequestType().equals("Update Group Head")){
+                    ViewGroupsData();
+                    AndroidUtils.showToast(result.getString("msg"),getContext());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -534,18 +541,9 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     @Override
     public void CGH(final ViewGroupModel viewGroupModel, ArrayList<ViewGroupModel> itemsArrayList) {
 //        hideData();
+        hide_CGH_UGM_data();
         try {
-            ll_group_list.setVisibility(View.GONE);
-            ll_tm.setVisibility(View.GONE);
-            ll_select_all.setVisibility(View.GONE);
-            ll_select_tm.setVisibility(View.VISIBLE);
-            rv_view_groups.setVisibility(View.VISIBLE);
-//        rv_view_groups
-//        rv_select_team_members.setVisibility(View.VISIBLE);
-            et_search.setVisibility(View.VISIBLE);
-            cv_groups.setVisibility(View.GONE);
-            ll_edit_groups.setVisibility(View.GONE);
-            tv_selected_members.setVisibility(View.GONE);
+
             tv_group_name.setText(viewGroupModel.getName());
             tv_group_description.setText(viewGroupModel.getDescription());
             String mtag = "CGH";
@@ -558,28 +556,26 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                 viewGroupMembersList.add(viewGroupModel_1);
             }
             loadViewGroupsRecylerview(mtag);
-            btn_cancel_edit.setOnClickListener(new View.OnClickListener() {
+            btn_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+//                    unhide_CGH_UGM_data();
                     unhideData();
                     ViewGroupsData();
                 }
             });
-            btn_update.setOnClickListener(new View.OnClickListener() {
+            btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    unhideData();
-                    if (tv_group_name.getText().toString().equals("")) {
-                        tv_group_name.setError("Group name Required");
-                        AndroidUtils.showToast("Group name Required", getContext());
+
+                    if (group_head.equals("")) {
+//                        tv_group_name.setError("Group name Required");
+                        AndroidUtils.showToast("Please select a Group Head", getContext());
 //                        assignGroupsList.clear();
-                    } else if (tv_group_description.getText().toString().equals("")) {
-                        tv_group_description.setError("Description Required");
-                        AndroidUtils.showToast("Description Required", getContext());
-//                        assignGroupsList.clear();
-                    } else {
+                    }else {
                         try {
-                            callUpdateGroups(tv_group_name.getText().toString().trim(), tv_group_description.getText().toString().trim(), viewGroupModel.getId());
+//                            unhideData();
+                            callUpdateGroupHeadWebservice(viewGroupModel.getId());
                         } catch (JSONException ex) {
                             ex.printStackTrace();
                         }
@@ -592,6 +588,50 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void callUpdateGroupHeadWebservice(String id)throws JSONException {
+        try {
+            JSONObject postData = new JSONObject();
+            postData.put("groupHead",id);
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PATCH, "v3/group/" + id, "Update Group Head", postData.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void unhide_CGH_UGM_data() {
+        ll_group_list.setVisibility(View.VISIBLE);
+        ll_tm.setVisibility(View.VISIBLE);
+        ll_select_all.setVisibility(View.VISIBLE);
+        ll_select_tm.setVisibility(View.GONE);
+        rv_view_groups.setVisibility(View.VISIBLE);
+        rv_select_team_members.setVisibility(View.GONE);
+//        rv_view_groups
+        ll_buttons.setVisibility(View.GONE);
+//        rv_select_team_members.setVisibility(View.VISIBLE);
+        et_search.setVisibility(View.VISIBLE);
+        cv_groups.setVisibility(View.VISIBLE);
+        cv_details.setVisibility(View.GONE);
+        ll_edit_groups.setVisibility(View.VISIBLE);
+        tv_selected_members.setVisibility(View.VISIBLE);
+    }
+
+    private void hide_CGH_UGM_data() {
+        ll_group_list.setVisibility(View.GONE);
+        ll_tm.setVisibility(View.GONE);
+        ll_select_all.setVisibility(View.GONE);
+        ll_select_tm.setVisibility(View.VISIBLE);
+        rv_view_groups.setVisibility(View.GONE);
+        rv_select_team_members.setVisibility(View.VISIBLE);
+//        rv_view_groups
+        ll_buttons.setVisibility(View.VISIBLE);
+//        rv_select_team_members.setVisibility(View.VISIBLE);
+        et_search.setVisibility(View.GONE);
+        cv_groups.setVisibility(View.GONE);
+        cv_details.setVisibility(View.VISIBLE);
+        ll_edit_groups.setVisibility(View.GONE);
+        tv_selected_members.setVisibility(View.GONE);
     }
 
     private void callDeleteGroups(String id) throws JSONException {

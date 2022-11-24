@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
+import com.digicoffer.lauditor.Groups.ViewGroupsItemClickListener;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.ItemClickListener;
 import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
@@ -27,14 +28,14 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
     ArrayList<ActionModel> actions_List = new ArrayList<ActionModel>();
     InterfaceListener eventListener;
     Context mcontext;
-    ItemClickListener itemClickListener;
+    ViewGroupsItemClickListener itemClickListener;
     String mTag = "";
     int selectedPosition = -1;
     private boolean isSpinnerInitial = true;
 
     int hidingItemIndex = 0;
 
-    public ViewGroupsAdpater(ArrayList<ViewGroupModel> itemsArrayList, Context context, InterfaceListener eventListener, String Tag, ItemClickListener itemClickListener) {
+    public ViewGroupsAdpater(ArrayList<ViewGroupModel> itemsArrayList, Context context, InterfaceListener eventListener, String Tag, ViewGroupsItemClickListener itemClickListener) {
         this.itemsArrayList = itemsArrayList;
         this.mcontext = context;
         this.eventListener = eventListener;

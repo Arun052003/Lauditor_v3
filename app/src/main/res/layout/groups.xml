@@ -58,7 +58,7 @@
         android:id="@+id/cv_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         android:padding="10dp"
         app:cardCornerRadius="10dp"
         android:elevation="@dimen/Fifty_dp"
@@ -235,8 +235,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="10dp"
-        android:paddingStart="50dp"
-        android:paddingEnd="50dp"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -304,7 +304,7 @@
         android:id="@+id/cv_details_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         android:padding="10dp"
         app:cardCornerRadius="10dp"
         android:elevation="10dp"
@@ -320,14 +320,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="10dp"
-            android:paddingBottom="50dp"
+            android:padding="5dp"
+            android:paddingBottom="30dp"
             >
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/search_tm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
+                android:layout_margin="10dp"
                 android:hint="Search Team Members"
 
                 android:textColorHint="@color/black"
@@ -365,7 +365,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:orientation="vertical"
-
                 android:layout_margin="10dp"
                 />
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -416,7 +415,7 @@
         android:id="@+id/search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         android:hint="Search Groups"
 
         android:textColorHint="@color/black"
@@ -450,7 +449,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

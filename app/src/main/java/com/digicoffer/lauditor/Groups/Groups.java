@@ -55,6 +55,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     public static String TM_TYPE = "";
     ArrayList<ViewGroupModel> viewGroupModelArrayList = new ArrayList<>();
     ArrayList<ViewGroupModel> viewGroupMembersList = new ArrayList<>();
+    ArrayList<ViewGroupModel> updateGroupMembersList = new ArrayList<>();
     ArrayList<GroupModel> assignGroupsList = new ArrayList<>();
     private CheckBox chk_select_all;
     CardView cv_groups, cv_details;
@@ -433,7 +434,22 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             groupModel = new GroupModel();
             groupModel.setId(jsonObject.getString("id"));
             groupModel.setName(jsonObject.getString("name"));
+            for (int j=0;j<users.length();j++){
+                for (int k=0;k<updateGroupMembersList.size();k++){
+                    if (groupModel.getId().matches(updateGroupMembersList.get(k).getGroup_id())){
+                        groupModel.setChecked(true);
+                    }
+                }
+            }
+//            for (int j=0;j<viewGroupModelArrayList.size();j++){
+//                for(int k=0;k<viewGroupModelArrayList.get(j).getMembers().length();k++){
+//                    if (viewGroupModelArrayList.get(k).getGroup_id().equals(groupModel.getId())){
+//                        groupModel.setChecked(true);
+//                    }
+//                }
+//            }
             selectedTMArrayList.add(groupModel);
+
         }
         TM_TYPE = "TM";
         loadTeamRecyclerview(selectedTMArrayList,TM_TYPE);
@@ -513,16 +529,16 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             String created = AndroidUtils.getDateToString(date_new, "MMM dd YYYY");
             viewGroupModel.setCreated(created);
             JSONArray members = jsonObject.getJSONArray("members");
-            viewGroupModel.setMembers(members);
 
-//            for (int j=0;j<members.length();j++){
-//                JSONObject jsonObject1 = members.getJSONObject(i);
-//                viewGroupModel.setGroup_id(jsonObject1.getString("id"));
-//                viewGroupModel.setGroup_name(jsonObject1.getString("name"));
+
+//            for (int j = 0; j < members.length(); j++) {
+//                viewGroupModel = new ViewGroupModel();
+//                JSONObject jsonObject_members = members.getJSONObject(j);
+//                viewGroupModel.setGroup_name(jsonObject_members.getString("name"));
+//                viewGroupModel.setGroup_id(jsonObject_members.getString("id"));
 //                viewGroupMembersList.add(viewGroupModel);
-//                viewGroupMembersList.addAll(viewGroupMembersList);
 //            }
-
+            viewGroupModel.setMembers(members);
             viewGroupModel.setDescription(jsonObject.getString("description"));
             viewGroupModel.setName(jsonObject.getString("name"));
             JSONObject group_head = jsonObject.getJSONObject("groupHead");
@@ -623,7 +639,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
 //        hideData();
         hide_CGH_UGM_data();
         try {
-
+            viewGroupMembersList.clear();
             tv_group_name.setText(viewGroupModel.getName());
             tv_group_description.setText(viewGroupModel.getDescription());
             String mtag = "CGH";
@@ -673,9 +689,16 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     }
 
     @Override
-    public void UGM(ViewGroupModel viewGroupModel) {
+    public void UGM(ViewGroupModel viewGroupModel) throws JSONException{
         new_viewGroupModel = viewGroupModel;
         hide_CGH_UGM_data();
+        for (int i = 0; i < viewGroupModel.getMembers().length(); i++) {
+            ViewGroupModel  viewGroupModel_1 = new ViewGroupModel();
+            JSONObject jsonObject = viewGroupModel.getMembers().getJSONObject(i);
+            viewGroupModel_1.setGroup_name(jsonObject.getString("name"));
+            viewGroupModel_1.setGroup_id(jsonObject.getString("id"));
+            updateGroupMembersList.add(viewGroupModel_1);
+        }
         callViewGroupMembersWebservice();
 //        callMembersWebservice();
     }

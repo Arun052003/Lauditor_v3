@@ -54,7 +54,7 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
 
         void CGH(ViewGroupModel viewGroupModel, ArrayList<ViewGroupModel> itemsArrayList);
 
-        void UGM(ViewGroupModel viewGroupModel);
+        void UGM(ViewGroupModel viewGroupModel) throws JSONException;
     }
 //    @Override
 //    public void onViewRecycled(@NonNull ViewHolder holder) {
@@ -95,6 +95,25 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
             actions_List.add(new ActionModel("Group Activity Log"));
             final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) mcontext, actions_List);
             holder.sp_action.setAdapter(spinner_adapter);
+//            holder.sp_action.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                    String name = actions_List.get(adapterView.getSelectedItemPosition()).getName();
+//                    if (name == "Edit Group") {
+//                        eventListener.EditGroup(viewGroupModel);
+//                    } else if (name == "Delete") {
+//                        eventListener.DeleteGroup(viewGroupModel);
+//                    } else if (name == "Change Group Head") {
+//                        eventListener.CGH(viewGroupModel, itemsArrayList);
+//                    }else if(name == "Update Group Members"){
+//                        try {
+//                            eventListener.UGM(viewGroupModel);
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//            });
             holder.sp_action.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -107,7 +126,11 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
                     } else if (name == "Change Group Head") {
                         eventListener.CGH(viewGroupModel, itemsArrayList);
                     }else if(name == "Update Group Members"){
-                        eventListener.UGM(viewGroupModel);
+                        try {
+                            eventListener.UGM(viewGroupModel);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 

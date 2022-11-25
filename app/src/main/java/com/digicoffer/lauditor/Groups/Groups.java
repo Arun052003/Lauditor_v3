@@ -408,12 +408,18 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                     ViewGroupsData();
                     viewGroupModelArrayList.clear();
                     viewGroupMembersList.clear();
+                    selectedTMArrayList.clear();
+                    adapter.getList_item().clear();
+                    updateGroupMembersList.clear();
                     AndroidUtils.showToast(result.getString("msg"), getContext());
                 } else if (httpResult.getRequestType().equals("Delete Groups")) {
                     ViewGroupsData();
                     AndroidUtils.showToast(result.getString("msg"), getContext());
                     viewGroupModelArrayList.clear();
                     viewGroupMembersList.clear();
+                    selectedTMArrayList.clear();
+                    adapter.getList_item().clear();
+                    updateGroupMembersList.clear();
                 }else if (httpResult.getRequestType().equals("Update Group Head")){
                     ViewGroupsData();
                     viewGroupMembersList.clear();
@@ -483,6 +489,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             @Override
             public void onClick(View view) {
                 unhideData();
+                ViewGroupsData();
             }
         });
         btn_save.setOnClickListener(new View.OnClickListener() {
@@ -649,8 +656,21 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                 JSONObject jsonObject = viewGroupModel.getMembers().getJSONObject(i);
                 viewGroupModel_1.setGroup_name(jsonObject.getString("name"));
                 viewGroupModel_1.setGroup_id(jsonObject.getString("id"));
+//                for (int j=0;j<viewGroupModel.getMembers().length();j++){
+//                    if (viewGroupModel.getGroup_head_id().matches(viewGroupModel_1.getGroup_id())){
+//                        viewGroupModel.setChecked(true);
+//                    }
+//                }
+//                for (int j=0;j<itemsArrayList.size();j++){
+//                    for (int k=0;k<viewGroupModelArrayList.size();k++){
+//                        if (viewGroupModel_1.getId().matches(viewGroupModelArrayList.get(k).getGroup_id())){
+//                            viewGroupModel_1.setChecked(true);
+//                        }
+//                    }
+//                }
                 viewGroupMembersList.add(viewGroupModel_1);
             }
+
             loadViewGroupsRecylerview(mtag, viewGroupModelArrayList);
             btn_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -692,6 +712,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     public void UGM(ViewGroupModel viewGroupModel) throws JSONException{
         new_viewGroupModel = viewGroupModel;
         hide_CGH_UGM_data();
+
         for (int i = 0; i < viewGroupModel.getMembers().length(); i++) {
             ViewGroupModel  viewGroupModel_1 = new ViewGroupModel();
             JSONObject jsonObject = viewGroupModel.getMembers().getJSONObject(i);

@@ -143,15 +143,18 @@ public class GroupAdapters extends RecyclerView.Adapter<GroupAdapters.ViewHolder
                 } else {
                     ArrayList<GroupModel> filteredList = new ArrayList<>();
                     for (GroupModel row : list_item) {
-
+//                            if (row.isChecked()){
+//                                row.setChecked(false);
+//                            }else
+//                            {
+//                                row.setChecked(true  );
+//                            }
                         // name match condition. this might differ depending on your requirement
                         // here we are looking for name or phone number match
                         if (AndroidUtils.isNull(row.getName()).toLowerCase().contains(charString.toLowerCase()) ) {
                             filteredList.add(row);
                         }
-
                     }
-
                     itemsArrayList = filteredList;
                 }
 

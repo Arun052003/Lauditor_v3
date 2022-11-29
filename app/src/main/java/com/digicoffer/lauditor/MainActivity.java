@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.digicoffer.lauditor.Dashboard.Dashboard;
 import com.digicoffer.lauditor.Groups.Groups;
+import com.digicoffer.lauditor.Members.Members;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 //            tv_matter.setVisibility(View.GONE);
 //            tv_more = findViewById(R.id.tv_more);
 //            tv_more.setVisibility(View.GONE);
-            Fragment fragment = new Groups();
+            Fragment fragment = new Members();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.id_framelayout, fragment);
             ft.commit();

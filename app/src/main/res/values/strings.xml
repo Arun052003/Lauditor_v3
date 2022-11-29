@@ -8,8 +8,16 @@
     <string name="meeting_with_tripathi">Meeting with Tripathi</string>
     <string name="todo">TODO</string>
     <string name="create_group">Create Group</string>
+    <string name="create_members">Create Members</string>
     <string name="view_group">View Group</string>
+    <string name="view_members">View Members</string>
     <string name="group_name">Group Name</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="confirm_email">Confirm Email</string>
+    <string name="designation">Designation</string>
+    <string name="default_currency">Default Currency</string>
+    <string name="default_rate">Default Rate</string>
     <string name="description">Description</string>
     <string name="select_team_member">Select Team Member</string>
     <string name="add_team_member">Add Team Member</string>

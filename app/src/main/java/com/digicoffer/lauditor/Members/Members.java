@@ -1,0 +1,164 @@
+package com.digicoffer.lauditor.Members;
+
+import android.app.AlertDialog;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.digicoffer.lauditor.Groups.GroupModels.GroupModel;
+import com.digicoffer.lauditor.R;
+import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
+import com.digicoffer.lauditor.Webservice.HttpResultDo;
+import com.digicoffer.lauditor.Webservice.WebServiceHelper;
+import com.digicoffer.lauditor.common.AndroidUtils;
+import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+public class Members extends Fragment implements AsyncTaskCompleteListener {
+    TextView tv_member_name,tv_designation,tv_email,tv_confirm_email,tv_default_rate,tv_create_members,tv_view_members,et_search_members;
+    Spinner sp_default_currency;
+    AppCompatButton btn_cancel_members,bt_save_members,bt_cancel,bt_save;
+    RecyclerView rv_selected_member;
+    String default_currency = "";
+    ArrayList<String> currency_list = new ArrayList<>();
+    ArrayList<GroupModel> MembersList = new ArrayList<>();
+    AlertDialog progress_dialog;
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.create_members, container, false);
+        tv_member_name = v.findViewById(R.id.tv_create_member_name);
+        tv_designation = v.findViewById(R.id.tv_designation);
+        tv_email = v.findViewById(R.id.tv_email);
+        tv_confirm_email = v.findViewById(R.id.tv_confirm_email);
+        tv_default_rate = v.findViewById(R.id.tv_default_rate);
+        tv_create_members = v.findViewById(R.id.tv_create_members);
+        tv_view_members = v.findViewById(R.id.tv_view_members);
+        et_search_members = v.findViewById(R.id.et_search_members);
+        sp_default_currency = v.findViewById(R.id.sp_default_currency);
+        btn_cancel_members = v.findViewById(R.id.btn_cancel_members);
+        bt_save_members = v.findViewById(R.id.btn_save_members);
+        bt_cancel = v.findViewById(R.id.btn_cancel);
+        bt_save = v.findViewById(R.id.btn_save);
+        rv_selected_member = v.findViewById(R.id.rv_selected_member);
+        tv_create_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+        tv_view_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+
+        tv_create_members.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tv_create_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+                tv_view_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+            }
+        });
+        tv_view_members.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tv_view_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+                tv_create_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+            }
+        });
+        currency_list = getCurrency_list();
+        final CommonSpinnerAdapter adapter = new CommonSpinnerAdapter(getActivity(),currency_list);
+        sp_default_currency.setAdapter(adapter);
+        sp_default_currency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                default_currency = currency_list.get(adapterView.getSelectedItemPosition());
+//                AndroidUtils.showToast("selected item is:"+default_currency,getContext());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        bt_save_members.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (tv_member_name.getText().toString().equals("")){
+                    tv_member_name.setError("Name is required ");
+                }
+                else if(tv_designation.getText().toString().equals("")){
+                        tv_designation.setError("Designation is required");
+                }else if (tv_default_rate.getText().toString().equals("")){
+                    tv_default_rate.setError("Hourly rate is required");
+                }else if(tv_email.getText().toString().equals("")){
+                    tv_email.setError("Email is required");
+                }else if(tv_confirm_email.getText().toString().equals("")){
+                    tv_confirm_email.setError("Confirm email is required");
+                }
+                else {
+                    callCreateMemberWebservice(tv_member_name.getText().toString().trim(),tv_designation.getText().toString().trim(),tv_default_rate.getText().toString().trim(),tv_email.getText().toString().trim(),tv_confirm_email.getText().toString().trim());
+                }
+
+            }
+        });
+        return v;
+    }
+
+    private void callCreateMemberWebservice(String name, String designation, String default_rate, String email, String confirm_email) {
+        try {
+            JSONObject postdata = new JSONObject();
+            JSONArray groups = new JSONArray();
+            progress_dialog = AndroidUtils.get_progress(getActivity());
+            postdata.put("currency",default_currency);
+            postdata.put("defaultRate",default_rate);
+            postdata.put("designation",designation);
+            postdata.put("email",email);
+            postdata.put("emailConfirm",confirm_email);
+            postdata.put("groups",groups);
+            postdata.put("name",name);
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/member", "Create Members",postdata.toString());
+        } catch (Exception e) {
+            if (progress_dialog != null && progress_dialog.isShowing())
+                AndroidUtils.dismiss_dialog(progress_dialog);
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+
+    }
+private ArrayList<String> getCurrency_list(){
+        ArrayList<String> currency = new ArrayList<>();
+        currency.add("USDollar(USD)");
+        currency.add("Euro(EUR)");
+        currency.add("Japanese Yen(JPY)");
+        currency.add("Pound(GBP)");
+        currency.add("AustralianDollar(AUD)");
+        currency.add("CanadianDOllar(CAD)");
+        currency.add("SwissFranc(CHF)");
+        currency.add("KuwaitiDinar(KWD)");
+        currency.add("BahrainiDinar(BHD)");
+        return currency;
+}
+    @Override
+    public void onAsyncTaskComplete(HttpResultDo httpResult) {
+          if(progress_dialog !=null && progress_dialog.isShowing())
+              AndroidUtils.dismiss_dialog(progress_dialog);
+          if (httpResult.getResult() == WebServiceHelper.ServiceCallStatus.Success);
+        try{
+            JSONObject result = new JSONObject(httpResult.getResponseContent());
+            if (httpResult.getRequestType().equals("Create Members")) {
+              AndroidUtils.showToast(result.getString("msg"),getContext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

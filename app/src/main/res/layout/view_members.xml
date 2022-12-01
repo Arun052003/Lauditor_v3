@@ -54,7 +54,7 @@
                     >
 
                     <TextView
-
+                        android:id="@+id/tv_member_type"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -67,7 +67,7 @@
                         android:textSize="@dimen/Twelve_dp" />
 
                     <TextView
-                        android:id="@+id/tv_type"
+                        android:id="@+id/tv_litigation"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="bottom"
@@ -86,11 +86,10 @@
                     >
 
                     <TextView
-
+                        android:id="@+id/tv_currency_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-
                         android:fontFamily="sans-serif-condensed-medium"
                         android:padding="5dp"
                         android:text="USD"

@@ -1,0 +1,78 @@
+package com.digicoffer.lauditor.Members;
+
+import org.json.JSONArray;
+
+public class MembersModel {
+    String currency;
+    String defaultRate;
+    String designation;
+    String email;
+    String id;
+    String lastLogin;
+    String name;
+    JSONArray groups;
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public String getDefaultRate() {
+        return defaultRate;
+    }
+
+    public void setDefaultRate(String defaultRate) {
+        this.defaultRate = defaultRate;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(String lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public JSONArray getGroups() {
+        return groups;
+    }
+
+    public void setGroups(JSONArray groups) {
+        this.groups = groups;
+    }
+}

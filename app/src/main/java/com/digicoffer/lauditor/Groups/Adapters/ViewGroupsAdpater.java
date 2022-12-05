@@ -141,7 +141,7 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
             });
         }
         else if(mTag == "UGM"){
-            holder.cb_team_members.setChecked(itemsArrayList.get(position).isSelected());
+            holder.cb_team_members.setChecked(itemsArrayList.get(position).isChecked());
             holder.cb_team_members.setTag(position);
             holder.cb_team_members.setOnClickListener(new View.OnClickListener() {
                 @Override

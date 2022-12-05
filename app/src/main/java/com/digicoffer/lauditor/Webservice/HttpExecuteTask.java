@@ -139,6 +139,26 @@ public class HttpExecuteTask extends AsyncTask<String, Integer, HttpResultDo> {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
+            }else if (status_code == 400) {
+                try {
+//                    InputStream in = httpURLConnection.getErrorStream();
+////                    InputStreamReader inputStreamReader = new InputStreamReader(in);
+////                    InputStream in = httpURLConnection.getInputStream();
+//                    InputStreamReader inputStreamReader = new InputStreamReader(in);
+//                    BufferedReader r = new BufferedReader(inputStreamReader);
+                    BufferedReader r = new BufferedReader(new InputStreamReader(httpURLConnection.getErrorStream()));
+                    StringBuilder total = new StringBuilder();
+                    for (String line; (line = r.readLine()) != null; ) {
+                        total.append(line).append('\n');
+                    }
+                    data = total.toString();
+                    httpResult.setResult(WebServiceHelper.ServiceCallStatus.Success);
+                    httpResult.setResponseContent(data);
+//                    JSONObject result = new JSONObject(httpResult.getResponseContent());
+//                    startActivity(new Intent(this, MainActivity.class));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             else {
                 httpResult.setResult(WebServiceHelper.ServiceCallStatus.Failed);

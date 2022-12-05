@@ -221,7 +221,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:inputType="text|textMultiLine"
                             android:textColorHint="@color/black"
                             app:boxBackgroundMode="none">
 
@@ -229,7 +228,7 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/tv_default_rate"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:background="@drawable/rectangle_grey_background"
                                 android:imeOptions="actionDone" />
 
@@ -324,48 +323,6 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/ll_buttons_1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="10dp"
-                    android:orientation="horizontal"
-
-                    >
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btn_cancel_members"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:layout_weight="1"
-
-                        android:background="@drawable/cancel_button_background"
-                        android:elevation="20dp"
-                        android:text="@string/cancel"
-                        android:textAllCaps="false">
-
-                    </androidx.appcompat.widget.AppCompatButton>
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btn_save_members"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/save_button_background"
-                        android:backgroundTint="@color/Blue_text_color"
-                        android:elevation="@dimen/Fifteen_dp"
-                        android:gravity="center"
-                        android:text="@string/save"
-                        android:textAllCaps="false"
-                        android:textColor="@color/white">
-
-                    </androidx.appcompat.widget.AppCompatButton>
-                </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/ll_edit_buttons"
@@ -480,7 +437,7 @@
                     android:layout_margin="10dp"
                     />
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/ll_buttons"
+                    android:id="@+id/ll_buttons_1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="10dp"
@@ -489,34 +446,35 @@
                     >
 
                     <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btn_cancel"
+                        android:id="@+id/btn_cancel_members"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_marginLeft="20dp"
-                        android:elevation="20dp"
-
                         android:layout_marginRight="20dp"
+                        android:layout_weight="1"
+
                         android:background="@drawable/cancel_button_background"
-                        android:textAllCaps="false"
-                        android:text="@string/cancel">
+                        android:elevation="20dp"
+                        android:text="@string/cancel"
+                        android:textAllCaps="false">
 
                     </androidx.appcompat.widget.AppCompatButton>
+
                     <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btn_save"
+                        android:id="@+id/btn_save_members"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_gravity="center"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/save_button_background"
+                        android:backgroundTint="@color/Blue_text_color"
                         android:elevation="@dimen/Fifteen_dp"
                         android:gravity="center"
-                        android:layout_gravity="center"
-                        android:background="@drawable/save_button_background"
-                        android:textColor="@color/white"
+                        android:text="@string/save"
                         android:textAllCaps="false"
-                        android:backgroundTint="@color/Blue_text_color"
-                        android:text="@string/save">
+                        android:textColor="@color/white">
 
                     </androidx.appcompat.widget.AppCompatButton>
                 </androidx.appcompat.widget.LinearLayoutCompat>

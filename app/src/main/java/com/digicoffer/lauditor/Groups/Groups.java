@@ -327,7 +327,9 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             JSONArray members = new JSONArray();
             for (int i = 0; i < list_item.size(); i++) {
                 GroupModel model = list_item.get(i);
-                members.put(model.getId());
+                if (model.isChecked()) {
+                    members.put(model.getId());
+                }
             }
             postData.put("name", tv_group_name);
             postData.put("description", tv_group_description);

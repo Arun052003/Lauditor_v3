@@ -280,6 +280,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_confirm_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"

@@ -86,6 +86,7 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
             holder.tv_date.setText(viewGroupModel.getCreated());
             holder.tv_description.setText(viewGroupModel.getDescription());
             actions_List.clear();
+
 //        actions_List.add(new ActionModel("Add|Remove"));
             actions_List.add(new ActionModel("Choose Actions"));
             actions_List.add(new ActionModel("Edit Group"));

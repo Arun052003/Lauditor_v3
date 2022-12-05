@@ -1,25 +1,41 @@
 package com.digicoffer.lauditor.Members;
 
+import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.Groups.Adapters.ViewGroupsAdpater;
+import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
 import com.digicoffer.lauditor.R;
+import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 
 import java.util.ArrayList;
+import java.util.EventListener;
 
 public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.ViewHolder> {
     ArrayList<MembersModel> members_list = new ArrayList<>();
-
-    public MembersAdapter(ArrayList<MembersModel> members_list) {
+    ArrayList<ActionModel> actions_List = new ArrayList<ActionModel>();
+    Context mcontext;
+  MembersAdapter.EventListener eventListener;
+    public MembersAdapter(ArrayList<MembersModel> members_list,Context context,MembersAdapter.EventListener listener) {
         this.members_list = members_list;
+        this.mcontext = context;
+        this.eventListener = listener;
     }
 
+
+    public interface EventListener{
+
+        void EditMember(MembersModel membersModel);
+    }
     @NonNull
     @Override
     public MembersAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -30,12 +46,47 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull MembersAdapter.ViewHolder holder, int position) {
             MembersModel membersModel = members_list.get(position);
+        actions_List.clear();
+//        actions_List.add(new ActionModel("Add|Remove"));
+        actions_List.add(new ActionModel("Choose Actions"));
+        actions_List.add(new ActionModel("Edit Member"));
+        actions_List.add(new ActionModel("Reset Password"));
+        actions_List.add(new ActionModel("Add|Remove Group Access"));
+        actions_List.add(new ActionModel("Delete Member"));
+
             holder.tv_members_name.setText(membersModel.getName());
             holder.tv_litigation.setText(membersModel.getDesignation());
             holder.tv_currency.setText(membersModel.getDefaultRate());
             holder.tv_currency_type.setText(membersModel.getCurrency());
             holder.tv_email.setText(membersModel.getEmail());
+        final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) mcontext, actions_List);
+        holder.sp_action.setAdapter(spinner_adapter);
+        holder.sp_action.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
+                String name = actions_List.get(adapterView.getSelectedItemPosition()).getName();
+                if (name == "Edit Member") {
+                    eventListener.EditMember(membersModel);
+                }
+//                else if (name == "Delete") {
+//                    eventListener.DeleteGroup(viewGroupModel);
+//                } else if (name == "Change Group Head") {
+//                    eventListener.CGH(viewGroupModel, itemsArrayList);
+//                }else if(name == "Update Group Members"){
+//                    try {
+//                        eventListener.UGM(viewGroupModel);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     @Override

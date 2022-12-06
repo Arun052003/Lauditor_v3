@@ -1,6 +1,7 @@
 package com.digicoffer.lauditor.Members;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,6 +47,7 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
     String default_currency = "";
     CardView cv_details,cv_members_details;
     GroupsAdapter groupsAdapter = null;
+    ArrayList<ViewGroupModel> updatedMembersList = new ArrayList<>();
     ArrayList<String> currency_list = new ArrayList<>();
     ArrayList<MembersModel> members_list = new ArrayList<>();
     String TAG = "";
@@ -125,7 +127,7 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
                 if(!validation()){
                     String tag = "Create";
                     String id = "";
-                    callCreateMemberWebservice(tv_member_name.getText().toString().trim(),tv_designation.getText().toString().trim(),tv_default_rate.getText().toString().trim(),tv_email.getText().toString().trim(),tv_confirm_email.getText().toString().trim(),tag,id);
+                      callCreateMemberWebservice(tv_member_name.getText().toString().trim(),tv_designation.getText().toString().trim(),tv_default_rate.getText().toString().trim(),tv_email.getText().toString().trim(),tv_confirm_email.getText().toString().trim(),tag,id);
                 }
 
             }
@@ -185,10 +187,18 @@ boolean validation(){
     return status;
 }
     private void CreateMembersData() {
-        cv_details.setVisibility(View.VISIBLE);
-        cv_members_details.setVisibility(View.VISIBLE);
-        members_list.clear();
-        if (TAG=="CM"){
+        if (TAG=="UGA") {
+            cv_details.setVisibility(View.GONE);
+            ll_new_buttons.setVisibility(View.GONE);
+            ll_buttons.setVisibility(View.GONE);
+            cv_members_details.setVisibility(View.VISIBLE);
+            members_list.clear();
+        }else{
+            cv_details.setVisibility(View.VISIBLE);
+            cv_members_details.setVisibility(View.VISIBLE);
+            members_list.clear();
+        }
+        if (TAG=="CM"||TAG=="UGA"){
             callGroupsWebservice();
         }
 
@@ -201,6 +211,9 @@ boolean validation(){
         cv_details.setVisibility(View.GONE);
         cv_members_details.setVisibility(View.GONE);
         callViewGroupsWebservice();
+        members_list.clear();
+        groupsList.clear();
+        updatedMembersList.clear();
     }
 
     private void callViewGroupsWebservice() {
@@ -225,16 +238,29 @@ boolean validation(){
                     groups.put(viewGroupModel.getId());
                 }
             }
+
             progress_dialog = AndroidUtils.get_progress(getActivity());
-            postdata.put("currency",default_currency);
-            postdata.put("defaultRate",default_rate);
-            postdata.put("designation",designation);
-            postdata.put("email",email);
-            postdata.put("emailConfirm",confirm_email);
-            postdata.put("groups",groups);
-            postdata.put("name",name);
+            if (tag=="Create"||tag=="Update") {
+                postdata.put("currency", default_currency);
+                postdata.put("defaultRate", default_rate);
+                postdata.put("designation", designation);
+                postdata.put("email", email);
+                postdata.put("emailConfirm", confirm_email);
+                postdata.put("name", name);
+            }if(tag=="Create"||tag=="Update"||tag == "UGA")
+            postdata.put("groups", groups);
+            if(tag=="RP"){
+                postdata.put("memberId",id);
+            }
             if (tag == "Create") {
                 WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/member", "Create Members",postdata.toString());
+
+            }else if(tag == "RP"){
+                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/member/resetpwd", "Reset Password",postdata.toString());
+
+            }else if(tag=="Delete"){
+                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.DELETE, "v3/member/"+id, "Delete Member",postdata.toString());
+
 
             }else{
                 WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PATCH, "v3/member/"+id, "Update Members",postdata.toString());
@@ -275,6 +301,13 @@ private ArrayList<String> getCurrency_list(){
             }else if(httpResult.getRequestType().equals("Update Members")){
                 AndroidUtils.showToast(result.getString("msg"),getContext());
                 ViewMembersData();
+            }else if (httpResult.getRequestType().equals("Reset Password")){
+                JSONObject data = result.getJSONObject("data");
+                AndroidUtils.showToast(data.getString("msg"),getContext());
+                ViewMembersData();
+            }else if(httpResult.getRequestType().equals("Delete Member")){
+                AndroidUtils.showToast(result.getString("msg"),getContext());
+                ViewMembersData();
             }
             else if(httpResult.getRequestType().equals("Get Members")){
                 JSONObject data = result.getJSONObject("data");
@@ -309,6 +342,13 @@ private ArrayList<String> getCurrency_list(){
             viewGroupModel.setGroup_head_id(group_head.getString("id"));
             viewGroupModel.setGroup_head_name(group_head.getString("name"));
             viewGroupModel.setOwner_name(group_head.getString("name"));
+            for (int j=0;j<data.length();j++){
+                for(int k=0;k<updatedMembersList.size();k++){
+                    if (viewGroupModel.getId().matches(updatedMembersList.get(k).getGroup_id())){
+                        viewGroupModel.setChecked(true);
+                    }
+                }
+            }
             groupsList.add(viewGroupModel);
         }
         Log.i("ArrayList", "info" + groupsList.toString());
@@ -384,7 +424,7 @@ private ArrayList<String> getCurrency_list(){
             @Override
             public void onClick(View view) {
                 if(!validation()){
-                    String tag = "update";
+                    String tag = "Update";
                     String id = membersModel.getId();
                     callCreateMemberWebservice(tv_member_name.getText().toString().trim(),tv_designation.getText().toString().trim(),tv_default_rate.getText().toString().trim(),tv_email.getText().toString().trim(),tv_confirm_email.getText().toString().trim(),tag, id);
                 }
@@ -400,6 +440,63 @@ private ArrayList<String> getCurrency_list(){
                 ViewMembersData();
             }
         });
+    }
+
+    @Override
+    public void UpdateGroupAcess(MembersModel membersModel) throws JSONException{
+        TAG = "UGA";
+        for (int i=0;i<membersModel.getGroups().length();i++){
+            ViewGroupModel viewGroupModel = new ViewGroupModel();
+            JSONObject jsonObject = membersModel.getGroups().getJSONObject(i);
+            viewGroupModel.setGroup_id(jsonObject.getString("id"));
+            viewGroupModel.setGroup_name(jsonObject.getString("name"));
+            updatedMembersList.add(viewGroupModel);
+        }
+        CreateMembersData();
+        btn_cancel_members.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                unhide();
+                ViewMembersData();
+
+            }
+        });
+        bt_save_members.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String tag = "UGA";
+                callCreateMemberWebservice("","","","","",tag,membersModel.getId());
+            }
+        });
+    }
+
+    @Override
+    public void ResetPassword(MembersModel membersModel) {
+                String tag = "RP";
+                callCreateMemberWebservice("","","","","",tag,membersModel.getId());
+    }
+
+    @Override
+    public void DeleteMember(MembersModel membersModel) {
+        final android.app.AlertDialog.Builder dlgAlert = new android.app.AlertDialog.Builder(getContext());
+        dlgAlert.setMessage("Are you sure you want to  delete "+membersModel.getName());
+        dlgAlert.setTitle("Alert");
+        dlgAlert.setPositiveButton("Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String tag = "Delete";
+                        callCreateMemberWebservice("","","","","",tag,membersModel.getId());
+                    }
+                });
+        dlgAlert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+//                AndroidUtils.showToast(result.getString("msg"),getContext());
+                ViewMembersData();
+            }
+        });
+        dlgAlert.setCancelable(true);
+        dlgAlert.show();
     }
 
     private void unhide() {

@@ -17,6 +17,8 @@ import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.EventListener;
 
@@ -35,6 +37,12 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.ViewHold
     public interface EventListener{
 
         void EditMember(MembersModel membersModel);
+
+        void UpdateGroupAcess(MembersModel membersModel) throws JSONException;
+
+        void ResetPassword(MembersModel membersModel);
+
+        void DeleteMember(MembersModel membersModel);
     }
     @NonNull
     @Override
@@ -68,6 +76,17 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.ViewHold
                 String name = actions_List.get(adapterView.getSelectedItemPosition()).getName();
                 if (name == "Edit Member") {
                     eventListener.EditMember(membersModel);
+                }else if(name == "Add|Remove Group Access"){
+                    try {
+                        eventListener.UpdateGroupAcess(membersModel);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }else if(name == "Reset Password"){
+                    eventListener.ResetPassword(membersModel);
+                }else if(name == "Delete Member"){
+                    eventListener.DeleteMember(membersModel);
                 }
 //                else if (name == "Delete") {
 //                    eventListener.DeleteGroup(viewGroupModel);

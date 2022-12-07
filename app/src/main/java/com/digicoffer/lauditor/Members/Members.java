@@ -3,6 +3,8 @@ package com.digicoffer.lauditor.Members;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -364,6 +366,22 @@ private ArrayList<String> getCurrency_list(){
              groupsAdapter = new GroupsAdapter(groupsList);
             rv_selected_member.setAdapter(groupsAdapter);
             rv_selected_member.setHasFixedSize(true);
+            et_search_members.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    groupsAdapter.getFilter().filter(et_search_members.getText().toString());
+                }
+
+            });
         }
         else{
             cv_members_details.setVisibility(View.GONE);

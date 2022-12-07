@@ -4,6 +4,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,16 +16,19 @@ import com.digicoffer.lauditor.Groups.GroupModels.GroupModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.Groups.Groups;
 import com.digicoffer.lauditor.R;
+import com.digicoffer.lauditor.common.AndroidUtils;
 
 import org.minidns.record.A;
 
 import java.util.ArrayList;
 
-public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder> {
+public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder>implements Filterable {
     ArrayList<ViewGroupModel> groupsList = new ArrayList<>();
+    ArrayList<ViewGroupModel> list_item = new ArrayList<>();
 
     public GroupsAdapter(ArrayList<ViewGroupModel> groupsList) {
         this.groupsList = groupsList;
+        this.list_item = groupsList;
     }
 
     @NonNull
@@ -36,6 +41,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull GroupsAdapter.ViewHolder holder, int position) {
                 ViewGroupModel groupModel = groupsList.get(position);
+                groupsList = list_item;
         holder.cb_team_members.setChecked(groupsList.get(position).isChecked());
         holder.cb_team_members.setTag(position);
 
@@ -64,6 +70,46 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     @Override
     public int getItemCount() {
         return groupsList.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    groupsList = list_item;
+                } else {
+                    ArrayList<ViewGroupModel> filteredList = new ArrayList<>();
+                    for (ViewGroupModel row : list_item) {
+//                            if (row.isChecked()){
+//                                row.setChecked(false);
+//                            }else
+//                            {
+//                                row.setChecked(true  );
+//                            }
+                        // name match condition. this might differ depending on your requirement
+                        // here we are looking for name or phone number match
+                        if (AndroidUtils.isNull(row.getName()).toLowerCase().contains(charString.toLowerCase()) ) {
+                            filteredList.add(row);
+                        }
+                    }
+                    groupsList = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.count = groupsList.size();
+                filterResults.values = groupsList;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                groupsList = (ArrayList<ViewGroupModel>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

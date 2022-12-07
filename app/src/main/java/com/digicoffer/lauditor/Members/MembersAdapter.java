@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -22,7 +24,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.EventListener;
 
-public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.ViewHolder> {
+public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.ViewHolder>  {
     ArrayList<MembersModel> members_list = new ArrayList<>();
     ArrayList<ActionModel> actions_List = new ArrayList<ActionModel>();
     Context mcontext;
@@ -32,6 +34,8 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.ViewHold
         this.mcontext = context;
         this.eventListener = listener;
     }
+
+
 
 
     public interface EventListener{

@@ -55,8 +55,11 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
         void CGH(ViewGroupModel viewGroupModel, ArrayList<ViewGroupModel> itemsArrayList);
 
         void UGM(ViewGroupModel viewGroupModel) throws JSONException;
+
+        void GAL(ViewGroupModel viewGroupModel) throws JSONException;
     }
-//    @Override
+
+    //    @Override
 //    public void onViewRecycled(@NonNull ViewHolder holder) {
 //        holder.cb_team_members.setOnCheckedChangeListener(null);
 //        super.onViewRecycled(holder);
@@ -67,7 +70,7 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
         if (mTag == "VG") {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_groups, parent, false);
             return new ViewGroupsAdpater.ViewHolder(itemView);
-        }else if(mTag == "UGM"){
+        } else if (mTag == "UGM") {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.select_team_members, parent, false);
             return new ViewGroupsAdpater.ViewHolder(itemView);
         } else {
@@ -126,10 +129,16 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
                         eventListener.DeleteGroup(viewGroupModel);
                     } else if (name == "Change Group Head") {
                         eventListener.CGH(viewGroupModel, itemsArrayList);
-                    }else if(name == "Update Group Members"){
+                    } else if (name == "Update Group Members") {
                         try {
                             eventListener.UGM(viewGroupModel);
                         } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else if (name == "Group Activity Log") {
+                        try {
+                            eventListener.GAL(viewGroupModel);
+                        } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
@@ -140,8 +149,7 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
 
                 }
             });
-        }
-        else if(mTag == "UGM"){
+        } else if (mTag == "UGM") {
             holder.cb_team_members.setChecked(itemsArrayList.get(position).isChecked());
             holder.cb_team_members.setTag(position);
             holder.cb_team_members.setOnClickListener(new View.OnClickListener() {
@@ -156,8 +164,7 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
                 }
             });
             holder.tv_tm_name.setText(viewGroupModel.getName());
-        }
-  else{
+        } else {
             holder.rb_group_head.setText(viewGroupModel.getGroup_name());
             holder.rb_group_head.setChecked(position == selectedPosition);
             holder.rb_group_head.setTag(viewGroupModel.getGroup_id());
@@ -196,7 +203,7 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView tv_user_type, tv_owner_name, tv_date, tv_description,tv_tm_name;
+        private TextView tv_user_type, tv_owner_name, tv_date, tv_description, tv_tm_name;
         private Spinner sp_action;
         private CheckBox cb_team_members;
         private RadioButton rb_group_head;

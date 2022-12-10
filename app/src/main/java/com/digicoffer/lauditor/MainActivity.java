@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 //            tv_matter.setVisibility(View.GONE);
 //            tv_more = findViewById(R.id.tv_more);
 //            tv_more.setVisibility(View.GONE);
-            Fragment fragment = new Members();
+            Fragment fragment = new Dashboard();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.id_framelayout, fragment);
             ft.commit();
@@ -84,6 +84,16 @@ public class MainActivity extends AppCompatActivity {
                     Fragment fragment = new Groups();
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.id_framelayout, fragment);
+                    ft.commit();
+                    closeMenu();
+                }
+            });
+            fab_timesheet.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Fragment fragment1 = new Members();
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.id_framelayout,fragment1);
                     ft.commit();
                     closeMenu();
                 }

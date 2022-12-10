@@ -29,9 +29,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Groups.Adapters.GroupAdapters;
+import com.digicoffer.lauditor.Groups.Adapters.SearchAdapter;
 import com.digicoffer.lauditor.Groups.Adapters.ViewGroupsAdpater;
 import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
 import com.digicoffer.lauditor.Groups.GroupModels.GroupModel;
+import com.digicoffer.lauditor.Groups.GroupModels.SearchDo;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
@@ -54,14 +56,16 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewGroupsAdpater.InterfaceListener {
-    RecyclerView rv_select_team_members, rv_view_groups;
+    RecyclerView rv_select_team_members, rv_view_groups,rv_activity_log;
     TextInputEditText et_search;
     Button tv_from_date,tv_to_date;
     TextInputLayout tv_selected_members;
     ItemClickListener itemClickListener;
     ViewGroupModel new_viewGroupModel = null;
+    TextInputLayout tv_search_message;
     ViewGroupsItemClickListener new_itemClickListener;
     String group_head = "";
+    ArrayList<SearchDo> searchList = new ArrayList<>();
     Spinner sp_category, sp_team_member;
     String selected_category = "";
     String selected_tm = "";
@@ -93,8 +97,10 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         et_search = v.findViewById(R.id.et_search);
         tv_group_name = v.findViewById(R.id.tv_group_name);
         tv_group_description = v.findViewById(R.id.tv_description);
+        rv_activity_log = v.findViewById(R.id.rv_view_activity_log);
         ll_edit_groups = v.findViewById(R.id.ll_edit_buttons);
         cv_groups = v.findViewById(R.id.cv_details);
+        tv_search_message = v.findViewById(R.id.search_message);
         tv_from_date = v.findViewById(R.id.btn_from_date);
         tv_to_date = v.findViewById(R.id.btn_to_date);
         et_Search = v.findViewById(R.id.et_search_tm);
@@ -448,11 +454,39 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                     viewGroupMembersList.clear();
                     viewGroupModelArrayList.clear();
                     AndroidUtils.showToast(result.getString("msg"), getContext());
+                }else if(httpResult.getRequestType().equals("Search Results")){
+                    JSONArray data = result.getJSONArray("data");
+                    loadSearchResults(data);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void loadSearchResults(JSONArray data) throws JSONException {
+        searchList.clear();
+        for (int i=0;i<data.length();i++){
+            SearchDo searchDo = new SearchDo();
+            JSONObject jsonObject = data.getJSONObject(i);
+            searchDo.setCategory(jsonObject.getString("category"));
+            searchDo.setTimestamp(jsonObject.getString("timestamp"));
+            searchDo.setMsg(jsonObject.getString("msg"));
+            searchList.add(searchDo);
+        }
+        if(data.length()!=0){
+            tv_search_message.setVisibility(View.VISIBLE);
+        }else{
+            tv_search_message.setVisibility(View.GONE);
+        }
+        loadSearchRecyclerview();
+    }
+
+    private void loadSearchRecyclerview() {
+        rv_activity_log.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        SearchAdapter adapter = new SearchAdapter(searchList);
+       rv_activity_log.setAdapter(adapter);
+        rv_activity_log.setHasFixedSize(true);
     }
 
     private void loadTeamMembers(JSONArray users) throws JSONException {
@@ -768,7 +802,6 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             JSONObject jsonObject = viewGroupModel.getMembers().getJSONObject(i);
             viewGroupModel_1.setGroup_name(jsonObject.getString("name"));
             viewGroupModel_1.setGroup_id(jsonObject.getString("id"));
-
             viewGroupMembersList.add(viewGroupModel_1);
         }
         final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) getContext(), actions_List);
@@ -816,22 +849,40 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             public void onClick(View view) {
 
                 unhideData();
+                tv_from_date.setText("");
+                tv_to_date.setText("");
+                searchList.clear();
+                rv_activity_log.removeAllViews();
+                tv_search_message.setVisibility(View.GONE);
                 ViewGroupsData();
             }
         });
-        btn_save.setOnClickListener(new View.OnClickListener() {
+        btn_search_gal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String update_type = "UGM";
+//                String update_type = "UGM";
                 try {
-                    callUpdateGroups("", "", new_viewGroupModel.getId(), update_type, adapter.getList_item());
-                } catch (JSONException e) {
+                    callSearchResultsWebservice(selected_category,selected_tm,tv_from_date.getText().toString(),tv_to_date.getText().toString(),viewGroupModel.getId());
+                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 //                callUpdateUGMWebservice(adapter.getList_item(););
             }
         });
     }
+
+    private void callSearchResultsWebservice(String selected_category, String selected_tm, String from_date, String to_date, String id) throws JSONException {
+
+        JSONObject postdate = new JSONObject();
+        postdate.put("category",selected_category);
+        postdate.put("client","");
+        postdate.put("fromDate",from_date);
+        postdate.put("search","");
+        postdate.put("tm",selected_tm);
+        postdate.put("toDate",to_date);
+        WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.PUT,"v3/auditlogs/"+id,"Search Results",postdate.toString());
+    }
+
     private void datepicker(Button bt_date) {
         final Calendar myCalendar = Calendar.getInstance();
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {

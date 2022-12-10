@@ -460,7 +460,7 @@
         android:layout_margin="10dp"
         android:padding="10dp"
         app:cardCornerRadius="10dp"
-        android:visibility="gone"
+        android:visibility="visible"
         android:elevation="@dimen/Fifty_dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -619,29 +619,24 @@
 
 
         </LinearLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_from_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+           android:drawableRight="@drawable/calendar_activity"
+            android:elevation="20dp"
+            android:hint="@string/from"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColorHint="@color/grey_text_color"
 
-            app:boxBackgroundMode="none"
+            android:background="@drawable/rectangle_grey_background"
+            android:textAllCaps="false"
+            >
 
-            android:textColorHint="@color/black">
-
-            <!--this is the actual edit text which takes the input-->
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/tv_from_date"
-                android:layout_width="match_parent"
-                android:background="@drawable/rectangle_grey_background"
-                android:drawableRight="@drawable/calendar_activity"
-                android:layout_height="match_parent"
-                android:imeOptions="actionDone"
-
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
+        </androidx.appcompat.widget.AppCompatButton>
+        </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -668,28 +663,23 @@
 
         </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_to_date"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableRight="@drawable/calendar_activity"
+            android:elevation="20dp"
+            android:hint="@string/to"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColorHint="@color/grey_text_color"
 
-            app:boxBackgroundMode="none"
-            android:inputType="text|textMultiLine"
-            android:textColorHint="@color/black">
+            android:background="@drawable/rectangle_grey_background"
+            android:textAllCaps="false"
+            >
 
-            <!--this is the actual edit text which takes the input-->
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/tv_to_date"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/rectangle_grey_background"
-                android:drawableRight="@drawable/calendar_activity"
-                android:imeOptions="actionDone"
-
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
+        </androidx.appcompat.widget.AppCompatButton> </LinearLayout>
 </LinearLayout>
 
             <androidx.appcompat.widget.LinearLayoutCompat

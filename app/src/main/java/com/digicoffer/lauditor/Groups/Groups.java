@@ -3,6 +3,7 @@ package com.digicoffer.lauditor.Groups;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,8 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -44,12 +47,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewGroupsAdpater.InterfaceListener {
     RecyclerView rv_select_team_members, rv_view_groups;
     TextInputEditText et_search;
+    Button tv_from_date,tv_to_date;
     TextInputLayout tv_selected_members;
     ItemClickListener itemClickListener;
     ViewGroupModel new_viewGroupModel = null;
@@ -88,6 +95,8 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         tv_group_description = v.findViewById(R.id.tv_description);
         ll_edit_groups = v.findViewById(R.id.ll_edit_buttons);
         cv_groups = v.findViewById(R.id.cv_details);
+        tv_from_date = v.findViewById(R.id.btn_from_date);
+        tv_to_date = v.findViewById(R.id.btn_to_date);
         et_Search = v.findViewById(R.id.et_search_tm);
         cv_details = v.findViewById(R.id.cv_details_2);
         btn_cancel_gal = v.findViewById(R.id.btn_cancel_activity_log);
@@ -788,6 +797,20 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
 
             }
         });
+        tv_from_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                datepicker(tv_from_date);
+            }
+        });
+        tv_to_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                datepicker(tv_to_date);
+            }
+        });
         btn_cancel_gal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -809,7 +832,33 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             }
         });
     }
+    private void datepicker(Button bt_date) {
+        final Calendar myCalendar = Calendar.getInstance();
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, month);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
 
+            private void updateLabel() {
+                String myFormat = "dd-MM-yyyy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                bt_date.setText(sdf.format(myCalendar.getTime()));
+            }
+        };
+
+        bt_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+                datePickerDialog.show();
+            }
+        });
+    }
     private void callViewGroupMembersWebservice() {
         try {
             JSONObject postdata = new JSONObject();

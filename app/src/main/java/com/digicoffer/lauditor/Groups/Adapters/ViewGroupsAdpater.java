@@ -131,7 +131,7 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
                         eventListener.CGH(viewGroupModel, itemsArrayList);
                     } else if (name == "Update Group Members") {
                         try {
-                            eventListener.UGM(viewGroupModel);
+                                eventListener.UGM(viewGroupModel);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

@@ -35,11 +35,11 @@ public class GroupAdapters extends RecyclerView.Adapter<GroupAdapters.ViewHolder
         this.mTag = Tag;
         this.itemClickListener = itemClickListener;
     }
-    @Override
-    public void onViewRecycled(@NonNull ViewHolder holder) {
-        holder.cb_team_members.setOnCheckedChangeListener(null);
-        super.onViewRecycled(holder);
-    }
+//    @Override
+//    public void onViewRecycled(@NonNull ViewHolder holder) {
+//        holder.cb_team_members.setOnCheckedChangeListener(null);
+//        super.onViewRecycled(holder);
+//    }
     @Override
     public int getItemViewType(int position) {
         return position;

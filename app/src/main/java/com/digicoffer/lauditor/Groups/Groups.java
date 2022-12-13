@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.view.View.OnClickListener;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -27,7 +28,6 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.digicoffer.lauditor.Groups.Adapters.GroupAdapters;
 import com.digicoffer.lauditor.Groups.Adapters.SearchAdapter;
 import com.digicoffer.lauditor.Groups.Adapters.ViewGroupsAdpater;
@@ -48,6 +48,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pgpainless.key.selection.key.util.And;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,11 +59,12 @@ import java.util.Locale;
 public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewGroupsAdpater.InterfaceListener {
     RecyclerView rv_select_team_members, rv_view_groups,rv_activity_log;
     TextInputEditText et_search;
-    Button tv_from_date,tv_to_date;
+    AppCompatButton tv_from_date,tv_to_date;
     TextInputLayout tv_selected_members;
     ItemClickListener itemClickListener;
     ViewGroupModel new_viewGroupModel = null;
-    TextInputLayout tv_search_message;
+    public static String FLAG = "";
+    TextInputLayout tv_search_message,tv_select_team_members;
     ViewGroupsItemClickListener new_itemClickListener;
     String group_head = "";
     ArrayList<SearchDo> searchList = new ArrayList<>();
@@ -82,6 +84,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     GroupAdapters adapter = null;
     ViewGroupsAdpater adapter_view_groups = null;
     AlertDialog progress_dialog;
+    View v = null;
     AppCompatButton btn_cancel, btn_save, btn_cancel_edit, btn_update, btn_cancel_gal, btn_search_gal;
     TextInputEditText et_Search;
     LinearLayoutCompat ll_tm, ll_select_all, ll_buttons, ll_group_list, ll_select_tm, ll_edit_groups;
@@ -91,7 +94,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.groups, container, false);
+        v = inflater.inflate(R.layout.groups, container, false);
         rv_select_team_members = v.findViewById(R.id.rv_selected_tm);
         rv_view_groups = v.findViewById(R.id.rv_view_group);
         et_search = v.findViewById(R.id.et_search);
@@ -100,6 +103,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         rv_activity_log = v.findViewById(R.id.rv_view_activity_log);
         ll_edit_groups = v.findViewById(R.id.ll_edit_buttons);
         cv_groups = v.findViewById(R.id.cv_details);
+        tv_select_team_members = v.findViewById(R.id.filledTextField3);
         tv_search_message = v.findViewById(R.id.search_message);
         tv_from_date = v.findViewById(R.id.btn_from_date);
         tv_to_date = v.findViewById(R.id.btn_to_date);
@@ -123,7 +127,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         sp_category = v.findViewById(R.id.sp_category);
         sp_team_member = v.findViewById(R.id.sp_team_member);
         btn_cancel = v.findViewById(R.id.btn_cancel);
-        btn_save = v.findViewById(R.id.btn_save);
+        btn_save =(AppCompatButton)  v.findViewById(R.id.btn_save);
         tv_create_group.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_view_group.setOnClickListener(new View.OnClickListener() {
@@ -135,8 +139,12 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         tv_practice_head.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
-                tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+                if (assignGroupsList.size() == 0) {
+                    AndroidUtils.showToast("Please select atleast one teammember", getContext());
+                } else {
+                    tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+                    tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+                }
             }
         });
         tv_create_group.setOnClickListener(new View.OnClickListener() {
@@ -144,37 +152,105 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             public void onClick(View view) {
                 tv_view_group.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
                 tv_create_group.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+                assignGroupsList.clear();
                 cv_groups.setVisibility(View.VISIBLE);
-                cv_details.setVisibility(View.VISIBLE);
-                ll_buttons.setVisibility(View.VISIBLE);
-                ll_tm.setVisibility(View.VISIBLE);
-                ll_select_all.setVisibility(View.VISIBLE);
+//                cv_details.setVisibility(View.VISIBLE);
+//                ll_buttons.setVisibility(View.VISIBLE);
+//                ll_tm.setVisibility(View.VISIBLE);
+//                ll_select_all.setVisibility(View.VISIBLE);
                 rv_view_groups.setVisibility(View.GONE);
                 et_search.setVisibility(View.GONE);
+                hideTM();
                 viewGroupModelArrayList.removeAll(viewGroupModelArrayList);
                 rv_view_groups.removeAllViews();
-                callMembersWebservice();
+//                callMembersWebservice();
 
             }
         });
         tv_add_tm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                assignGroupsList.clear();
+                selectedTMArrayList.clear();
+                callMembersWebservice();
                 tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
                 tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+            }
+        });
+//        if ()
+        btn_update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (tv_group_name.getText().toString().equals("")) {
+                    tv_group_name.setError("Group name Required");
+                    AndroidUtils.showToast("Group name Required", getContext());
+                    assignGroupsList.clear();
+                } else if (tv_group_description.getText().toString().equals("")) {
+                    tv_group_description.setError("Description Required");
+                    AndroidUtils.showToast("Description Required", getContext());
+                    assignGroupsList.clear();
+                }else {
+                    ArrayList<GroupModel>arraylist = new ArrayList<>();
+                    callCreateGroupWebservice(tv_group_name.getText().toString().trim(), tv_group_description.getText().toString().trim(),arraylist ,"" );
+                }
+            }
+        });
+        btn_cancel_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tv_group_name.setText("");
+                tv_group_description.setText("");
+                assignGroupsList.clear();
+                selectedTMArrayList.clear();
+            }
+        });
+        hideTM();
+        FLAG = "first_click";
+        tv_select_team_members.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+//                if (FLAG!="first_click"){
+                    if (FLAG!="second_click") {
+                        unhideTM();
+                        callMembersWebservice();
+                    }else
+                    {
+                        FLAG = "first_click";
+                        hideTM();
+                        selectedTMArrayList.clear();
+                    }
+//                }else{
+//                    FLAG="first_click";
+//                }
             }
         });
         chk_select_all = v.findViewById(R.id.chk_select_all);
 
         try {
-            callMembersWebservice();
+//            callMembersWebservice();
 //            loadRecylcerview();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return v;
+    }
+
+    private void unhideTM() {
+        ll_tm.setVisibility(View.VISIBLE);
+        cv_details.setVisibility(View.VISIBLE);
+        ll_edit_groups.setVisibility(View.GONE);
+
+        btn_update.setText("Update");
+    }
+    private void hideTM(){
+//        cv_groups.setVisibility(View.VISIBLE);
+        ll_tm.setVisibility(View.GONE);
+        cv_details.setVisibility(View.GONE);
+        ll_edit_groups.setVisibility(View.VISIBLE);
+
+        btn_update.setText("Save");
     }
 
     private void ViewGroupsData() {
@@ -185,7 +261,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         tv_group_name.setText("");
         tv_group_description.setText("");
         cv_groups.setVisibility(View.GONE);
-        ll_buttons.setVisibility(View.GONE);
+//        ll_buttons.setVisibility(View.GONE);
         ll_tm.setVisibility(View.GONE);
         ll_select_all.setVisibility(View.GONE);
         selectedTMArrayList.removeAll(selectedTMArrayList);
@@ -258,6 +334,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     private void loadRecylcerview(ArrayList<GroupModel> selectedTMArrayList, String tmType) {
         tv_create_group.setTextColor(getContext().getResources().getColor(R.color.white));
         tv_view_group.setTextColor(getContext().getResources().getColor(R.color.black));
+        FLAG = "second_click";
         if (tmType == "TM") {
             chk_select_all.setVisibility(View.GONE);
             tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
@@ -312,7 +389,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
 
             }
         });
-        btn_save.setOnClickListener(new View.OnClickListener() {
+        btn_save.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (tmType == "TM") {
@@ -327,8 +404,14 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
 
             }
         });
-
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
+//        btn_save.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
+//        AppCompatButton btn_cancel_new = v.findViewById(R.id.btn_save);
+        btn_cancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
@@ -359,13 +442,27 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                     members.put(model.getId());
                 }
             }
-            postData.put("name", tv_group_name);
-            postData.put("description", tv_group_description);
-            postData.put("groupHead", group_head);
-            postData.put("members", members);
+            if(members.length()!=0&&group_head!=""){
+                postData.put("name", tv_group_name);
+                postData.put("description", tv_group_description);
+                postData.put("groupHead", group_head);
+                postData.put("members", members);
 //                AndroidUtils.showToast("Selected:"+members+" "+"GH"+group_head,getContext());
-            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/group", "Create Groups", postData.toString());
-        } catch (Exception e) {
+                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/group", "Create Groups", postData.toString());
+
+            }else if(members.length()  !=0&&group_head ==""){
+                AndroidUtils.showToast("Please select a group head",getContext());
+            }else {
+                postData.put("name", tv_group_name);
+                postData.put("description", tv_group_description);
+                postData.put("groupHead", group_head);
+                postData.put("members", members);
+//                AndroidUtils.showToast("Selected:"+members+" "+"GH"+group_head,getContext());
+                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/group", "Create Groups", postData.toString());
+
+
+            }
+             } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -434,6 +531,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                     ViewGroupsData();
                     AndroidUtils.showToast(result.getString("msg"), getContext());
                 } else if (httpResult.getRequestType().equals("Update Groups")) {
+                   unhideData();
                     ViewGroupsData();
                     viewGroupModelArrayList.clear();
                     viewGroupMembersList.clear();
@@ -450,6 +548,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                     adapter.getList_item().clear();
                     updateGroupMembersList.clear();
                 } else if (httpResult.getRequestType().equals("Update Group Head")) {
+                    unhideData();
                     ViewGroupsData();
                     viewGroupMembersList.clear();
                     viewGroupModelArrayList.clear();
@@ -542,14 +641,16 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             }
 
         });
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
+        AppCompatButton btn_cancel_selected_tm =(AppCompatButton) v.findViewById(R.id.btn_save);
+        btn_cancel_selected_tm.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 unhideData();
                 ViewGroupsData();
             }
         });
-        btn_save.setOnClickListener(new View.OnClickListener() {
+        AppCompatButton btn_save_selected_tm =(AppCompatButton) v.findViewById(R.id.btn_save);
+        btn_save_selected_tm.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 String update_type = "UGM";
@@ -631,6 +732,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         });
         btn_update.setOnClickListener(new View.OnClickListener() {
             @Override
+
             public void onClick(View view) {
                 unhideData();
                 if (tv_group_name.getText().toString().equals("")) {
@@ -728,7 +830,8 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             }
 
             loadViewGroupsRecylerview(mtag, viewGroupModelArrayList);
-            btn_cancel.setOnClickListener(new View.OnClickListener() {
+            Button btn_cancel_CGH = v.findViewById(R.id.btn_save);
+            btn_cancel_CGH.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 //                    unhide_CGH_UGM_data();
@@ -738,7 +841,8 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                     ViewGroupsData();
                 }
             });
-            btn_save.setOnClickListener(new View.OnClickListener() {
+           Button btn_save_CGH = v.findViewById(R.id.btn_save);
+            btn_save_CGH.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
@@ -932,22 +1036,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         }
     }
 
-    private void unhide_CGH_UGM_data() {
-        ll_group_list.setVisibility(View.VISIBLE);
-        ll_tm.setVisibility(View.VISIBLE);
-        ll_select_all.setVisibility(View.VISIBLE);
-        ll_select_tm.setVisibility(View.GONE);
-        rv_view_groups.setVisibility(View.VISIBLE);
-        rv_select_team_members.setVisibility(View.GONE);
-//        rv_view_groups
-        ll_buttons.setVisibility(View.GONE);
-//        rv_select_team_members.setVisibility(View.VISIBLE);
-        et_search.setVisibility(View.VISIBLE);
-        cv_groups.setVisibility(View.VISIBLE);
-        cv_details.setVisibility(View.GONE);
-        ll_edit_groups.setVisibility(View.VISIBLE);
-        tv_selected_members.setVisibility(View.VISIBLE);
-    }
+
 
     private void hide_CGH_UGM_data() {
         ll_group_list.setVisibility(View.GONE);
@@ -957,7 +1046,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         rv_view_groups.setVisibility(View.GONE);
         rv_select_team_members.setVisibility(View.VISIBLE);
 //        rv_view_groups
-        ll_buttons.setVisibility(View.VISIBLE);
+//        ll_buttons.setVisibility(View.VISIBLE);
 //        rv_select_team_members.setVisibility(View.VISIBLE);
         et_search.setVisibility(View.GONE);
         cv_groups.setVisibility(View.GONE);

@@ -233,6 +233,7 @@
         android:id="@+id/linearLayoutCompat1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:orientation="horizontal"
         android:padding="10dp"
         android:paddingStart="40dp"
@@ -279,6 +280,7 @@
         android:layout_marginTop="21dp"
         android:background="@drawable/checkbox_background"
         android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.914"
@@ -308,6 +310,7 @@
         android:padding="10dp"
         app:cardCornerRadius="10dp"
         android:elevation="10dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -398,12 +401,11 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:elevation="@dimen/Fifteen_dp"
-                    android:gravity="center"
-                    android:layout_gravity="center"
+
                     android:background="@drawable/save_button_background"
                     android:textColor="@color/white"
                     android:textAllCaps="false"
-                    android:backgroundTint="@color/Blue_text_color"
+
                     android:text="@string/save">
 
                 </androidx.appcompat.widget.AppCompatButton>
@@ -460,7 +462,7 @@
         android:layout_margin="10dp"
         android:padding="10dp"
         app:cardCornerRadius="10dp"
-        android:visibility="visible"
+        android:visibility="gone"
         android:elevation="@dimen/Fifty_dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

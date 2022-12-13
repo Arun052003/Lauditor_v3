@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
@@ -58,6 +59,25 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
     LinearLayoutCompat ll_buttons,ll_new_buttons;
     LinearLayout ll_confirm_email;
     AlertDialog progress_dialog;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        setupOnBackPressed();
+        super.onCreate(savedInstanceState);
+    }
+
+    private void setupOnBackPressed() {
+        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (isEnabled()){
+//                    AndroidUtils.showToast("Dashboard",getContext());
+                    setEnabled(false);
+                    requireActivity().onBackPressed();
+                }
+            }
+        });
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

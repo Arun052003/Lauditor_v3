@@ -3,12 +3,18 @@ package com.digicoffer.lauditor;
 import static java.security.AccessController.getContext;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.Group;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +28,11 @@ import android.widget.TextView;
 import com.digicoffer.lauditor.Dashboard.Dashboard;
 import com.digicoffer.lauditor.Groups.Groups;
 import com.digicoffer.lauditor.Members.Members;
+import com.digicoffer.lauditor.common.Constants;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     ExtendedFloatingActionButton mAddFab;
@@ -84,7 +93,8 @@ public class MainActivity extends AppCompatActivity {
                     Fragment fragment = new Groups();
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.id_framelayout, fragment);
-                    ft.commit();
+                    ft.addToBackStack("current_fragment").commit();
+//                    ft.commit();
                     closeMenu();
                 }
             });
@@ -94,7 +104,8 @@ public class MainActivity extends AppCompatActivity {
                     Fragment fragment1 = new Members();
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.id_framelayout,fragment1);
-                    ft.commit();
+                    ft.addToBackStack("current_fragment").commit();
+//                    ft.commit();
                     closeMenu();
                 }
             });
@@ -104,10 +115,12 @@ public class MainActivity extends AppCompatActivity {
                     Fragment fragment = new Dashboard();
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.id_framelayout, fragment);
-                    ft.commit();
+                    ft.addToBackStack("current_fragment").commit();
+//                    ft.commit();
                 }
             });
-            iv_open_menu.setOnClickListener(new View.OnClickListener() {
+            iv_open_menu.setOnClickListener(new View.OnClickListener
+                    () {
                 @Override
                 public void onClick(View view) {
                     try {
@@ -213,4 +226,54 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+//    @Override
+//    public void onBackPressed() {
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//        prefs.edit().remove("current_fragment").apply();
+////        appbar.setVisibility(View.VISIBLE);
+//        List list = getSupportFragmentManager().getFragments();
+//        android.app.FragmentManager fm = getFragmentManager();
+////        SupportRequestManagerFragment manager = new SupportRequestManagerFragment();
+//        if (getSupportFragmentManager().getFragments().get(0) instanceof Dashboard || list.size() <= 1)
+//            logout();
+//
+////        else if(list.get(1) instanceof Dashboard  || list.get(1) instanceof Members || list.get(1) instanceof Members && list.size()<= 1) {
+////            logout();
+////        }else if(list.get(0) instanceof Dashboard || list.get(0) instanceof Members || list.get(0) instanceof Members && list.size()<= 1) {
+////            logout();
+////        }else if(fm.getBackStackEntryCount() > 0){
+////            Log.i("MainActivity", "popping backstack");
+////            fm.popBackStack();
+////        }
+//        else {
+//            super.onBackPressed();
+//        }
+//    }
+
+    private void logout() {
+        new AlertDialog.Builder(this)
+                .setTitle("Alert")
+                .setMessage("Are you sure you want to logout?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+//                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//                        prefs.edit().remove("current_fragment");
+////                        SharedPreferences crend_Prefs = getSharedPreferences(Constants.BIOMETIRCSharedPrefsKey, MODE_PRIVATE);
+//                        crend_Prefs.edit().putString(Constants.TOKEN_key,"");
+//                        crend_Prefs.edit().putString(Constants.PK_key,"");
+//                        crend_Prefs.edit().apply();
+//
+//                        FragmentManager fragmentManager = getSupportFragmentManager();
+//                        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                        finish();
+
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
 }

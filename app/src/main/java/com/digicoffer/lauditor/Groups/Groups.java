@@ -20,6 +20,7 @@ import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
@@ -89,9 +90,29 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     TextInputEditText et_Search;
     LinearLayoutCompat ll_tm, ll_select_all, ll_buttons, ll_group_list, ll_select_tm, ll_edit_groups;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+     setupOnBackPressed();
+        super.onCreate(savedInstanceState);
+    }
+
+    private void setupOnBackPressed() {
+        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (isEnabled()){
+                    AndroidUtils.showToast("Dashboard",getContext());
+                    setEnabled(false);
+                    requireActivity().onBackPressed();
+                }
+            }
+        });
+    }
+
     @SuppressLint("MissingInflatedId")
     @Nullable
     @Override
+
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.groups, container, false);
@@ -1183,4 +1204,5 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         tv_selected_members.setVisibility(View.VISIBLE);
         cv_activity_log.setVisibility(View.GONE);
     }
+
 }

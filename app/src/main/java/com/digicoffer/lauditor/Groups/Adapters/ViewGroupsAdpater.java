@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -16,18 +18,21 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
+import com.digicoffer.lauditor.Groups.GroupModels.GroupModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.Groups.ViewGroupsItemClickListener;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.ItemClickListener;
+import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
 
-public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.ViewHolder> {
+public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.ViewHolder> implements Filterable {
     ArrayList<ViewGroupModel> itemsArrayList;
+    ArrayList<ViewGroupModel> list_item;
     ArrayList<ActionModel> actions_List = new ArrayList<ActionModel>();
     InterfaceListener eventListener;
     Context mcontext;
@@ -40,10 +45,51 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
 
     public ViewGroupsAdpater(ArrayList<ViewGroupModel> itemsArrayList, Context context, InterfaceListener eventListener, String Tag, ViewGroupsItemClickListener itemClickListener) {
         this.itemsArrayList = itemsArrayList;
+        this.list_item = itemsArrayList;
         this.mcontext = context;
         this.eventListener = eventListener;
         this.mTag = Tag;
         this.itemClickListener = itemClickListener;
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    itemsArrayList = list_item;
+                } else {
+                    ArrayList<ViewGroupModel> filteredList = new ArrayList<>();
+                    for (ViewGroupModel row : list_item) {
+//                            if (row.isChecked()){
+//                                row.setChecked(false);
+//                            }else
+//                            {
+//                                row.setChecked(true  );
+//                            }
+                        // name match condition. this might differ depending on your requirement
+                        // here we are looking for name or phone number match
+                        if (AndroidUtils.isNull(row.getName()).toLowerCase().contains(charString.toLowerCase()) ) {
+                            filteredList.add(row);
+                        }
+                    }
+                    itemsArrayList = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.count = itemsArrayList.size();
+                filterResults.values = itemsArrayList;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                itemsArrayList = (ArrayList<ViewGroupModel>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
 
@@ -83,6 +129,7 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
     public void onBindViewHolder(@NonNull ViewGroupsAdpater.ViewHolder holder, int position) {
 
         ViewGroupModel viewGroupModel = itemsArrayList.get(position);
+        itemsArrayList = list_item;
         if (mTag == "VG") {
             holder.tv_user_type.setText(viewGroupModel.getName());
             holder.tv_owner_name.setText(viewGroupModel.getOwner_name());
@@ -196,7 +243,21 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
 
     }
 
+    public void selectOrDeselectAll(boolean isChecked) {
+        for (int i = 0; i < list_item.size(); i++) {
 
+            if (isChecked){
+                list_item.get(i).setSelected(true);
+
+            }
+            else{
+                list_item.get(i).setSelected(false);
+            }
+
+        }
+
+        notifyDataSetChanged();
+    }
     @Override
     public int getItemCount() {
         return itemsArrayList.size();

@@ -172,21 +172,29 @@ public class GroupAdapters extends RecyclerView.Adapter<GroupAdapters.ViewHolder
         };
     }
 
-    public void selectOrDeselectAll(boolean isChecked) {
-        for (int i = 0; i < list_item.size(); i++) {
-
-            if (isChecked){
-                list_item.get(i).setSelected(true);
-
-            }
-            else{
-                list_item.get(i).setSelected(false);
-            }
-
+    public void selectOrDeselectAll(boolean isChecked)
+    {
+        for(int i = 0; i<list_item.size(); i++)
+        {
+            list_item.get(i).setChecked(isChecked);
         }
-
         notifyDataSetChanged();
     }
+//    public void selectOrDeselectAll(boolean isChecked) {
+//        for (int i = 0; i < list_item.size(); i++) {
+//
+//            if (isChecked){
+//                list_item.get(i).setSelected(true);
+//
+//            }
+//            else{
+//                list_item.get(i).setSelected(false);
+//            }
+//
+//        }
+//
+//        notifyDataSetChanged();
+//    }
     public class ViewHolder extends RecyclerView.ViewHolder{
         private CheckBox cb_team_members;
         private TextView tv_tm_name,tv_gh_name;

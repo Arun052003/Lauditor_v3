@@ -127,6 +127,8 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         sp_category = v.findViewById(R.id.sp_category);
         sp_team_member = v.findViewById(R.id.sp_team_member);
         btn_cancel = v.findViewById(R.id.btn_cancel);
+        chk_select_all = v.findViewById(R.id.chk_select_all);
+
         btn_save =(AppCompatButton)  v.findViewById(R.id.btn_save);
         tv_create_group.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
@@ -139,9 +141,11 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         tv_practice_head.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 if (assignGroupsList.size() == 0) {
                     AndroidUtils.showToast("Please select atleast one teammember", getContext());
                 } else {
+                    ll_select_all.setVisibility(View.GONE);
                     tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
                     tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
                 }
@@ -170,11 +174,27 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         tv_add_tm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                assignGroupsList.clear();
-                selectedTMArrayList.clear();
-                callMembersWebservice();
                 tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
                 tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+                ll_select_all.setVisibility(View.VISIBLE);
+                chk_select_all.setChecked(false);
+                if (selectedTMArrayList.size() == 0) {
+                    AndroidUtils.showToast("No team Members selected", getContext());
+                } else {
+                    adapter.selectOrDeselectAll(false);
+                    adapter.getList_item().clear();
+                    selectedTMArrayList.clear();
+                    assignGroupsList.clear();
+                    rv_select_team_members.removeAllViews();
+                    callMembersWebservice();
+                }
+//                selectedTMArrayList.clear();
+
+
+//                selectedTMArrayList.clear();
+//                callMembersWebservice();
+//                tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+//                tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
             }
         });
 //        if ()
@@ -225,7 +245,6 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
 //                }
             }
         });
-        chk_select_all = v.findViewById(R.id.chk_select_all);
 
         try {
 //            callMembersWebservice();
@@ -241,7 +260,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         ll_tm.setVisibility(View.VISIBLE);
         cv_details.setVisibility(View.VISIBLE);
         ll_edit_groups.setVisibility(View.GONE);
-
+        ll_select_all.setVisibility(View.VISIBLE);
         btn_update.setText("Update");
     }
     private void hideTM(){
@@ -249,7 +268,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         ll_tm.setVisibility(View.GONE);
         cv_details.setVisibility(View.GONE);
         ll_edit_groups.setVisibility(View.VISIBLE);
-
+        ll_select_all.setVisibility(View.GONE);
         btn_update.setText("Save");
     }
 
@@ -269,6 +288,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         cv_details.setVisibility(View.GONE);
         rv_view_groups.setVisibility(View.VISIBLE);
         et_search.setVisibility(View.VISIBLE);
+        et_search.setText("");
         callViewGroupsWebservice();
     }
 
@@ -328,6 +348,22 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                 });
             }
         };
+        et_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                adapter_view_groups.getFilter().filter(s.toString());
+            }
+
+        });
 
     }
 
@@ -336,12 +372,12 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         tv_view_group.setTextColor(getContext().getResources().getColor(R.color.black));
         FLAG = "second_click";
         if (tmType == "TM") {
-            chk_select_all.setVisibility(View.GONE);
+            chk_select_all.setVisibility(View.VISIBLE);
             tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
             tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
 
         } else {
-            chk_select_all.setVisibility(View.GONE);
+            chk_select_all.setVisibility(View.VISIBLE);
             tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
             tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         }
@@ -381,27 +417,39 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                 });
             }
         };
+
         chk_select_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
                 adapter.selectOrDeselectAll(isChecked);
-
             }
         });
+
+//        chk_select_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//
+//                adapter.selectOrDeselectAll(isChecked);
+//
+//            }
+//        });
         btn_save.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (tmType == "TM") {
-                    assignGroupHead(adapter.getList_item());
-                } else {
-                    try {
-                        callCreateGroupWebservice(tv_group_name.getText().toString().trim(), tv_group_description.getText().toString().trim(), adapter.getList_item(), group_head);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                try {
+                    if (tmType == "TM") {
+                        ll_select_all.setVisibility(View.GONE);
+                        assignGroupHead(adapter.getList_item());
+                    } else {
+                        try {
+                            callCreateGroupWebservice(tv_group_name.getText().toString().trim(), tv_group_description.getText().toString().trim(), adapter.getList_item(), group_head);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-
             }
         });
 //        btn_save.setOnClickListener(new View.OnClickListener() {
@@ -416,6 +464,8 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             public void onClick(View view) {
                 tv_practice_head.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
                 tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+                chk_select_all.setChecked(false);
+                ll_select_all.setVisibility(View.VISIBLE);
                 if (selectedTMArrayList.size() == 0) {
                     AndroidUtils.showToast("No team Members selected", getContext());
                 } else {
@@ -830,7 +880,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             }
 
             loadViewGroupsRecylerview(mtag, viewGroupModelArrayList);
-            Button btn_cancel_CGH = v.findViewById(R.id.btn_save);
+            AppCompatButton btn_cancel_CGH = v.findViewById(R.id.btn_cancel);
             btn_cancel_CGH.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -841,7 +891,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                     ViewGroupsData();
                 }
             });
-           Button btn_save_CGH = v.findViewById(R.id.btn_save);
+            AppCompatButton btn_save_CGH = v.findViewById(R.id.btn_save);
             btn_save_CGH.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

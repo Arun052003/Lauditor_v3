@@ -691,11 +691,19 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             }
 
         });
-        AppCompatButton btn_cancel_selected_tm =(AppCompatButton) v.findViewById(R.id.btn_save);
+        chk_select_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                adapter.selectOrDeselectAll(isChecked);
+            }
+        });
+        AppCompatButton btn_cancel_selected_tm =(AppCompatButton) v.findViewById(R.id.btn_cancel);
         btn_cancel_selected_tm.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 unhideData();
+                chk_select_all.setVisibility(View.GONE);
+                chk_select_all.setChecked(false);
                 ViewGroupsData();
             }
         });
@@ -922,7 +930,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     public void UGM(ViewGroupModel viewGroupModel) throws JSONException {
         new_viewGroupModel = viewGroupModel;
         hide_CGH_UGM_data();
-
+        ll_select_all.setVisibility(View.VISIBLE);
         for (int i = 0; i < viewGroupModel.getMembers().length(); i++) {
             ViewGroupModel viewGroupModel_1 = new ViewGroupModel();
             JSONObject jsonObject = viewGroupModel.getMembers().getJSONObject(i);

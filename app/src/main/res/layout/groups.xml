@@ -310,7 +310,7 @@
         android:padding="10dp"
         app:cardCornerRadius="10dp"
         android:elevation="10dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -326,6 +326,8 @@
             android:padding="5dp"
             android:paddingBottom="30dp"
             >
+
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/search_tm"
                 android:layout_width="match_parent"
@@ -361,6 +363,20 @@
                 android:textColor="@color/Blue_text_color"
                 android:visibility="gone"
                 android:fontFamily="sans-serif-condensed">
+
+            </TextView>
+            <TextView
+                android:id="@+id/group_head_name"
+                android:layout_width="match_parent"
+                android:visibility="gone"
+                android:padding="10dp"
+                android:textColor="@color/black"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textSize="@dimen/Fifteen_dp"
+                android:drawableLeft="@drawable/person_image_email"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rectangle_grey_background"
+                android:layout_margin="10dp">
 
             </TextView>
             <androidx.recyclerview.widget.RecyclerView

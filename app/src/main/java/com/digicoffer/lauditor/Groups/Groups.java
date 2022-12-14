@@ -672,7 +672,6 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                 for (int m=0;m<updateGroupMembersList.size();m++){
                     if(groupModel.getId().matches(new_viewGroupModel.getGroup_head_id())){
                         groupModel.setIsenabled(false);
-
                     }else {
                         groupModel.setIsenabled(true);
                     }
@@ -695,6 +694,16 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
 //            }
             selectedTMArrayList.add(groupModel);
 
+        }
+        TextView group_head_name = (TextView) v.findViewById(R.id.group_head_name);
+
+        if(selectedTMArrayList.size()!=0){
+            group_head_name.setVisibility(View.VISIBLE);
+            group_head_name.setText(new_viewGroupModel.getGroup_head_name());
+
+        }else {
+            group_head_name.setVisibility(View.GONE);
+            group_head_name.setText("");
         }
         TM_TYPE = "TM";
         loadTeamRecyclerview(selectedTMArrayList, TM_TYPE);

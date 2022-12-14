@@ -77,17 +77,27 @@ public class GroupAdapters extends RecyclerView.Adapter<GroupAdapters.ViewHolder
             holder.cb_team_members.setTag(position);
 
 //            holder.cb_team_members.isChecked() = itemsArrayList.get(position).isChecked();
+//            Integer pos = (Integer) holder.cb_team_members.getTag();
+            if (itemsArrayList.get(position).isIsenabled()){
+                holder.cb_team_members.setEnabled(true);
+            }else
+            {
+                holder.cb_team_members.setEnabled(false);
+//                        itemsArrayList.get(pos).set
+            }
             holder.cb_team_members.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Integer pos = (Integer) holder.cb_team_members.getTag();
                     if (itemsArrayList.get(pos).isChecked()) {
                         itemsArrayList.get(pos).setChecked(false);
+
 //                        itemsArrayList.add(itemsArrayList.get(pos));
                     } else {
                         itemsArrayList.get(pos).setChecked(true);
 //                        itemsArrayList.remove(itemsArrayList.get(pos));
                     }
+
 
                 }
             });

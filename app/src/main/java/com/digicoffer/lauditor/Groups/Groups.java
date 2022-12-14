@@ -668,10 +668,21 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             groupModel = new GroupModel();
             groupModel.setId(jsonObject.getString("id"));
             groupModel.setName(jsonObject.getString("name"));
+            for (int a=0;a<users.length();a++){
+                for (int m=0;m<updateGroupMembersList.size();m++){
+                    if(groupModel.getId().matches(new_viewGroupModel.getGroup_head_id())){
+                        groupModel.setIsenabled(false);
+
+                    }else {
+                        groupModel.setIsenabled(true);
+                    }
+                }
+            }
             for (int j = 0; j < users.length(); j++) {
                 for (int k = 0; k < updateGroupMembersList.size(); k++) {
                     if (groupModel.getId().matches(updateGroupMembersList.get(k).getGroup_id())) {
                         groupModel.setChecked(true);
+
                     }
                 }
             }

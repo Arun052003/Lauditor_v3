@@ -36,6 +36,8 @@
                     android:layout_margin="5dp"
                     android:fontFamily="sans-serif-condensed"
                     android:text="TextView"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:drawableRight="@drawable/lock_password"
                     android:textColor="@color/black"
                     android:textSize="@dimen/thirty_dp" />

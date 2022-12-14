@@ -460,6 +460,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                 try {
                     if (tmType == "TM") {
                         ll_select_all.setVisibility(View.GONE);
+                        et_Search.setText("");
                         assignGroupHead(adapter.getList_item());
                     } else {
                         try {

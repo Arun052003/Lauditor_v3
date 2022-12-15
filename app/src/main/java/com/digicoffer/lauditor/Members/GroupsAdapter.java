@@ -64,6 +64,19 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
         holder.tv_tm_name.setText(groupModel.getName());
 
     }
+    public void selectOrDeselectAll(boolean isChecked)
+    {
+        for(int i = 0; i<list_item.size(); i++)
+        {
+//            if (list_item.get(i).isIsenabled())
+//            if (list_item.get(i).isIsenabled()) {
+            list_item.get(i).setChecked(isChecked);
+//            }else {
+//                list_item.get(i).setChecked(false);
+//            }
+        }
+        notifyDataSetChanged();
+    }
     public ArrayList<ViewGroupModel> getList_item() {
         return groupsList;
     }

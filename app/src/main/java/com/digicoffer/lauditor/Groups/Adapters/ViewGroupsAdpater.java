@@ -234,7 +234,6 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     if (b) {
-
                         selectedPosition = holder.getAdapterPosition();
                         itemClickListener.onClick(viewGroupModel.getGroup_id());
                     }

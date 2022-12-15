@@ -761,6 +761,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                 unhideData();
                 chk_select_all.setVisibility(View.GONE);
                 chk_select_all.setChecked(false);
+                et_Search.setText("");
                 ViewGroupsData();
             }
         });
@@ -961,6 +962,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                     unhideData();
                     viewGroupMembersList.clear();
                     viewGroupModelArrayList.clear();
+                    et_search.setText("");
                     ViewGroupsData();
                 }
             });

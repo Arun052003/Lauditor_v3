@@ -49,7 +49,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.pgpainless.key.selection.key.util.And;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -339,22 +338,35 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
 
     private void loadViewGroupsRecylerview(String TAG_TYPE, ArrayList<ViewGroupModel> viewGroupModelArrayList) {
 
-        for (int i = 0; i < viewGroupModelArrayList.size(); i++) {
-
-        }
+//        for (int i = 0; i < viewGroupModelArrayList.size(); i++) {
+//
+//        }
 //        String mtag = "VG";
         if (TAG_TYPE == "VG") {
             rv_view_groups.setLayoutManager(new GridLayoutManager(getContext(), 1));
             adapter_view_groups = new ViewGroupsAdpater(viewGroupModelArrayList, getContext(), this, TAG_TYPE, new_itemClickListener);
             rv_view_groups.setAdapter(adapter_view_groups);
             rv_view_groups.setHasFixedSize(true);
-        } else {
-            rv_select_team_members.setLayoutManager(new GridLayoutManager(getContext(), 1));
-            adapter_view_groups = new ViewGroupsAdpater(viewGroupMembersList, getContext(), this, TAG_TYPE, new_itemClickListener);
-            rv_select_team_members.setAdapter(adapter_view_groups);
-            rv_select_team_members.setHasFixedSize(true);
-//            ViewGroupsAdpater finalAdapter_view_groups = adapter_view_groups;
+        }
+        else {
+            try {
+                rv_select_team_members.setLayoutManager(new GridLayoutManager(getContext(), 1));
+                if (TAG_TYPE == "DG") {
+                   ViewGroupsAdpater adapter_delete = new ViewGroupsAdpater(viewGroupModelArrayList, getContext(), this, TAG_TYPE, new_itemClickListener);
+                    Log.i("TAG", "List" +TAG_TYPE);
+                    rv_select_team_members.setAdapter(adapter_delete);
+                    rv_select_team_members.setHasFixedSize(true);
+                } else {
+                    adapter_view_groups = new ViewGroupsAdpater(viewGroupMembersList, getContext(), this, TAG_TYPE, new_itemClickListener);
+                    rv_select_team_members.setAdapter(adapter_view_groups);
+                    rv_select_team_members.setHasFixedSize(true);
+                }
 
+//            ViewGroupsAdpater finalAdapter_view_groups = adapter_view_groups;
+            } catch (Exception e) {
+                Log.e("Tag","Error"+e.getMessage());
+                e.printStackTrace();
+            }
         }
         new_itemClickListener = new ViewGroupsItemClickListener() {
             @Override
@@ -808,6 +820,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             JSONObject group_head = jsonObject.getJSONObject("groupHead");
             viewGroupModel.setGroup_head_id(group_head.getString("id"));
             viewGroupModel.setGroup_head_name(group_head.getString("name"));
+
             viewGroupModel.setOwner_name(group_head.getString("name"));
             viewGroupModelArrayList.add(viewGroupModel);
         }
@@ -859,22 +872,36 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     }
 
     @Override
-    public void DeleteGroup(ViewGroupModel viewGroupModel) {
+    public void DeleteGroup(ViewGroupModel viewGroupModel, ArrayList<ViewGroupModel> itemsArrayList) {
 
         hideData();
+        cv_details.setVisibility(View.VISIBLE);
+        for(int i=0;i<itemsArrayList.size();i++){
+            if (viewGroupModel.getName().matches(itemsArrayList.get(i).getName())){
+                itemsArrayList.remove(i);
+            }
+        }
+        btn_update.setVisibility(View.GONE);
+        btn_cancel_edit.setVisibility(View.GONE);
         tv_group_name.setText(viewGroupModel.getName());
         tv_group_name.setEnabled(false);
         tv_group_description.setText(viewGroupModel.getDescription());
         tv_group_description.setEnabled(false);
-        btn_cancel_edit.setOnClickListener(new View.OnClickListener() {
+        AppCompatButton btn_cancel = (AppCompatButton) v.findViewById(R.id.btn_cancel);
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                cv_details.setVisibility(View.GONE);
                 unhideData();
                 ViewGroupsData();
             }
         });
-        btn_update.setText(getContext().getResources().getString(R.string.assign));
-        btn_update.setOnClickListener(new View.OnClickListener() {
+        AppCompatButton btn_delete = (AppCompatButton)v.findViewById(R.id.btn_save);
+        btn_delete.setText(getContext().getResources().getString(R.string.delete));
+        Log.i("TAG","INFO"+itemsArrayList.toString());
+        String mtag = "DG";
+        loadViewGroupsRecylerview(mtag, itemsArrayList);
+        btn_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 unhideData();
@@ -1159,7 +1186,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
 
         try {
             JSONObject postData = new JSONObject();
-            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.DELETE, "v3/group/" + id, "Delete Groups", postData.toString());
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.DELETE, "v3/group/" + id+"/"+group_head, "Delete Groups", postData.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1204,8 +1231,10 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         ll_group_list.setVisibility(View.GONE);
         ll_tm.setVisibility(View.GONE);
         ll_select_all.setVisibility(View.GONE);
-        ll_select_tm.setVisibility(View.GONE);
+        ll_select_tm.setVisibility(View.VISIBLE);
         rv_view_groups.setVisibility(View.GONE);
+        rv_select_team_members.setVisibility(View.VISIBLE);
+
         et_search.setVisibility(View.GONE);
         cv_groups.setVisibility(View.VISIBLE);
         ll_edit_groups.setVisibility(View.VISIBLE);

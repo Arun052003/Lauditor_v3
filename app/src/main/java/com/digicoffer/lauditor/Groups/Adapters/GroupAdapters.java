@@ -186,7 +186,12 @@ public class GroupAdapters extends RecyclerView.Adapter<GroupAdapters.ViewHolder
     {
         for(int i = 0; i<list_item.size(); i++)
         {
-            list_item.get(i).setChecked(isChecked);
+//            if (list_item.get(i).isIsenabled())
+//            if (list_item.get(i).isIsenabled()) {
+                list_item.get(i).setChecked(isChecked);
+//            }else {
+//                list_item.get(i).setChecked(false);
+//            }
         }
         notifyDataSetChanged();
     }

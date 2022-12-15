@@ -2,6 +2,7 @@ package com.digicoffer.lauditor.Groups.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +19,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
-import com.digicoffer.lauditor.Groups.GroupModels.GroupModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.Groups.ViewGroupsItemClickListener;
 import com.digicoffer.lauditor.R;
-import com.digicoffer.lauditor.Webservice.ItemClickListener;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 
@@ -96,7 +95,7 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
     public interface InterfaceListener {
         void EditGroup(ViewGroupModel viewGroupModel);
 
-        void DeleteGroup(ViewGroupModel viewGroupModel);
+        void DeleteGroup(ViewGroupModel viewGroupModel, ArrayList<ViewGroupModel> itemsArrayList);
 
         void CGH(ViewGroupModel viewGroupModel, ArrayList<ViewGroupModel> itemsArrayList);
 
@@ -127,7 +126,7 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewGroupsAdpater.ViewHolder holder, int position) {
-
+        Log.i("Tag","tagname"+mTag);
         ViewGroupModel viewGroupModel = itemsArrayList.get(position);
         itemsArrayList = list_item;
         if (mTag == "VG") {
@@ -173,7 +172,7 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
                     if (name == "Edit Group") {
                         eventListener.EditGroup(viewGroupModel);
                     } else if (name == "Delete") {
-                        eventListener.DeleteGroup(viewGroupModel);
+                        eventListener.DeleteGroup(viewGroupModel,itemsArrayList);
                     } else if (name == "Change Group Head") {
                         eventListener.CGH(viewGroupModel, itemsArrayList);
                     } else if (name == "Update Group Members") {
@@ -211,6 +210,34 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
                 }
             });
             holder.tv_tm_name.setText(viewGroupModel.getName());
+        }else if(mTag=="DG"){
+            holder.rb_group_head.setText(viewGroupModel.getName());
+            holder.rb_group_head.setChecked(position == selectedPosition);
+            holder.rb_group_head.setTag(viewGroupModel.getId());
+//           for (int i=0;i<itemsArrayList.size();i++){
+//               if (itemsArrayList.get(i).getGroup_id().matches(itemsArrayList.get(i).getGroup_head_id())){
+//                   holder.rb_group_head.setChecked();
+//               }
+//           }
+//          holder.rb_group_head.
+            holder.rb_group_head.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (b) {
+
+                        selectedPosition = holder.getAdapterPosition();
+                        itemClickListener.onClick(viewGroupModel.getId());
+//                        int copyOfLastCheckedPosition = selectedPosition;
+//                        selectedPosition = holder.getAdapterPosition();
+//                        notifyItemChanged(copyOfLastCheckedPosition);
+//                        notifyItemChanged(selectedPosition);
+//                            holder.rb_group_head.itemcl
+//                        itemClickListener.onClick(
+//                                holder.radioButton.getText()
+//                                        .toString());
+                    }
+                }
+            });
         } else {
             holder.rb_group_head.setText(viewGroupModel.getGroup_name());
             holder.rb_group_head.setChecked(position == selectedPosition);

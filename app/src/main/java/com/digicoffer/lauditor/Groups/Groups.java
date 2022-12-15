@@ -130,7 +130,6 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         tv_to_date = v.findViewById(R.id.btn_to_date);
         et_Search = v.findViewById(R.id.et_search_tm);
          group_head_name = (TextView) v.findViewById(R.id.group_head_name);
-
         cv_details = v.findViewById(R.id.cv_details_2);
         btn_cancel_gal = v.findViewById(R.id.btn_cancel_activity_log);
         btn_search_gal = v.findViewById(R.id.btn_update_activity_log);
@@ -151,7 +150,6 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         sp_team_member = v.findViewById(R.id.sp_team_member);
         btn_cancel = v.findViewById(R.id.btn_cancel);
         chk_select_all = v.findViewById(R.id.chk_select_all);
-
         btn_save =(AppCompatButton)  v.findViewById(R.id.btn_save);
         tv_create_group.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
@@ -289,6 +287,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     private void hideTM(){
 //        cv_groups.setVisibility(View.VISIBLE);
         ll_tm.setVisibility(View.GONE);
+        et_Search.setText("");
         cv_details.setVisibility(View.GONE);
         ll_edit_groups.setVisibility(View.VISIBLE);
         ll_select_all.setVisibility(View.GONE);

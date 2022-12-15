@@ -273,14 +273,14 @@ public class ViewGroupsAdpater extends RecyclerView.Adapter<ViewGroupsAdpater.Vi
     public void selectOrDeselectAll(boolean isChecked) {
         for (int i = 0; i < list_item.size(); i++) {
 
-            if (isChecked){
-                list_item.get(i).setSelected(true);
-
-            }
-            else{
-                list_item.get(i).setSelected(false);
-            }
-
+//            if (isChecked){
+//                list_item.get(i).setSelected(true);
+//
+//            }
+//            else{
+//                list_item.get(i).setSelected(false);
+//            }
+            list_item.get(i).setChecked(isChecked);
         }
 
         notifyDataSetChanged();

@@ -63,27 +63,17 @@ public class GroupAdapters extends RecyclerView.Adapter<GroupAdapters.ViewHolder
     public void onBindViewHolder(@NonNull GroupAdapters.ViewHolder holder, int position) {
         final GroupModel groupModel = itemsArrayList.get(position);
         itemsArrayList = list_item;
-//        holder.cb_team_members.setOnCheckedChangeListener(null);
-//        holder.cb_team_members.setOnLongClickListener(null);
+
         if (mTag == "TM") {
-//            holder.set
-//            if (itemsArrayList.get(position).isChecked()){
-//                holder.cb_team_members.setChecked(true);
-//            }else
-//            {
-//                holder.cb_team_members.setChecked(false);
-//            }
+
             holder.cb_team_members.setChecked(itemsArrayList.get(position).isChecked());
             holder.cb_team_members.setTag(position);
-
-//            holder.cb_team_members.isChecked() = itemsArrayList.get(position).isChecked();
-//            Integer pos = (Integer) holder.cb_team_members.getTag();
+//            if(groupModel.isIsenabled()==null)
             if (itemsArrayList.get(position).isIsenabled()){
                 holder.cb_team_members.setEnabled(true);
             }else
             {
                 holder.cb_team_members.setEnabled(false);
-//                        itemsArrayList.get(pos).set
             }
             holder.cb_team_members.setOnClickListener(new View.OnClickListener() {
                 @Override

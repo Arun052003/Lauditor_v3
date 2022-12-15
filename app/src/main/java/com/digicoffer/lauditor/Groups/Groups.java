@@ -85,6 +85,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     ViewGroupsAdpater adapter_view_groups = null;
     AlertDialog progress_dialog;
     View v = null;
+    TextView group_head_name;
     AppCompatButton btn_cancel, btn_save, btn_cancel_edit, btn_update, btn_cancel_gal, btn_search_gal;
     TextInputEditText et_Search;
     LinearLayoutCompat ll_tm, ll_select_all, ll_buttons, ll_group_list, ll_select_tm, ll_edit_groups;
@@ -128,6 +129,8 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         tv_from_date = v.findViewById(R.id.btn_from_date);
         tv_to_date = v.findViewById(R.id.btn_to_date);
         et_Search = v.findViewById(R.id.et_search_tm);
+         group_head_name = (TextView) v.findViewById(R.id.group_head_name);
+
         cv_details = v.findViewById(R.id.cv_details_2);
         btn_cancel_gal = v.findViewById(R.id.btn_cancel_activity_log);
         btn_search_gal = v.findViewById(R.id.btn_update_activity_log);
@@ -289,7 +292,17 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         cv_details.setVisibility(View.GONE);
         ll_edit_groups.setVisibility(View.VISIBLE);
         ll_select_all.setVisibility(View.GONE);
+        group_head_name.setVisibility(View.GONE);
+        group_head_name.setText("");
         btn_update.setText("Save");
+        updateGroupMembersList.clear();
+        selectedTMArrayList.clear();
+        actions_List.clear();
+        assignGroupsList.clear();
+        searchList.clear();
+        viewGroupMembersList.clear();
+        viewGroupModelArrayList.clear();
+
     }
 
     private void ViewGroupsData() {
@@ -458,14 +471,6 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             }
         });
 
-//        chk_select_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//
-//                adapter.selectOrDeselectAll(isChecked);
-//
-//            }
-//        });
         btn_save.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -486,13 +491,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                 }
             }
         });
-//        btn_save.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        });
-//        AppCompatButton btn_cancel_new = v.findViewById(R.id.btn_save);
+
         btn_cancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -612,6 +611,8 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
 
                 } else if (httpResult.getRequestType().equals("Create Groups")) {
 //                    JSONObject jsonObject = result.getJSONObject("msg");
+                    chk_select_all.setChecked(false);
+                    group_head = "";
                     ViewGroupsData();
                     AndroidUtils.showToast(result.getString("msg"), getContext());
                 } else if (httpResult.getRequestType().equals("Update Groups")) {
@@ -634,6 +635,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                 } else if (httpResult.getRequestType().equals("Update Group Head")) {
                     unhideData();
                     ViewGroupsData();
+                    group_head = "";
                     viewGroupMembersList.clear();
                     viewGroupModelArrayList.clear();
                     AndroidUtils.showToast(result.getString("msg"), getContext());
@@ -693,7 +695,6 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                 for (int k = 0; k < updateGroupMembersList.size(); k++) {
                     if (groupModel.getId().matches(updateGroupMembersList.get(k).getGroup_id())) {
                         groupModel.setChecked(true);
-
                     }
                 }
             }
@@ -707,7 +708,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             selectedTMArrayList.add(groupModel);
 
         }
-        TextView group_head_name = (TextView) v.findViewById(R.id.group_head_name);
+
 
         if(selectedTMArrayList.size()!=0){
             group_head_name.setVisibility(View.VISIBLE);
@@ -785,6 +786,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             groupModel = new GroupModel();
             groupModel.setId(jsonObject.getString("id"));
             groupModel.setName(jsonObject.getString("name"));
+            groupModel.setIsenabled(true);
             selectedTMArrayList.add(groupModel);
         }
         TM_TYPE = "TM";

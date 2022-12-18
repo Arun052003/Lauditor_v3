@@ -274,7 +274,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             e.printStackTrace();
         }
 
-        return v;
+        return  v;
     }
 
     private void unhideTM() {

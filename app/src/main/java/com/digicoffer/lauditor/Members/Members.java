@@ -1,5 +1,6 @@
 package com.digicoffer.lauditor.Members;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -32,23 +33,27 @@ import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.digicoffer.lauditor.Webservice.WebServiceHelper;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pgpainless.key.selection.key.util.And;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Members extends Fragment implements AsyncTaskCompleteListener, MembersAdapter.EventListener {
-    TextView tv_member_name,tv_designation,tv_email,tv_confirm_email,tv_default_rate,tv_create_members,tv_view_members,et_search_members;
+public class Members extends Fragment implements AsyncTaskCompleteListener, MembersAdapter.EventListener ,View.OnClickListener{
+    TextView tv_member_name, tv_designation, tv_email, tv_confirm_email, tv_default_rate, tv_create_members, tv_view_members, et_search_members;
     Spinner sp_default_currency;
-    AppCompatButton btn_cancel_members,bt_save_members,bt_cancel,bt_save;
-    RecyclerView rv_selected_member,rv_view_members;
+    AppCompatButton btn_cancel_members, bt_save_members, bt_cancel, bt_save,btn_cancel_save,btn_create;
+    RecyclerView rv_selected_member, rv_view_members;
+    TextInputLayout tv_assign_groups;
+    public static String FLAG = "";
     String default_currency = "";
-    CardView cv_details,cv_members_details;
+    CardView cv_details, cv_members_details;
     GroupsAdapter groupsAdapter = null;
     ArrayList<ViewGroupModel> updatedMembersList = new ArrayList<>();
     ArrayList<String> currency_list = new ArrayList<>();
@@ -56,7 +61,7 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
     String TAG = "";
     ArrayList<GroupModel> MembersList = new ArrayList<>();
     ArrayList<ViewGroupModel> groupsList = new ArrayList<>();
-    LinearLayoutCompat ll_buttons,ll_new_buttons;
+    LinearLayoutCompat ll_buttons, ll_new_buttons,ll_save_buttons;
     LinearLayout ll_confirm_email;
     AlertDialog progress_dialog;
 
@@ -70,7 +75,7 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
         requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (isEnabled()){
+                if (isEnabled()) {
 //                    AndroidUtils.showToast("Dashboard",getContext());
                     setEnabled(false);
                     requireActivity().onBackPressed();
@@ -78,6 +83,8 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
             }
         });
     }
+
+    @SuppressLint("MissingInflatedId")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -97,21 +104,49 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
         btn_cancel_members = v.findViewById(R.id.btn_cancel_members);
         bt_save_members = v.findViewById(R.id.btn_save_members);
         cv_details = v.findViewById(R.id.cv_details);
+        btn_cancel_save = v.findViewById(R.id.btn_cancel_save);
+        btn_create = v.findViewById(R.id.btn_create);
+        btn_create.setOnClickListener(this);
+        btn_cancel_save.setOnClickListener(this);
+        ll_save_buttons = v.findViewById(R.id.ll_save_buttons);
         ll_confirm_email = v.findViewById(R.id.ll_confirm_email);
         ll_buttons = v.findViewById(R.id.linearLayoutCompat);
         cv_members_details = v.findViewById(R.id.cv_details_2);
         ll_new_buttons = v.findViewById(R.id.ll_edit_buttons);
+        tv_assign_groups = v.findViewById(R.id.tv_assign_group);
+        FLAG = "first_click";
+        tv_assign_groups.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (FLAG != "second_click") {
+                    cv_members_details.setVisibility(View.VISIBLE);
+                    callGroupsWebservice();
+                    ll_save_buttons.setVisibility(View.GONE);
+
+                } else {
+                    FLAG = "first_click";
+//                    cv_members_details.setVisibility(View.VISIBLE);
+//                    callGroupsWebservice();
+                    cv_members_details.setVisibility(View.GONE);
+                    ll_save_buttons.setVisibility(View.VISIBLE);
+                    groupsList.clear();
+                }
+            }
+        });
 //        bt_cancel = v.findViewById(R.id.btn_cancel_members);
 //        bt_save = v.findViewById(R.id.btn_save_members);
         rv_selected_member = v.findViewById(R.id.rv_selected_member);
         tv_create_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_view_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
-        callGroupsWebservice();
+//        cv_members_details.setVisibility(View.GONE);
+
         ll_confirm_email.setVisibility(View.VISIBLE);
         ll_new_buttons.setVisibility(View.GONE);
         tv_create_members.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                clearData();
+//                cv_members_details.setVisibility(View.GONE);
                 tv_create_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
                 tv_view_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
                 ll_confirm_email.setVisibility(View.VISIBLE);
@@ -128,7 +163,7 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
             }
         });
         currency_list = getCurrency_list();
-        final CommonSpinnerAdapter adapter = new CommonSpinnerAdapter(getActivity(),currency_list);
+        final CommonSpinnerAdapter adapter = new CommonSpinnerAdapter(getActivity(), currency_list);
         sp_default_currency.setAdapter(adapter);
         sp_default_currency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -146,10 +181,10 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
             @Override
             public void onClick(View view) {
 
-                if(!validation()){
+                if (!validation()) {
                     String tag = "Create";
                     String id = "";
-                      callCreateMemberWebservice(tv_member_name.getText().toString().trim(),tv_designation.getText().toString().trim(),tv_default_rate.getText().toString().trim(),tv_email.getText().toString().trim(),tv_confirm_email.getText().toString().trim(),tag,id);
+                    callCreateMemberWebservice(tv_member_name.getText().toString().trim(), tv_designation.getText().toString().trim(), tv_default_rate.getText().toString().trim(), tv_email.getText().toString().trim(), tv_confirm_email.getText().toString().trim(), tag, id);
                 }
 
             }
@@ -157,70 +192,87 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
         return v;
     }
 
-    private void callGroupsWebservice() {
-        JSONObject postdata = new JSONObject();
-        WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.GET,"v3/groups","Get Groups",postdata.toString());
-
-
-    }
-boolean validation(){
-        boolean status = false;
-    String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-    Pattern pattern;
-    Matcher matcher;
-    if (tv_member_name.getText().toString().equals("")){
-        tv_member_name.setError("Name is required ");
-        AndroidUtils.showToast("Name is required ",getContext());
-        status = true;
-    }
-    else if(tv_designation.getText().toString().equals("")){
-        tv_designation.setError("Designation is required");
-        AndroidUtils.showToast("Designation is required",getContext());
-        status = true;
-    }else if (tv_default_rate.getText().toString().equals("")){
-        tv_default_rate.setError("Hourly rate is required");
-        AndroidUtils.showToast("Hourly rate is required",getContext());
-        status = true;
-    }else if(tv_email.getText().toString().equals("")){
-        tv_email.setError("Email is required");
-        AndroidUtils.showToast("Email is required",getContext());
-        status = true;
-    }else if(tv_confirm_email.getText().toString().equals("")){
-        tv_confirm_email.setError("Confirm email is required");
-        AndroidUtils.showToast("Confirm email is required",getContext());
-        status = true;
-    }
-    else if (!tv_email.getText().toString().equals(tv_confirm_email.getText().toString())){
-        tv_confirm_email.setError("Email and Confirm Email doesn't match");
-        AndroidUtils.showToast("Email and Confirm Email doesn't match",getContext());
-        status = true;
-    }else {
-        if(!tv_email.getText().toString().trim().equals(""))
-        {
-            pattern = Pattern.compile(emailPattern);
-            matcher = pattern.matcher(tv_email.getText().toString());
-            if (!matcher.matches()){
-                tv_email.setError("Enter a valid email address");
-//                tv_email.requestFocus();
-                status = true;
+    private void clearData() {
+        tv_member_name.setText("");
+        tv_designation.setText("");
+//        sp_default_currency.setSelection();
+        tv_default_rate.setText("");
+        tv_email.setText("");
+        tv_confirm_email.setText("");
+//        currency_list.clear();
+        members_list.clear();
+        groupsList.clear();
+        updatedMembersList.clear();
+        for (int i = 0; i < currency_list.size(); i++) {
+            if (currency_list.get(i).equals("USDollar(USD)")) {
+                sp_default_currency.setSelection(i);
             }
         }
     }
-    return status;
-}
+
+    private void callGroupsWebservice() {
+        JSONObject postdata = new JSONObject();
+        WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/groups", "Get Groups", postdata.toString());
+
+
+    }
+
+    boolean validation() {
+        boolean status = false;
+        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+        Pattern pattern;
+        Matcher matcher;
+        if (tv_member_name.getText().toString().equals("")) {
+            tv_member_name.setError("Name is required ");
+            AndroidUtils.showToast("Name is required ", getContext());
+            status = true;
+        } else if (tv_designation.getText().toString().equals("")) {
+            tv_designation.setError("Designation is required");
+            AndroidUtils.showToast("Designation is required", getContext());
+            status = true;
+        } else if (tv_default_rate.getText().toString().equals("")) {
+            tv_default_rate.setError("Hourly rate is required");
+            AndroidUtils.showToast("Hourly rate is required", getContext());
+            status = true;
+        } else if (tv_email.getText().toString().equals("")) {
+            tv_email.setError("Email is required");
+            AndroidUtils.showToast("Email is required", getContext());
+            status = true;
+        } else if (tv_confirm_email.getText().toString().equals("")) {
+            tv_confirm_email.setError("Confirm email is required");
+            AndroidUtils.showToast("Confirm email is required", getContext());
+            status = true;
+        } else if (!tv_email.getText().toString().equals(tv_confirm_email.getText().toString())) {
+            tv_confirm_email.setError("Email and Confirm Email doesn't match");
+            AndroidUtils.showToast("Email and Confirm Email doesn't match", getContext());
+            status = true;
+        } else {
+            if (!tv_email.getText().toString().trim().equals("")) {
+                pattern = Pattern.compile(emailPattern);
+                matcher = pattern.matcher(tv_email.getText().toString());
+                if (!matcher.matches()) {
+                    tv_email.setError("Enter a valid email address");
+//                tv_email.requestFocus();
+                    status = true;
+                }
+            }
+        }
+        return status;
+    }
+
     private void CreateMembersData() {
-        if (TAG=="UGA") {
+        if (TAG == "UGA") {
             cv_details.setVisibility(View.GONE);
             ll_new_buttons.setVisibility(View.GONE);
             ll_buttons.setVisibility(View.GONE);
             cv_members_details.setVisibility(View.VISIBLE);
             members_list.clear();
-        }else{
+        } else {
             cv_details.setVisibility(View.VISIBLE);
-            cv_members_details.setVisibility(View.VISIBLE);
+            cv_members_details.setVisibility(View.GONE);
             members_list.clear();
         }
-        if (TAG=="CM"||TAG=="UGA"){
+        if (TAG == "CM" || TAG == "UGA") {
             callGroupsWebservice();
         }
 
@@ -228,11 +280,13 @@ boolean validation(){
     }
 
     private void ViewMembersData() {
+        ll_buttons.setVisibility(View.VISIBLE);
         tv_view_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         tv_create_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         cv_details.setVisibility(View.GONE);
         cv_members_details.setVisibility(View.GONE);
         callViewGroupsWebservice();
+        et_search_members.setText("");
         members_list.clear();
         groupsList.clear();
         updatedMembersList.clear();
@@ -254,40 +308,45 @@ boolean validation(){
         try {
             JSONObject postdata = new JSONObject();
             JSONArray groups = new JSONArray();
-            for (int i=0;i<groupsAdapter.getList_item().size();i++){
-                ViewGroupModel viewGroupModel = groupsAdapter.getList_item().get(i);
-                if (viewGroupModel.isChecked()){
-                    groups.put(viewGroupModel.getId());
+            if (groupsAdapter!=null) {
+                for (int i = 0; i < groupsAdapter.getList_item().size(); i++) {
+                    ViewGroupModel viewGroupModel = groupsAdapter.getList_item().get(i);
+                    if (viewGroupModel.isChecked()) {
+                        groups.put(viewGroupModel.getId());
+                    }
                 }
             }
 
             progress_dialog = AndroidUtils.get_progress(getActivity());
-            if (tag=="Create"||tag=="Update") {
+            if (tag == "Create" || tag == "Update") {
                 postdata.put("currency", default_currency);
                 postdata.put("defaultRate", default_rate);
                 postdata.put("designation", designation);
                 postdata.put("email", email);
                 postdata.put("emailConfirm", confirm_email);
                 postdata.put("name", name);
-            }if(tag=="Create"||tag=="Update"||tag == "UGA")
-            postdata.put("groups", groups);
-            if(tag=="RP"){
-                postdata.put("memberId",id);
+            }
+            if (tag == "Create" || tag == "Update" || tag == "UGA")
+                postdata.put("groups", groups);
+            if (tag == "RP") {
+                postdata.put("memberId", id);
             }
             if (tag == "Create") {
-                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/member", "Create Members",postdata.toString());
+                Log.i("Tag","Info:"+postdata.toString());
+                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/member", "Create Members", postdata.toString());
 
-            }else if(tag == "RP"){
-                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/member/resetpwd", "Reset Password",postdata.toString());
+            } else if (tag == "RP") {
+                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/member/resetpwd", "Reset Password", postdata.toString());
 
-            }else if(tag=="Delete"){
-                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.DELETE, "v3/member/"+id, "Delete Member",postdata.toString());
+            } else if (tag == "Delete") {
+                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.DELETE, "v3/member/" + id, "Delete Member", postdata.toString());
 
 
-            }else{
-                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PATCH, "v3/member/"+id, "Update Members",postdata.toString());
+            } else {
+                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PATCH, "v3/member/" + id, "Update Members", postdata.toString());
             }
-         } catch (Exception e) {
+        } catch (Exception e) {
+            AndroidUtils.showToast(e.getMessage(),getContext());
             if (progress_dialog != null && progress_dialog.isShowing())
                 AndroidUtils.dismiss_dialog(progress_dialog);
         }
@@ -295,9 +354,30 @@ boolean validation(){
 
     @Override
     public void onClick(View view) {
+        try {
 
+
+            switch (view.getId()){
+                case R.id.btn_create:
+                    if (!validation()) {
+                        String tag = "Create";
+                        String id = "";
+                        callCreateMemberWebservice(tv_member_name.getText().toString().trim(), tv_designation.getText().toString().trim(), tv_default_rate.getText().toString().trim(), tv_email.getText().toString().trim(), tv_confirm_email.getText().toString().trim(), tag, id);
+                    }
+                    break;
+                case R.id.btn_cancel_save:
+                    clearData();
+                    break;
+
+
+            }
+        } catch (Exception e) {
+            Log.e("TAG","Error:"+e.getMessage());
+            e.printStackTrace();
+        }
     }
-private ArrayList<String> getCurrency_list(){
+
+    private ArrayList<String> getCurrency_list() {
         ArrayList<String> currency = new ArrayList<>();
         currency.add("USDollar(USD)");
         currency.add("Euro(EUR)");
@@ -309,33 +389,48 @@ private ArrayList<String> getCurrency_list(){
         currency.add("KuwaitiDinar(KWD)");
         currency.add("BahrainiDinar(BHD)");
         return currency;
-}
+    }
+
     @Override
     public void onAsyncTaskComplete(HttpResultDo httpResult) {
-          if(progress_dialog !=null && progress_dialog.isShowing())
-              AndroidUtils.dismiss_dialog(progress_dialog);
-           if (httpResult.getResult() == WebServiceHelper.ServiceCallStatus.Success);
-        try{
+        if (progress_dialog != null && progress_dialog.isShowing())
+            AndroidUtils.dismiss_dialog(progress_dialog);
+        if (httpResult.getResult() == WebServiceHelper.ServiceCallStatus.Success) ;
+        try {
             JSONObject result = new JSONObject(httpResult.getResponseContent());
             if (httpResult.getRequestType().equals("Create Members")) {
-              AndroidUtils.showToast(result.getString("msg"),getContext());
-                ViewMembersData();
-            }else if(httpResult.getRequestType().equals("Update Members")){
-                AndroidUtils.showToast(result.getString("msg"),getContext());
-                ViewMembersData();
-            }else if (httpResult.getRequestType().equals("Reset Password")){
+                if(httpResult.getStatus_code()==200) {
+                    AndroidUtils.showToast(result.getString("msg"), getContext());
+                    ViewMembersData();
+                }else{
+                    AndroidUtils.showToast(result.getString("msg"), getContext());
+
+                }
+            } else if (httpResult.getRequestType().equals("Update Members")) {
+                if(httpResult.getStatus_code()==200) {
+                    AndroidUtils.showToast(result.getString("msg"), getContext());
+                    ViewMembersData();
+                }else{
+                    AndroidUtils.showToast(result.getString("msg"), getContext());
+
+                }
+            } else if (httpResult.getRequestType().equals("Reset Password")) {
                 JSONObject data = result.getJSONObject("data");
-                AndroidUtils.showToast(data.getString("msg"),getContext());
+                AndroidUtils.showToast(data.getString("msg"), getContext());
                 ViewMembersData();
-            }else if(httpResult.getRequestType().equals("Delete Member")){
-                AndroidUtils.showToast(result.getString("msg"),getContext());
-                ViewMembersData();
-            }
-            else if(httpResult.getRequestType().equals("Get Members")){
+            } else if (httpResult.getRequestType().equals("Delete Member")) {
+                if(httpResult.getStatus_code()==200) {
+                    AndroidUtils.showToast(result.getString("msg"), getContext());
+                    ViewMembersData();
+                }else{
+                    AndroidUtils.showToast(result.getString("msg"), getContext());
+
+                }
+            } else if (httpResult.getRequestType().equals("Get Members")) {
                 JSONObject data = result.getJSONObject("data");
                 JSONArray users = data.getJSONArray("users");
                 loadMembers(users);
-            }else if (httpResult.getRequestType().equals("Get Groups")){
+            } else if (httpResult.getRequestType().equals("Get Groups")) {
                 JSONArray data = result.getJSONArray("data");
                 loadViewGroups(data);
             }
@@ -364,9 +459,9 @@ private ArrayList<String> getCurrency_list(){
             viewGroupModel.setGroup_head_id(group_head.getString("id"));
             viewGroupModel.setGroup_head_name(group_head.getString("name"));
             viewGroupModel.setOwner_name(group_head.getString("name"));
-            for (int j=0;j<data.length();j++){
-                for(int k=0;k<updatedMembersList.size();k++){
-                    if (viewGroupModel.getId().matches(updatedMembersList.get(k).getGroup_id())){
+            for (int j = 0; j < data.length(); j++) {
+                for (int k = 0; k < updatedMembersList.size(); k++) {
+                    if (viewGroupModel.getId().matches(updatedMembersList.get(k).getGroup_id())) {
                         viewGroupModel.setChecked(true);
                     }
                 }
@@ -381,9 +476,10 @@ private ArrayList<String> getCurrency_list(){
 
     private void loadGroupsRecylerview() {
 
-        if (groupsList.size()!=0) {
+//        if (groupsList.size() != 0) {
+        FLAG = "second_click";
             rv_selected_member.setLayoutManager(new GridLayoutManager(getContext(), 1));
-             groupsAdapter = new GroupsAdapter(groupsList);
+            groupsAdapter = new GroupsAdapter(groupsList);
             rv_selected_member.setAdapter(groupsAdapter);
             rv_selected_member.setHasFixedSize(true);
             et_search_members.addTextChangedListener(new TextWatcher() {
@@ -402,10 +498,19 @@ private ArrayList<String> getCurrency_list(){
                 }
 
             });
-        }
-        else{
-            cv_members_details.setVisibility(View.GONE);
-        }
+            btn_cancel_members.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    et_search_members.setText("");
+                    groupsList.clear();
+                    callGroupsWebservice();
+                }
+            });
+
+//        }
+//        else {
+////            cv_members_details.setVisibility(View.GONE);
+//        }
     }
 
     private void loadMembers(JSONArray users) throws JSONException {
@@ -431,10 +536,10 @@ private ArrayList<String> getCurrency_list(){
     }
 
     private void loadRecylcerview() {
-       rv_view_members.setLayoutManager(new GridLayoutManager(getContext(), 1));
-       MembersAdapter adapter = new MembersAdapter(members_list,getContext(),this);
-       rv_view_members.setAdapter(adapter);
-       rv_view_members.setHasFixedSize(true);
+        rv_view_members.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        MembersAdapter adapter = new MembersAdapter(members_list, getContext(), this);
+        rv_view_members.setAdapter(adapter);
+        rv_view_members.setHasFixedSize(true);
     }
 
 
@@ -443,17 +548,19 @@ private ArrayList<String> getCurrency_list(){
 //        cv_members_details.setVisibility(View.GONE);
 
         CreateMembersData();
-       ll_buttons.setVisibility(View.GONE);
+        ll_buttons.setVisibility(View.GONE);
+        ll_save_buttons.setVisibility(View.GONE);
+        tv_assign_groups.setVisibility(View.GONE);
         ll_new_buttons.setVisibility(View.VISIBLE);
         cv_members_details.setVisibility(View.GONE);
-       ll_confirm_email.setVisibility(View.GONE);
+        ll_confirm_email.setVisibility(View.VISIBLE);
         tv_member_name.setText(membersModel.getName());
         tv_email.setText(membersModel.getEmail());
         tv_default_rate.setText(membersModel.getDefaultRate());
-        tv_confirm_email.setVisibility(View.GONE);
+        tv_confirm_email.setVisibility(View.VISIBLE);
         tv_confirm_email.setText(tv_email.getText().toString());
-        for (int i=0;i<currency_list.size();i++){
-            if (currency_list.get(i).equals(membersModel.getCurrency())){
+        for (int i = 0; i < currency_list.size(); i++) {
+            if (currency_list.get(i).equals(membersModel.getCurrency())) {
                 sp_default_currency.setSelection(i);
             }
         }
@@ -461,10 +568,10 @@ private ArrayList<String> getCurrency_list(){
         bt_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!validation()){
+                if (!validation()) {
                     String tag = "Update";
                     String id = membersModel.getId();
-                    callCreateMemberWebservice(tv_member_name.getText().toString().trim(),tv_designation.getText().toString().trim(),tv_default_rate.getText().toString().trim(),tv_email.getText().toString().trim(),tv_confirm_email.getText().toString().trim(),tag, id);
+                    callCreateMemberWebservice(tv_member_name.getText().toString().trim(), tv_designation.getText().toString().trim(), tv_default_rate.getText().toString().trim(), tv_email.getText().toString().trim(), tv_confirm_email.getText().toString().trim(), tag, id);
                 }
             }
         });
@@ -481,9 +588,9 @@ private ArrayList<String> getCurrency_list(){
     }
 
     @Override
-    public void UpdateGroupAcess(MembersModel membersModel) throws JSONException{
+    public void UpdateGroupAcess(MembersModel membersModel) throws JSONException {
         TAG = "UGA";
-        for (int i=0;i<membersModel.getGroups().length();i++){
+        for (int i = 0; i < membersModel.getGroups().length(); i++) {
             ViewGroupModel viewGroupModel = new ViewGroupModel();
             JSONObject jsonObject = membersModel.getGroups().getJSONObject(i);
             viewGroupModel.setGroup_id(jsonObject.getString("id"));
@@ -495,6 +602,7 @@ private ArrayList<String> getCurrency_list(){
             @Override
             public void onClick(View view) {
                 unhide();
+                et_search_members.setText("");
                 ViewMembersData();
 
             }
@@ -503,27 +611,27 @@ private ArrayList<String> getCurrency_list(){
             @Override
             public void onClick(View view) {
                 String tag = "UGA";
-                callCreateMemberWebservice("","","","","",tag,membersModel.getId());
+                callCreateMemberWebservice("", "", "", "", "", tag, membersModel.getId());
             }
         });
     }
 
     @Override
     public void ResetPassword(MembersModel membersModel) {
-                String tag = "RP";
-                callCreateMemberWebservice("","","","","",tag,membersModel.getId());
+        String tag = "RP";
+        callCreateMemberWebservice("", "", "", "", "", tag, membersModel.getId());
     }
 
     @Override
     public void DeleteMember(MembersModel membersModel) {
         final android.app.AlertDialog.Builder dlgAlert = new android.app.AlertDialog.Builder(getContext());
-        dlgAlert.setMessage("Are you sure you want to  delete "+membersModel.getName());
+        dlgAlert.setMessage("Are you sure you want to  delete " + membersModel.getName());
         dlgAlert.setTitle("Alert");
         dlgAlert.setPositiveButton("Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         String tag = "Delete";
-                        callCreateMemberWebservice("","","","","",tag,membersModel.getId());
+                        callCreateMemberWebservice("", "", "", "", "", tag, membersModel.getId());
                     }
                 });
         dlgAlert.setNegativeButton("No", new DialogInterface.OnClickListener() {

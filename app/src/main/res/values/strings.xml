@@ -20,6 +20,7 @@
     <string name="default_rate">Default Rate</string>
     <string name="description">Description</string>
     <string name="select_team_member">Select Team Member</string>
+    <string name="assign_group">Assign Group</string>
     <string name="add_team_member">Add Team Member</string>
     <string name="add_practice_head">Add Group Head</string>
     <string name="select_all">Select All</string>

@@ -180,6 +180,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-condensed-medium"
                     android:textSize="@dimen/Fifteen_dp"
+                    android:textColor="@color/black"
                     android:text="@string/select_team_member">
 
                 </TextView>

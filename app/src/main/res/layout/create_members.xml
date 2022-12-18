@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:layout_marginBottom="20dp"
+    android:layout_marginTop="20dp"
     tools:context=".MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -230,7 +231,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/rectangle_grey_background"
-                                android:imeOptions="actionDone" />
+                                android:imeOptions="actionDone"
+                                android:inputType="number" />
 
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
@@ -324,6 +326,70 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tv_assign_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/rectangle_grey_background"
+                    android:hint="@string/description"
+                    android:padding="@dimen/Fifteen_dp"
+                    android:textColorHint="@color/black"
+                    app:hintAnimationEnabled="true">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        android:text="@string/assign_group"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/Fifteen_dp">
+
+                    </TextView>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/ll_save_buttons"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:orientation="horizontal"
+                    android:visibility="visible"
+
+                    >
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_cancel_save"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/cancel_button_background"
+                        android:elevation="20dp"
+                        android:text="@string/cancel"
+                        android:textAllCaps="false">
+
+                    </androidx.appcompat.widget.AppCompatButton>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_create"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/save_button_background"
+                        android:backgroundTint="@color/Blue_text_color"
+                        android:elevation="@dimen/Fifteen_dp"
+                        android:gravity="center"
+                        android:text="@string/save"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white">
+
+                    </androidx.appcompat.widget.AppCompatButton>
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/ll_edit_buttons"
@@ -378,6 +444,7 @@
             android:padding="10dp"
             app:cardCornerRadius="10dp"
             android:elevation="10dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"

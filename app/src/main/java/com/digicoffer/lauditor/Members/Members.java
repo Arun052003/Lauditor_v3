@@ -219,7 +219,7 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
 
     boolean validation() {
         boolean status = false;
-        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]";
         Pattern pattern;
         Matcher matcher;
         if (tv_member_name.getText().toString().equals("")) {

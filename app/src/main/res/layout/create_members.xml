@@ -205,17 +205,30 @@
                         android:layout_margin="10dp"
                         android:layout_weight="1"
                         android:orientation="vertical">
-
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:fontFamily="sans-serif-condensed-medium"
-                            android:text="@string/default_rate"
-                            android:textColor="@color/Blue_text_color"
-                            android:textSize="@dimen/Fifteen_dp">
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
 
-                        </TextView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-condensed-medium"
+                                android:text="@string/default_rate"
+                                android:textColor="@color/Blue_text_color"
+                                android:textSize="@dimen/Fifteen_dp">
+
+                            </TextView>
+
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="10dp"
+                                android:src="@drawable/asterisk_icon">
+
+                            </ImageView>
+
+                        </LinearLayout>
+
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/filledTextField6"

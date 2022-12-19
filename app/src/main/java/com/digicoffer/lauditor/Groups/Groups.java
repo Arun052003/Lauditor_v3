@@ -27,6 +27,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.digicoffer.lauditor.Groups.Adapters.GroupAdapters;
@@ -36,6 +37,7 @@ import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
 import com.digicoffer.lauditor.Groups.GroupModels.GroupModel;
 import com.digicoffer.lauditor.Groups.GroupModels.SearchDo;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
+import com.digicoffer.lauditor.NewModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
@@ -61,6 +63,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     TextInputEditText et_search;
     AppCompatButton tv_from_date,tv_to_date;
     TextInputLayout tv_selected_members;
+    private NewModel mViewModel;
     ItemClickListener itemClickListener;
     ViewGroupModel new_viewGroupModel = null;
     public static String FLAG = "";
@@ -116,6 +119,13 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.groups, container, false);
+        return  v;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(v, savedInstanceState);
+        mViewModel = new ViewModelProvider(requireActivity()).get(NewModel.class);
         rv_select_team_members = v.findViewById(R.id.rv_selected_tm);
         rv_view_groups = v.findViewById(R.id.rv_view_group);
         et_search = v.findViewById(R.id.et_search);
@@ -129,7 +139,7 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         tv_from_date = v.findViewById(R.id.btn_from_date);
         tv_to_date = v.findViewById(R.id.btn_to_date);
         et_Search = v.findViewById(R.id.et_search_tm);
-         group_head_name = (TextView) v.findViewById(R.id.group_head_name);
+        group_head_name = (TextView) v.findViewById(R.id.group_head_name);
         cv_details = v.findViewById(R.id.cv_details_2);
         btn_cancel_gal = v.findViewById(R.id.btn_cancel_activity_log);
         btn_search_gal = v.findViewById(R.id.btn_update_activity_log);
@@ -151,11 +161,15 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         btn_cancel = v.findViewById(R.id.btn_cancel);
         chk_select_all = v.findViewById(R.id.chk_select_all);
         btn_save =(AppCompatButton)  v.findViewById(R.id.btn_save);
+        String data = "Create Groups";
+        setViewModelData(data);
         tv_create_group.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_add_tm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_view_group.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String data = "View Groups";
+                setViewModelData(data);
                 ViewGroupsData();
             }
         });
@@ -179,6 +193,8 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                 tv_create_group.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
                 assignGroupsList.clear();
                 cv_groups.setVisibility(View.VISIBLE);
+                String data = "Create Groups";
+                setViewModelData(data);
 //                cv_details.setVisibility(View.VISIBLE);
 //                ll_buttons.setVisibility(View.VISIBLE);
 //                ll_tm.setVisibility(View.VISIBLE);
@@ -252,15 +268,15 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
             public void onClick(View view) {
 
 //                if (FLAG!="first_click"){
-                    if (FLAG!="second_click") {
-                        unhideTM();
-                        callMembersWebservice();
-                    }else
-                    {
-                        FLAG = "first_click";
-                        hideTM();
-                        selectedTMArrayList.clear();
-                    }
+                if (FLAG!="second_click") {
+                    unhideTM();
+                    callMembersWebservice();
+                }else
+                {
+                    FLAG = "first_click";
+                    hideTM();
+                    selectedTMArrayList.clear();
+                }
 //                }else{
 //                    FLAG="first_click";
 //                }
@@ -273,8 +289,9 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return  v;
+    }
+    private void setViewModelData(String data) {
+        mViewModel.setData(data);
     }
 
     private void unhideTM() {

@@ -8,6 +8,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -38,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     ExtendedFloatingActionButton mAddFab;
     ImageView iv_logo_dashboard;
     ImageButton iv_open_menu,iv_close_menu;
+    private NewModel viewModel;
+    TextView tv_pageName;
     Animation fabOpen, fabClose, rotateForward, rotateBackward;
     FloatingActionButton fab_relationships,fab_documents,fab_timesheet,fab_matter,fab_more;
     TextView tv_relations,tv_documents,tv_timesheet,tv_matter,tv_more;
@@ -66,12 +70,16 @@ public class MainActivity extends AppCompatActivity {
             iv_logo_dashboard = findViewById(R.id.logo_dashboard);
             ll_bottom_menu = findViewById(R.id.ll_bottom_menu);
             fab_matter = findViewById(R.id.fb_matter);
+            tv_pageName = findViewById(R.id.page_name);
             fab_matter.setVisibility(View.GONE);
             fab_timesheet = findViewById(R.id.fb_timesheets);
             fab_timesheet.setVisibility(View.GONE);
             fab_more = findViewById(R.id.fb_more);
             fab_more.setVisibility(View.GONE);
-
+            viewModel = new ViewModelProvider(this).get(NewModel.class);
+            viewModel.getselectedItem().observe(this,item ->{
+                    tv_pageName.setText(item);
+            });
 //            tv_relations = findViewById(R.id.tv_relationships);
 //            tv_relations.setVisibility(View.GONE);
 //            tv_documents = findViewById(R.id.tv_documents);
@@ -227,29 +235,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//        prefs.edit().remove("current_fragment").apply();
-////        appbar.setVisibility(View.VISIBLE);
-//        List list = getSupportFragmentManager().getFragments();
-//        android.app.FragmentManager fm = getFragmentManager();
-////        SupportRequestManagerFragment manager = new SupportRequestManagerFragment();
-//        if (getSupportFragmentManager().getFragments().get(0) instanceof Dashboard || list.size() <= 1)
-//            logout();
-//
-////        else if(list.get(1) instanceof Dashboard  || list.get(1) instanceof Members || list.get(1) instanceof Members && list.size()<= 1) {
-////            logout();
-////        }else if(list.get(0) instanceof Dashboard || list.get(0) instanceof Members || list.get(0) instanceof Members && list.size()<= 1) {
-////            logout();
-////        }else if(fm.getBackStackEntryCount() > 0){
-////            Log.i("MainActivity", "popping backstack");
-////            fm.popBackStack();
-////        }
-//        else {
-//            super.onBackPressed();
-//        }
-//    }
+
 
     private void logout() {
         new AlertDialog.Builder(this)

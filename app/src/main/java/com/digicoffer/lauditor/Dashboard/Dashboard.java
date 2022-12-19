@@ -13,6 +13,7 @@ import android.widget.TextClock;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +25,7 @@ import com.digicoffer.lauditor.Dashboard.DahboardModels.MydayModels.Relationship
 import com.digicoffer.lauditor.Dashboard.DahboardModels.MydayModels.TeamChatModel;
 import com.digicoffer.lauditor.Dashboard.DahboardModels.PracticeHeadModels.PracticeModel;
 import com.digicoffer.lauditor.MainActivity;
+import com.digicoffer.lauditor.NewModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
 
@@ -34,7 +36,7 @@ import java.util.Date;
 
 public class Dashboard extends Fragment {
 
-
+    private NewModel mViewModel;
     private TextClock tv_date_time,tv_time,tv_am_pm;
     private Calendar calendar;
     private SimpleDateFormat dateFormat;
@@ -55,59 +57,67 @@ public class Dashboard extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
           View v = inflater.inflate(R.layout.dashboard_screen, container, false);
-        try {
-          calendar = Calendar.getInstance();
-          dateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
-          date = dateFormat.format(calendar.getTime());
-          try {
-//            mainActivity = (MainActivity) getActivity();
-          } catch (Exception e) {
-              e.printStackTrace();
-          }
-          bt_KPI = v.findViewById(R.id.bt_kpi);
-          bt_MyDay = v.findViewById(R.id.bt_Myday);
-          bt_MyDay.setBackgroundColor(getContext().getResources().getColor(R.color.grey_color_dark));
-          Date date_new = AndroidUtils.stringToDateTimeDefault(date, "MMM dd YYYY HH:mm:ss aa");
-          String time = AndroidUtils.getDateToString(date_new, "HH:mm");
-          String date = AndroidUtils.getDateToString(date_new, "MMM dd YYYY");
-          String am_pm = AndroidUtils.getDateToString(date_new, "aa");
-          tv_am_pm = v.findViewById(R.id.am_pm);
-          tv_time = v.findViewById(R.id.time);
-          tv_date_time = v.findViewById(R.id.tv_date);
-          rv_myday = v.findViewById(R.id.rv_myday);
-          itemArrayList.clear();
 
-          try {
-              bt_MyDay.setOnClickListener(new View.OnClickListener() {
-                  @Override
-                  public void onClick(View view) {
-                      itemArrayList.clear();
-                      KPI_DATA = "";
-                      bt_MyDay.setBackgroundColor(getContext().getResources().getColor(R.color.grey_color_dark));
-                      bt_KPI.setBackgroundColor(getContext().getResources().getColor(R.color.white));
-                      loadMyDayData();
-                  }
-              });
-              bt_KPI.setOnClickListener(new View.OnClickListener() {
-                  @Override
-                  public void onClick(View view) {
-                      KPI_DATA = "";
-                      itemArrayList.clear();
-                      bt_MyDay.setBackgroundColor(getContext().getResources().getColor(R.color.white));
-                      bt_KPI.setBackgroundColor(getContext().getResources().getColor(R.color.grey_color_dark));
-                      load_TM_KPI_data();
-                  }
-              });
-              loadMyDayData();
-          } catch (Exception e) {
-              Log.e("Error", "Info" + e.getMessage());
-          }
-
-
-      } catch (Resources.NotFoundException e) {
-          e.printStackTrace();
-      }
         return v;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(v, savedInstanceState);
+        try {
+            mViewModel = new ViewModelProvider(requireActivity()).get(NewModel.class);
+            mViewModel.setData("Lauditor");
+            calendar = Calendar.getInstance();
+            dateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
+            date = dateFormat.format(calendar.getTime());
+            try {
+//            mainActivity = (MainActivity) getActivity();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            bt_KPI = v.findViewById(R.id.bt_kpi);
+            bt_MyDay = v.findViewById(R.id.bt_Myday);
+            bt_MyDay.setBackgroundColor(getContext().getResources().getColor(R.color.grey_color_dark));
+            Date date_new = AndroidUtils.stringToDateTimeDefault(date, "MMM dd YYYY HH:mm:ss aa");
+            String time = AndroidUtils.getDateToString(date_new, "HH:mm");
+            String date = AndroidUtils.getDateToString(date_new, "MMM dd YYYY");
+            String am_pm = AndroidUtils.getDateToString(date_new, "aa");
+            tv_am_pm = v.findViewById(R.id.am_pm);
+            tv_time = v.findViewById(R.id.time);
+            tv_date_time = v.findViewById(R.id.tv_date);
+            rv_myday = v.findViewById(R.id.rv_myday);
+            itemArrayList.clear();
+
+            try {
+                bt_MyDay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        itemArrayList.clear();
+                        KPI_DATA = "";
+                        bt_MyDay.setBackgroundColor(getContext().getResources().getColor(R.color.grey_color_dark));
+                        bt_KPI.setBackgroundColor(getContext().getResources().getColor(R.color.white));
+                        loadMyDayData();
+                    }
+                });
+                bt_KPI.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        KPI_DATA = "";
+                        itemArrayList.clear();
+                        bt_MyDay.setBackgroundColor(getContext().getResources().getColor(R.color.white));
+                        bt_KPI.setBackgroundColor(getContext().getResources().getColor(R.color.grey_color_dark));
+                        load_TM_KPI_data();
+                    }
+                });
+                loadMyDayData();
+            } catch (Exception e) {
+                Log.e("Error", "Info" + e.getMessage());
+            }
+
+
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadMyDayData(){

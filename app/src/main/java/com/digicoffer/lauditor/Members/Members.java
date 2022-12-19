@@ -22,11 +22,13 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Groups.GroupModels.GroupModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
+import com.digicoffer.lauditor.NewModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
@@ -48,6 +50,7 @@ import java.util.regex.Pattern;
 public class Members extends Fragment implements AsyncTaskCompleteListener, MembersAdapter.EventListener ,View.OnClickListener{
     TextView tv_member_name, tv_designation, tv_email, tv_confirm_email, tv_default_rate, tv_create_members, tv_view_members, et_search_members;
     Spinner sp_default_currency;
+    private NewModel mViewModel;
     AppCompatButton btn_cancel_members, bt_save_members, bt_cancel, bt_save,btn_cancel_save,btn_create;
     RecyclerView rv_selected_member, rv_view_members;
     TextInputLayout tv_assign_groups;
@@ -89,6 +92,13 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.create_members, container, false);
+      return v;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(v, savedInstanceState);
+        mViewModel = new ViewModelProvider(requireActivity()).get(NewModel.class);
         tv_member_name = v.findViewById(R.id.tv_create_member_name);
         tv_designation = v.findViewById(R.id.tv_designation);
         tv_email = v.findViewById(R.id.tv_email);
@@ -142,6 +152,8 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
 
         ll_confirm_email.setVisibility(View.VISIBLE);
         ll_new_buttons.setVisibility(View.GONE);
+        String data = "Create Members";
+        setViewModelData(data);
         tv_create_members.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -152,12 +164,16 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
                 ll_confirm_email.setVisibility(View.VISIBLE);
                 ll_new_buttons.setVisibility(View.GONE);
                 TAG = "CM";
+                String data = "Create Members";
+                setViewModelData(data);
                 CreateMembersData();
             }
         });
         tv_view_members.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String data = "View Members";
+                setViewModelData(data);
                 ViewMembersData();
 
             }
@@ -189,7 +205,11 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
 
             }
         });
-        return v;
+
+    }
+
+    private void setViewModelData(String data) {
+        mViewModel.setData(data);
     }
 
     private void clearData() {

@@ -632,14 +632,19 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                     ViewGroupsData();
                     AndroidUtils.showToast(result.getString("msg"), getContext());
                 } else if (httpResult.getRequestType().equals("Update Groups")) {
-                   unhideData();
-                    ViewGroupsData();
-                    viewGroupModelArrayList.clear();
-                    viewGroupMembersList.clear();
-                    selectedTMArrayList.clear();
-                    adapter.getList_item().clear();
-                    updateGroupMembersList.clear();
-                    AndroidUtils.showToast(result.getString("msg"), getContext());
+                    if(httpResult.getStatus_code()==200) {
+                        unhideData();
+                        ViewGroupsData();
+                        viewGroupModelArrayList.clear();
+                        viewGroupMembersList.clear();
+                        selectedTMArrayList.clear();
+                        adapter.getList_item().clear();
+                        updateGroupMembersList.clear();
+                        AndroidUtils.showToast(result.getString("msg"), getContext());
+                    }else{
+                        AndroidUtils.showToast(result.getString("msg"), getContext());
+
+                    }
                 } else if (httpResult.getRequestType().equals("Delete Groups")) {
                     ViewGroupsData();
                     AndroidUtils.showToast(result.getString("msg"), getContext());
@@ -880,7 +885,8 @@ public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewG
                 } else {
                     try {
                         String update_type = "EG";
-                        callUpdateGroups(tv_group_name.getText().toString().trim(), tv_group_description.getText().toString().trim(), viewGroupModel.getId(), update_type, adapter.getList_item());
+                        ArrayList<GroupModel> new_list = new ArrayList<>();
+                        callUpdateGroups(tv_group_name.getText().toString().trim(), tv_group_description.getText().toString().trim(), viewGroupModel.getId(), update_type, new_list);
                     } catch (JSONException ex) {
                         ex.printStackTrace();
                     }

@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.digicoffer.lauditor.ClientRelationships.ClientRelationship;
 import com.digicoffer.lauditor.Dashboard.Dashboard;
 import com.digicoffer.lauditor.Groups.Groups;
 import com.digicoffer.lauditor.Members.Members;
@@ -110,6 +111,17 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Fragment fragment1 = new Members();
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.id_framelayout,fragment1);
+                    ft.addToBackStack("current_fragment").commit();
+//                    ft.commit();
+                    closeMenu();
+                }
+            });
+            fab_matter.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Fragment fragment1 = new ClientRelationship();
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.id_framelayout,fragment1);
                     ft.addToBackStack("current_fragment").commit();

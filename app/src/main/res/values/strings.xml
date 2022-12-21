@@ -33,4 +33,14 @@
     <string name="team_members">Team Members</string>
     <string name="from">From</string>
     <string name="to">To</string>
+    <string name="add_relationships">Add Relationships</string>
+    <string name="view_relationships">View Relationships</string>
+    <string name="search">Search</string>
+    <string name="search_team_members">Search Team Members</string>
+    <string name="first_name">First Name</string>
+    <string name="country">Country</string>
+    <string name="entity_name">Entity Name</string>
+    <string name="contact_person">Contact Person</string>
+    <string name="last_name">Last Name</string>
+    <string name="contact_phone_number">Contact Phone Number</string>
 </resources>

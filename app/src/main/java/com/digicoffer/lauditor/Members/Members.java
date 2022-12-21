@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,13 +144,10 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
                 }
             }
         });
-//        bt_cancel = v.findViewById(R.id.btn_cancel_members);
-//        bt_save = v.findViewById(R.id.btn_save_members);
+
         rv_selected_member = v.findViewById(R.id.rv_selected_member);
         tv_create_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_view_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
-//        cv_members_details.setVisibility(View.GONE);
-
         ll_confirm_email.setVisibility(View.VISIBLE);
         ll_new_buttons.setVisibility(View.GONE);
         String data = "Create Members";
@@ -239,7 +237,7 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
 
     boolean validation() {
         boolean status = false;
-        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]";
+        String emailPattern = "[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.+[a-z]";
         Pattern pattern;
         Matcher matcher;
         if (tv_member_name.getText().toString().equals("")) {
@@ -266,17 +264,32 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
             tv_confirm_email.setError("Email and Confirm Email doesn't match");
             AndroidUtils.showToast("Email and Confirm Email doesn't match", getContext());
             status = true;
-        } else {
-            if (!tv_email.getText().toString().trim().equals("")) {
-                pattern = Pattern.compile(emailPattern);
-                matcher = pattern.matcher(tv_email.getText().toString());
-                if (!matcher.matches()) {
-                    tv_email.setError("Enter a valid email address");
-//                tv_email.requestFocus();
-                    status = true;
-                }
+        }else{
+            if (!tv_email.getText().toString().isEmpty()&&Patterns.EMAIL_ADDRESS.matcher(tv_email.getText().toString()).matches()){
+
+                status = false;
+            }else
+            {
+                tv_email.setError("Enter a valid email address");
+                AndroidUtils.showToast("Enter a valid email address", getContext());
+                status = true;
             }
         }
+//        else if(!tv_email.getText().toString().trim().equals("")) {
+//
+//                pattern = Pattern.compile(emailPattern);
+//                matcher = pattern.matcher(tv_email.getText().toString());
+//                if (!matcher.matches()) {
+//
+//                tv_email.requestFocus();
+//                    status = true;
+//                }
+//            }else{
+//                tv_email.setError("Email is required");
+//                AndroidUtils.showToast("Email is required", getContext());
+//                status = true;
+//            }
+
         return status;
     }
 

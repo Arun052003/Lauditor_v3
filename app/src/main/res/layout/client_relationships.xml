@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="20dp"
-    android:layout_marginTop="20dp"
+
     tools:context=".MainActivity">
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/thirty_dp"
         android:orientation="horizontal"
+
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -138,13 +139,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_margin="5dp"
+
                 >
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/search_tm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
+
                     android:layout_weight="1"
                     android:hint="@string/search"
                     android:textColorHint="@color/black"
@@ -169,17 +170,30 @@
                 </com.google.android.material.textfield.TextInputLayout>
                 <Button
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_margin="5dp"
-                    android:layout_gravity="center"
+                    android:layout_gravity="bottom"
+                    android:textAllCaps="false"
 
                     android:backgroundTint="@color/Blue_text_color"
                     android:text="@string/search">
 
                 </Button>
             </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="hi"
+                android:visibility="gone"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textSize="@dimen/twenty_dp"
+                >
+
+            </TextView>
+
             <LinearLayout
                 android:id="@+id/ll_entity_name"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -187,6 +201,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -230,12 +245,14 @@
 
             <LinearLayout
                 android:id="@+id/ll_contact_person"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -519,6 +536,7 @@
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/ll_entity_number"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">

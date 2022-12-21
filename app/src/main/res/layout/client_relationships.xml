@@ -533,14 +533,23 @@
                     </ImageView>
 
                 </LinearLayout>
-
-                <Spinner
-                    android:id="@+id/sp_default_currency"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tl_individual_country"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rectangle_grey_background"
-                    android:clickable="false"
-                    android:focusable="false" />
+                    app:boxBackgroundMode="none"
+                    android:textColorHint="@color/black">
+
+
+                <Spinner
+                    android:id="@+id/sp_country"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:spinnerMode="dropdown"
+                     />
+                </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/ll_entity_number"
@@ -595,11 +604,39 @@
             </LinearLayout>
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.cardview.widget.CardView>
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/ll_select_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="21dp"
+        android:background="@drawable/checkbox_background"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.914"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cv_details"
+        app:layout_constraintVertical_bias="0.0">
+
+        <CheckBox
+            android:id="@+id/chk_select_all"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="20dp"
+            android:layout_margin="10dp"
+            android:text="@string/select_all"
+            android:buttonTint="@color/grey_color_dark"
+            android:background="@color/grey_text_color"
+            android:layout_gravity="center"
+
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cv_details"
+        app:layout_constraintTop_toBottomOf="@id/ll_select_all"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:orientation="vertical">

@@ -1,73 +1,110 @@
 package com.digicoffer.lauditor.ClientRelationships;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.ClientRelationships.Model.CountriesDO;
 import com.digicoffer.lauditor.ClientRelationships.Model.SearchModel;
+import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
+import com.digicoffer.lauditor.Members.GroupsAdapter;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.digicoffer.lauditor.Webservice.WebServiceHelper;
 import com.digicoffer.lauditor.common.AndroidUtils;
+import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 
-public class ClientRelationship extends Fragment implements AsyncTaskCompleteListener,View.OnClickListener {
+public class ClientRelationship extends Fragment implements AsyncTaskCompleteListener, View.OnClickListener {
 
-    private RadioGroup rg_add_relationships,rg_individual_entity;
+    private RadioGroup rg_add_relationships, rg_individual_entity;
     ArrayList<SearchModel> searchModelsList = new ArrayList<>();
-    RadioButton rb_add_relationship, rb_view_relationships,rb_individual,rb_entity;
-    LinearLayout ll_entity_name,ll_contact_person,ll_first_name,ll_last_name,ll_contatc_phone;
-    TextInputEditText et_search_individual,tv_individual_email,tv_individual_confirm_email,tv_individual_firstname,tv_individual_last_name,tv_entity_name,tv_entity_contact_person,tv_entity_phone_number;
-    Button btn_search_individual,btn_relationships_cancel,btn_send_request;
+    RadioButton rb_add_relationship, rb_view_relationships, rb_individual, rb_entity;
+    LinearLayout ll_entity_name, ll_contact_person, ll_first_name, ll_last_name, ll_contatc_phone;
+    TextInputEditText et_search_relationships, et_search_individual, tv_individual_email, tv_individual_confirm_email, tv_individual_firstname, tv_individual_last_name, tv_entity_name, tv_entity_contact_person, tv_entity_phone_number;
+    Button btn_search_individual, btn_relationships_cancel, btn_send_request;
     TextView tv_response;
+    Spinner sp_country;
+    GroupsAdapter groupsAdapter;
+    RecyclerView rv_relationship_groups;
+    private CheckBox chk_select_all;
+    ArrayList<ViewGroupModel> groupsList = new ArrayList<>();
+    ArrayList<CountriesDO> countriesList = new ArrayList<>();
     CardView cv_details;
+    private String country_name;
 
 
     @Override
     public void onClick(View view) {
-    switch (view.getId()){
+        switch (view.getId()) {
 
-        case R.id.btn_search_individual:
-            try{
+            case R.id.btn_search_individual:
+                try {
 //                searchModelsList.clear();
 //                tv_response.setText("");
-            callSearchIndividualWebservice();
-    } catch (JSONException e) {
-                e.printStackTrace();
-                AndroidUtils.showToast(e.getMessage(),getContext());
-            }
+                    callSearchIndividualWebservice();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    AndroidUtils.showToast(e.getMessage(), getContext());
+                }
+        }
     }
+
+
+    private void callGroupsWebservice() {
+        JSONObject postdata = new JSONObject();
+        WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/groups", "Get Groups", postdata.toString());
+
+
     }
 
     private void callSearchIndividualWebservice() throws JSONException {
         JSONObject postdata = new JSONObject();
-        postdata.put("email",et_search_individual.getText().toString());
-        WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.POST,"v2/relationship/search/consumer","Search Consumer",postdata.toString());
+        postdata.put("email", et_search_individual.getText().toString());
+        WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v2/relationship/search/consumer", "Search Consumer", postdata.toString());
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        callCountriesWebService();
+        super.onCreate(savedInstanceState);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.client_relationships, container, false);
+        callGroupsWebservice();
         return view;
+
     }
 
     @Override
@@ -78,14 +115,18 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         rb_view_relationships = view.findViewById(R.id.view_relationship);
         rg_individual_entity = view.findViewById(R.id.entity);
         rb_individual = view.findViewById(R.id.add_individiual);
+        rv_relationship_groups = view.findViewById(R.id.rv_relationship_groups);
         rb_entity = view.findViewById(R.id.add_entity);
         ll_entity_name = view.findViewById(R.id.ll_entity_name);
-        ll_contact_person  = view.findViewById(R.id.ll_contact_person);
+        ll_contact_person = view.findViewById(R.id.ll_contact_person);
         ll_contatc_phone = view.findViewById(R.id.ll_entity_number);
+        sp_country = view.findViewById(R.id.sp_country);
         et_search_individual = view.findViewById(R.id.et_search_individual);
         btn_search_individual = view.findViewById(R.id.btn_search_individual);
+        et_search_relationships = view.findViewById(R.id.et_search_relationships);
         tv_response = view.findViewById(R.id.tv_response);
         cv_details = view.findViewById(R.id.cv_details);
+        chk_select_all = view.findViewById(R.id.chk_select_all);
         tv_individual_email = view.findViewById(R.id.tv_individual_email);
         tv_entity_contact_person = view.findViewById(R.id.tv_entity_contact_person);
         tv_entity_name = view.findViewById(R.id.tv_entity_name);
@@ -134,7 +175,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
                         rb_entity.setTextColor(getContext().getResources().getColor(R.color.black));
                         break;
                     case R.id.add_entity:
-                            unhideEntityData();
+                        unhideEntityData();
+                        clearIndividualData();
                         rb_individual.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
                         rb_entity.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
                         rb_individual.setTextColor(getContext().getResources().getColor(R.color.black));
@@ -145,7 +187,15 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         });
 
     }
+    public void callCountriesWebService() {
+        JSONObject jsonData = new JSONObject();
+        try {
 
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "countries", "COUNTRIES", jsonData.toString());
+        } catch (Exception e) {
+
+        }
+    }
     private void disableAlpha() {
 
         tv_individual_email.setBackground(getContext().getResources().getDrawable(R.drawable.rectangle_grey_background));
@@ -158,7 +208,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         btn_relationships_cancel.setBackground(getContext().getResources().getDrawable(R.drawable.cancel_button_background));
         btn_send_request.setBackground(getContext().getResources().getDrawable(R.drawable.save_button_background));
     }
-    private void enableAlpha(){
+
+    private void enableAlpha() {
         tv_individual_email.getBackground().setAlpha(100);
         tv_individual_confirm_email.getBackground().setAlpha(100);
         tv_individual_firstname.getBackground().setAlpha(100);
@@ -168,6 +219,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_name.getBackground().setAlpha(100);
         btn_relationships_cancel.getBackground().setAlpha(100);
         btn_send_request.getBackground().setAlpha(100);
+//        rv_relationship_groups.getBackground().setAlpha(100);
     }
 
     private void hideEntityData() {
@@ -184,16 +236,31 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 
     @Override
     public void onAsyncTaskComplete(HttpResultDo httpResult) {
-        if (httpResult.getResult()== WebServiceHelper.ServiceCallStatus.Success){
-            try{
+        if (httpResult.getResult() == WebServiceHelper.ServiceCallStatus.Success) {
+            try {
                 JSONObject result = new JSONObject(httpResult.getResponseContent());
-                Log.i("Tag","Info:"+httpResult.getStatus_code());
-                Log.i("Tag","Info:"+result);
-                boolean error = result.getBoolean("error");
-                String msg = result.getString("msg");
-                if (httpResult.getRequestType().equals("Search Consumer")){
-                        loadIndividualData(result);
+                Log.i("Tag", "Info:" + httpResult.getStatus_code());
+                Log.i("Tag", "Info:" + result);
 
+                if (httpResult.getRequestType().equals("Search Consumer")) {
+                    loadIndividualData(result);
+
+                } else if (httpResult.getRequestType().equals("Get Groups")) {
+                    JSONArray data = result.getJSONArray("data");
+                    loadViewGroups(data);
+                }else if (httpResult.getRequestType() == "COUNTRIES") {
+
+                    JSONArray jsonArray = (new JSONObject(result.getString("data"))).getJSONArray("countries");
+                    CountriesDO countriesDO;
+                    countriesList.clear();
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        countriesDO = new CountriesDO();
+                        countriesDO.setName(String.valueOf(jsonArray.getJSONArray(i).get(1)));
+                        countriesDO.setValue(String.valueOf(jsonArray.getJSONArray(i).get(0)));
+                        countriesList.add(countriesDO);
+                    }
+
+//                    callHealthProfileWebservice();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -201,21 +268,114 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         }
     }
 
-    private void loadIndividualData(JSONObject result) throws JSONException{
+    private void loadViewGroups(JSONArray data) throws JSONException {
+
+        ViewGroupModel viewGroupModel;
+        groupsList.clear();
+        for (int i = 0; i < data.length(); i++) {
+            JSONObject jsonObject = data.getJSONObject(i);
+            viewGroupModel = new ViewGroupModel();
+            viewGroupModel.setId(jsonObject.getString("id"));
+            String date = jsonObject.getString("created");
+            Date date_new = AndroidUtils.stringToDateTimeDefault(date, "yyyy-MM-dd'T'HH:mm:ss.SSS");
+            String created = AndroidUtils.getDateToString(date_new, "MMM dd YYYY");
+            viewGroupModel.setCreated(created);
+            JSONArray members = jsonObject.getJSONArray("members");
+            viewGroupModel.setMembers(members);
+            viewGroupModel.setDescription(jsonObject.getString("description"));
+            viewGroupModel.setName(jsonObject.getString("name"));
+            JSONObject group_head = jsonObject.getJSONObject("groupHead");
+            viewGroupModel.setGroup_head_id(group_head.getString("id"));
+            viewGroupModel.setGroup_head_name(group_head.getString("name"));
+            viewGroupModel.setOwner_name(group_head.getString("name"));
+
+            groupsList.add(viewGroupModel);
+        }
+        Log.i("ArrayList", "info" + groupsList.toString());
+        String mtag = "VG";
+        loadGroupsRecylerview();
+
+    }
+
+    private void loadGroupsRecylerview() {
+
+//        if (groupsList.size() != 0) {
+
+        rv_relationship_groups.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        groupsAdapter = new GroupsAdapter(groupsList);
+        rv_relationship_groups.setAdapter(groupsAdapter);
+        rv_relationship_groups.setHasFixedSize(true);
+        et_search_relationships.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                groupsAdapter.getFilter().filter(s);
+            }
+
+        });
+        btn_relationships_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                et_search_relationships.setText("");
+                groupsList.clear();
+                callGroupsWebservice();
+            }
+        });
+        chk_select_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                groupsAdapter.selectOrDeselectAll(isChecked);
+            }
+        });
+
+//        }
+//        else {
+////            cv_members_details.setVisibility(View.GONE);
+//        }
+    }
+
+    private void loadIndividualData(JSONObject result) throws JSONException {
+        CommonSpinnerAdapter adapter = new CommonSpinnerAdapter(getActivity(), countriesList);
+        Log.i("ArrayList","Info:"+countriesList);
+//        ArrayAdapter adaptador = new ArrayAdapter(User_Profile.this, android.R.layout.simple_spinner_item, sorted_countriesList);
+//        adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+//        spinner.setAdapter(adaptador);
+        sp_country.setAdapter(adapter);
+        sp_country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                country_name = countriesList.get(position).getValue();
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         SearchModel searchModel = new SearchModel();
         searchModel.setMsg(result.getString("msg"));
         searchModel.setError(result.getBoolean("error"));
-        if (searchModel.getError()){
-            Log.i("Tag","Info:"+searchModel.getError());
-            tv_response.setText(et_search_individual.getText().toString()+"-"+"not found. Please fill in the details below to send relationship invite");
+        if (searchModel.getError()) {
+            Log.i("Tag", "Info:" + searchModel.getError());
+            tv_response.setText(et_search_individual.getText().toString() + "-" + "not found. Please fill in the details below to send relationship invite");
             tv_response.setTextColor(getContext().getResources().getColor(R.color.Red));
             disableAlpha();
             enableIndividualData();
             clearIndividualData();
 //                  et_search_individual.setText("");
-        }
-        else{
-            Log.i("Tag","Info:"+searchModel.getError());
+        } else {
+            Log.i("Tag", "Info:" + searchModel.getError());
             searchModel.setFirstName(result.getString("firstName"));
             searchModel.setLastName(result.getString("lastName"));
             searchModel.setCountry(result.getString("country"));
@@ -237,6 +397,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_individual_last_name.setText("");
         tv_individual_email.setText("");
         tv_individual_confirm_email.setText("");
+        et_search_individual.setText("");
 
     }
 
@@ -251,9 +412,10 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_contact_person.setEnabled(true);
         btn_send_request.setEnabled(true);
         btn_relationships_cancel.setEnabled(true);
+//        rv_relationship_groups.setEnabled(true);
     }
 
-    private void disableIndividualData(){
+    private void disableIndividualData() {
         tv_individual_firstname.setEnabled(false);
         tv_individual_last_name.setEnabled(false);
         tv_individual_email.setEnabled(false);
@@ -263,12 +425,14 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_contact_person.setEnabled(false);
         btn_send_request.setEnabled(false);
         btn_relationships_cancel.setEnabled(false);
+//        rv_relationship_groups.setEnabled(false);
     }
 
     private void loadUI(SearchModel searchModel) {
 //        disableAlpha();
         enableAlpha();
         disableIndividualData();
+
         btn_relationships_cancel.setBackground(getContext().getResources().getDrawable(R.drawable.cancel_button_background));
         btn_send_request.setBackground(getContext().getResources().getDrawable(R.drawable.save_button_background));
         btn_send_request.setEnabled(true);

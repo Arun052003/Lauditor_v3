@@ -36,7 +36,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     RadioButton rb_add_relationship, rb_view_relationships,rb_individual,rb_entity;
     LinearLayout ll_entity_name,ll_contact_person,ll_first_name,ll_last_name,ll_contatc_phone;
     TextInputEditText et_search_individual,tv_individual_email,tv_individual_confirm_email,tv_individual_firstname,tv_individual_last_name,tv_entity_name,tv_entity_contact_person,tv_entity_phone_number;
-    Button btn_search_individual;
+    Button btn_search_individual,btn_relationships_cancel,btn_send_request;
     TextView tv_response;
     CardView cv_details;
 
@@ -94,6 +94,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_individual_email = view.findViewById(R.id.tv_individual_email);
         tv_individual_firstname = view.findViewById(R.id.tv_individual_firstname);
         tv_individual_last_name = view.findViewById(R.id.tv_individual_last_name);
+        btn_send_request = view.findViewById(R.id.btn_send_request);
+        btn_relationships_cancel = view.findViewById(R.id.btn_relationships_cancel);
         enableAlpha();
         btn_search_individual.setOnClickListener(this);
         rb_add_relationship.setTextColor(getContext().getResources().getColor(R.color.white));
@@ -153,7 +155,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_phone_number.setBackground(getContext().getResources().getDrawable(R.drawable.rectangle_grey_background));
         tv_entity_contact_person.setBackground(getContext().getResources().getDrawable(R.drawable.rectangle_grey_background));
         tv_entity_name.setBackground(getContext().getResources().getDrawable(R.drawable.rectangle_grey_background));
-
+        btn_relationships_cancel.setBackground(getContext().getResources().getDrawable(R.drawable.cancel_button_background));
+        btn_send_request.setBackground(getContext().getResources().getDrawable(R.drawable.save_button_background));
     }
     private void enableAlpha(){
         tv_individual_email.getBackground().setAlpha(100);
@@ -163,6 +166,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_phone_number.getBackground().setAlpha(100);
         tv_entity_contact_person.getBackground().setAlpha(100);
         tv_entity_name.getBackground().setAlpha(100);
+        btn_relationships_cancel.getBackground().setAlpha(100);
+        btn_send_request.getBackground().setAlpha(100);
     }
 
     private void hideEntityData() {
@@ -202,7 +207,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         searchModel.setError(result.getBoolean("error"));
         if (searchModel.getError()){
             Log.i("Tag","Info:"+searchModel.getError());
-            tv_response.setText(et_search_individual.getText().toString()+"-"+"not found. Please in the details below to send relationship invite");
+            tv_response.setText(et_search_individual.getText().toString()+"-"+"not found. Please fill in the details below to send relationship invite");
             tv_response.setTextColor(getContext().getResources().getColor(R.color.Red));
             disableAlpha();
             enableIndividualData();
@@ -244,6 +249,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_phone_number.setEnabled(true);
         tv_entity_name.setEnabled(true);
         tv_entity_contact_person.setEnabled(true);
+        btn_send_request.setEnabled(true);
+        btn_relationships_cancel.setEnabled(true);
     }
 
     private void disableIndividualData(){
@@ -254,12 +261,18 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_phone_number.setEnabled(false);
         tv_entity_name.setEnabled(false);
         tv_entity_contact_person.setEnabled(false);
+        btn_send_request.setEnabled(false);
+        btn_relationships_cancel.setEnabled(false);
     }
 
     private void loadUI(SearchModel searchModel) {
 //        disableAlpha();
         enableAlpha();
         disableIndividualData();
+        btn_relationships_cancel.setBackground(getContext().getResources().getDrawable(R.drawable.cancel_button_background));
+        btn_send_request.setBackground(getContext().getResources().getDrawable(R.drawable.save_button_background));
+        btn_send_request.setEnabled(true);
+        btn_relationships_cancel.setEnabled(true);
         tv_individual_firstname.setText(searchModel.getFirstName());
         tv_individual_last_name.setText(searchModel.getLastName());
         tv_individual_email.setText(et_search_individual.getText().toString());

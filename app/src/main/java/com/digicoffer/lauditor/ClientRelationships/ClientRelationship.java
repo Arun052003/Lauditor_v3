@@ -59,6 +59,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     Spinner sp_country;
     GroupsAdapter groupsAdapter;
     RecyclerView rv_relationship_groups;
+    SearchModel searchModel;
     private CheckBox chk_select_all;
     ArrayList<ViewGroupModel> groupsList = new ArrayList<>();
     ArrayList<CountriesDO> countriesList = new ArrayList<>();
@@ -91,6 +92,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     }
 
     private void callSearchIndividualWebservice() throws JSONException {
+
+
         JSONObject postdata = new JSONObject();
         postdata.put("email", et_search_individual.getText().toString());
         WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v2/relationship/search/consumer", "Search Consumer", postdata.toString());
@@ -273,12 +276,30 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
                     loadCountryData();
 
 //                    callHealthProfileWebservice();
+                }else if(httpResult.getRequestType() == "Send Request"){
+                    boolean error = result.getBoolean("error");
+                    if(error){
+                        callGroupsWebservice();
+                        AndroidUtils.showToast(result.getString("msg"),getContext());
+                    }else {
+                        AndroidUtils.showToast(result.getString("msg"), getContext());
+
+                        enableAlpha();
+                        clearIndividualData();
+                        disableIndividualData();
+                        groupsList.clear();
+                        searchModelsList.clear();
+                        callGroupsWebservice();
+                    }
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
+
 
     private void loadCountryData() {
         CommonSpinnerAdapter adapter = new CommonSpinnerAdapter(getActivity(), countriesList);
@@ -368,7 +389,12 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
             @Override
             public void onClick(View view) {
                 if (!individualValidation()){
-                    callIndividualRequestWebservice();
+                    try {
+
+                        callIndividualRequestWebservice();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -385,16 +411,45 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 //        }
     }
 
-    private void callIndividualRequestWebservice() {
+    private void callIndividualRequestWebservice() throws JSONException {
         Log.i("Tag","Country_Name:"+country_name);
+        JSONObject postdata = new JSONObject();
+        JSONArray groups = new JSONArray();
+        if (groupsAdapter.getList_item().size()!=0){
+            for (int i=0;i<groupsAdapter.getList_item().size();i++){
+                ViewGroupModel viewGroupModel = groupsAdapter.getList_item().get(i);
+                if (viewGroupModel.isChecked()){
+                    groups.put(viewGroupModel.getId());
+                }
+            }
+            if (groups.length()==0){
+                AndroidUtils.showToast("Please select atleast one group",getContext());
 
-          AndroidUtils.showToast("Request sent successfully", getContext());
+            }else{
+                if(searchModel.getMsg().equals("Individual Not Found")){
+                    postdata.put("country",country_name);
+                    postdata.put("email",tv_individual_email.getText().toString());
+                    postdata.put("first_name",tv_individual_firstname.getText().toString());
+                    postdata.put("last_name",tv_individual_last_name.getText().toString());
+                }
+                else {
+                    postdata.put("consumerId",searchModel.getConsumerID());
+                    postdata.put("description","Description");
+                }
+                postdata.put("groupAcls",groups);
+                WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.POST,"v2/relationship/request/consumer","Send Request",postdata.toString());
+//                AndroidUtils.showValidationALert("Alert",postdata.toString(), getContext());
+            }
+         }else{
+            AndroidUtils.showToast("No groups selected",getContext());
+         }
+
 
     }
 
     private void loadIndividualData(JSONObject result) throws JSONException {
 
-        SearchModel searchModel = new SearchModel();
+        searchModel= new SearchModel();
         searchModel.setMsg(result.getString("msg"));
         searchModel.setError(result.getBoolean("error"));
         if (searchModel.getError()) {
@@ -424,6 +479,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 //                    et_search_individual.setText("");
 
         }
+        searchModelsList.add(searchModel);
 //        searchModelsList.add(searchModel);
 
     }

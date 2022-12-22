@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,10 +36,12 @@ import com.digicoffer.lauditor.Webservice.WebServiceHelper;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pgpainless.key.selection.key.util.And;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,6 +55,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     TextInputEditText et_search_relationships, et_search_individual, tv_individual_email, tv_individual_confirm_email, tv_individual_firstname, tv_individual_last_name, tv_entity_name, tv_entity_contact_person, tv_entity_phone_number;
     Button btn_search_individual, btn_relationships_cancel, btn_send_request;
     TextView tv_response;
+    TextInputLayout tl_individual_country;
     Spinner sp_country;
     GroupsAdapter groupsAdapter;
     RecyclerView rv_relationship_groups;
@@ -133,6 +137,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_phone_number = view.findViewById(R.id.tv_entity_phone_number);
         tv_individual_confirm_email = view.findViewById(R.id.tv_individual_confirm_email);
         tv_individual_email = view.findViewById(R.id.tv_individual_email);
+        tl_individual_country = view.findViewById(R.id.tl_individual_country);
         tv_individual_firstname = view.findViewById(R.id.tv_individual_firstname);
         tv_individual_last_name = view.findViewById(R.id.tv_individual_last_name);
         btn_send_request = view.findViewById(R.id.btn_send_request);
@@ -185,6 +190,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
                 }
             }
         });
+        tl_individual_country.setEnabled(false);
+        sp_country.setEnabled(false);
 
     }
     public void callCountriesWebService() {
@@ -207,6 +214,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_name.setBackground(getContext().getResources().getDrawable(R.drawable.rectangle_grey_background));
         btn_relationships_cancel.setBackground(getContext().getResources().getDrawable(R.drawable.cancel_button_background));
         btn_send_request.setBackground(getContext().getResources().getDrawable(R.drawable.save_button_background));
+        tl_individual_country.setBackground(getContext().getResources().getDrawable(R.drawable.rectangle_grey_background));
+
     }
 
     private void enableAlpha() {
@@ -219,6 +228,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_name.getBackground().setAlpha(100);
         btn_relationships_cancel.getBackground().setAlpha(100);
         btn_send_request.getBackground().setAlpha(100);
+        tl_individual_country.getBackground().setAlpha(100);
+
 //        rv_relationship_groups.getBackground().setAlpha(100);
     }
 
@@ -259,6 +270,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
                         countriesDO.setValue(String.valueOf(jsonArray.getJSONArray(i).get(0)));
                         countriesList.add(countriesDO);
                     }
+                    loadCountryData();
 
 //                    callHealthProfileWebservice();
                 }
@@ -266,6 +278,28 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
                 e.printStackTrace();
             }
         }
+    }
+
+    private void loadCountryData() {
+        CommonSpinnerAdapter adapter = new CommonSpinnerAdapter(getActivity(), countriesList);
+        Log.i("ArrayList","Info:"+countriesList);
+//        ArrayAdapter adaptador = new ArrayAdapter(User_Profile.this, android.R.layout.simple_spinner_item, sorted_countriesList);
+//        adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+//        spinner.setAdapter(adaptador);
+        sp_country.setAdapter(adapter);
+        sp_country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                country_name = countriesList.get(position).getName();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     private void loadViewGroups(JSONArray data) throws JSONException {
@@ -326,7 +360,16 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
             public void onClick(View view) {
                 et_search_relationships.setText("");
                 groupsList.clear();
+                clearIndividualData();
                 callGroupsWebservice();
+            }
+        });
+        btn_send_request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!individualValidation()){
+                    callIndividualRequestWebservice();
+                }
             }
         });
         chk_select_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -342,27 +385,15 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 //        }
     }
 
+    private void callIndividualRequestWebservice() {
+        Log.i("Tag","Country_Name:"+country_name);
+
+          AndroidUtils.showToast("Request sent successfully", getContext());
+
+    }
+
     private void loadIndividualData(JSONObject result) throws JSONException {
-        CommonSpinnerAdapter adapter = new CommonSpinnerAdapter(getActivity(), countriesList);
-        Log.i("ArrayList","Info:"+countriesList);
-//        ArrayAdapter adaptador = new ArrayAdapter(User_Profile.this, android.R.layout.simple_spinner_item, sorted_countriesList);
-//        adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-//        spinner.setAdapter(adaptador);
-        sp_country.setAdapter(adapter);
-        sp_country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                country_name = countriesList.get(position).getValue();
-
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
         SearchModel searchModel = new SearchModel();
         searchModel.setMsg(result.getString("msg"));
         searchModel.setError(result.getBoolean("error"));
@@ -383,6 +414,11 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
             searchModel.setName(result.getString("name"));
             tv_response.setText(searchModel.getMsg());
             tv_response.setTextColor(getContext().getResources().getColor(R.color.Blue_text_color));
+            for (int i=0;i<countriesList.size();i++){
+                if (countriesList.get(i).getName().equals(searchModel.getCountry())){
+                    sp_country.setSelection(i);
+                }
+            }
             loadUI(searchModel);
 //
 //                    et_search_individual.setText("");
@@ -398,7 +434,11 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_individual_email.setText("");
         tv_individual_confirm_email.setText("");
         et_search_individual.setText("");
-
+        for (int i = 0; i < countriesList.size(); i++) {
+            if (countriesList.get(i).getName().equals("Choose country")) {
+                sp_country.setSelection(i);
+            }
+        }
     }
 
     private void enableIndividualData() {
@@ -412,6 +452,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_contact_person.setEnabled(true);
         btn_send_request.setEnabled(true);
         btn_relationships_cancel.setEnabled(true);
+        tl_individual_country.setEnabled(true);
+        sp_country.setEnabled(true);
 //        rv_relationship_groups.setEnabled(true);
     }
 
@@ -425,6 +467,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_contact_person.setEnabled(false);
         btn_send_request.setEnabled(false);
         btn_relationships_cancel.setEnabled(false);
+        sp_country.setEnabled(false);
 //        rv_relationship_groups.setEnabled(false);
     }
 
@@ -432,15 +475,58 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 //        disableAlpha();
         enableAlpha();
         disableIndividualData();
-
         btn_relationships_cancel.setBackground(getContext().getResources().getDrawable(R.drawable.cancel_button_background));
         btn_send_request.setBackground(getContext().getResources().getDrawable(R.drawable.save_button_background));
         btn_send_request.setEnabled(true);
         btn_relationships_cancel.setEnabled(true);
+
         tv_individual_firstname.setText(searchModel.getFirstName());
         tv_individual_last_name.setText(searchModel.getLastName());
         tv_individual_email.setText(et_search_individual.getText().toString());
         tv_individual_confirm_email.setText(et_search_individual.getText().toString());
 
+    }
+
+    private boolean individualValidation(){
+        boolean status = false;
+        if(tv_individual_email.getText().toString().equals("")){
+            tv_individual_email.setError("Email is required");
+            tv_individual_email.requestFocus();
+            AndroidUtils.showToast("Email is required",getContext());
+            status = true;
+        }else if(tv_individual_confirm_email.getText().toString().equals("")){
+            tv_individual_confirm_email.setError("Confirm email is required");
+            tv_individual_confirm_email.requestFocus();
+            AndroidUtils.showToast("Confirm email is required",getContext());
+            status = true;
+        } else if (!tv_individual_email.getText().toString().equals(tv_individual_confirm_email.getText().toString())) {
+            tv_individual_confirm_email.setError("Email and Confirm Email doesn't match");
+            AndroidUtils.showToast("Email and Confirm Email doesn't match", getContext());
+            status = true;
+        }
+        else if(tv_individual_firstname.getText().toString().equals("")){
+            tv_individual_firstname.setError("First Name is required");
+            tv_individual_firstname.requestFocus();
+            AndroidUtils.showToast("First Name is required",getContext());
+            status = true;
+        }else if(tv_individual_last_name.getText().toString().equals("")){
+            tv_individual_last_name.setError("Last Name is required");
+            tv_individual_last_name.requestFocus();
+            AndroidUtils.showToast("Last Name is required",getContext());
+            status = true;
+        }else if(country_name.equals("Choose country")){
+            AndroidUtils.showToast("Please select a country",getContext());
+        }else{
+             if(!tv_individual_email.getText().toString().equals("")&& Patterns.EMAIL_ADDRESS.matcher(tv_individual_email.getText().toString()).matches()){
+                status = false;
+            }else
+             {
+                 tv_individual_email.setError("Enter a valid email address");
+                 AndroidUtils.showToast("Enter a valid email address", getContext());
+                 status = true;
+             }
+        }
+
+        return status;
     }
 }

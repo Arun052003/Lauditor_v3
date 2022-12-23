@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.digicoffer.lauditor.ClientRelationships.Model.CountriesDO;
+import com.digicoffer.lauditor.ClientRelationships.Model.EntityModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.LoginActivity.FirmsDo;
@@ -58,6 +59,8 @@ public class CommonSpinnerAdapter<Object> extends BaseAdapter {
             data = ((ViewGroupModel)listData).getGroup_name();
         } if (listData instanceof CountriesDO) {
             data = ((CountriesDO) listData).getName();
+        }if (listData instanceof EntityModel){
+            data = ((EntityModel)listData).getEntityID();
         }
         listTextView.setText(data);
 

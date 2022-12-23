@@ -134,6 +134,7 @@
             android:layout_margin="10dp"
             android:orientation="vertical">
             <LinearLayout
+                android:id="@+id/ll_search_individual"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -147,6 +148,8 @@
                     android:hint="@string/search"
                     android:textColorHint="@color/black"
                     app:boxBackgroundMode="none"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -158,8 +161,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_search_individual"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
                         android:maxLines="1"
                         android:scrollHorizontally="true"
                         android:textSize="20dp"
@@ -175,7 +178,54 @@
                     android:layout_margin="5dp"
                     android:layout_gravity="bottom"
                     android:textAllCaps="false"
+                    android:backgroundTint="@color/Blue_text_color"
+                    android:text="@string/search">
 
+                </Button>
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_search_entity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="horizontal"
+
+                >
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/search_entity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/search"
+                    android:textColorHint="@color/black"
+                    app:boxBackgroundMode="none"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cv_details_2"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <!--this is the actual edit text which takes the input-->
+                    <AutoCompleteTextView
+                        android:id="@+id/ac_search_entity"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:drawableRight="@drawable/search_groups"
+                        android:background="@drawable/rectangle_grey_background"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btn_search_entity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_gravity="bottom"
+                    android:visibility="visible"
+                    android:textAllCaps="false"
                     android:backgroundTint="@color/Blue_text_color"
                     android:text="@string/search">
 
@@ -596,6 +646,7 @@
                         android:layout_gravity="start"
                         android:gravity="start"
                         android:enabled="false"
+                        android:inputType="number"
                         android:imeOptions="actionDone"
                         android:background="@drawable/rectangle_grey_background"
                         android:layout_height="wrap_content" />

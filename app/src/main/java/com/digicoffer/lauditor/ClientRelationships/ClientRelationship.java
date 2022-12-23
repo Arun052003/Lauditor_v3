@@ -57,6 +57,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     ArrayList<String> entityList = new ArrayList<>();
     String value = "";
     EntitySearchModel entitySearchModel;
+    EntityModel entityModel;
     ArrayList<EntityModel> updatedEntityList = new ArrayList<>();
     RadioButton rb_add_relationship, rb_view_relationships, rb_individual, rb_entity;
     LinearLayout ll_entity_name, ll_contact_person, ll_first_name, ll_last_name, ll_contatc_phone,ll_search_individual,ll_search_entity;
@@ -73,6 +74,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     private CheckBox chk_select_all;
     ArrayList<ViewGroupModel> groupsList = new ArrayList<>();
     ArrayList<CountriesDO> countriesList = new ArrayList<>();
+    private static String RELATIONSHIP_TAG = "";
     CardView cv_details;
     private String country_name;
 
@@ -104,9 +106,12 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 
     private void callSearchEntityWebservice(String id) throws JSONException{
         JSONObject postdata = new JSONObject();
-        if (entity_id==""){
+        if (entity_id == ""){
             tv_response.setText(at_search_entity.getText().toString()+"-not found.Please fill the below details to invite relationship");
             tv_response.setTextColor(getContext().getResources().getColor(R.color.Red));
+            disableAlpha();
+            enableIndividualData();
+            clearIndividualData();
         }else {
             WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v2/relationship/entity/" + entity_id, "Search Entity", postdata.toString());
         }
@@ -215,13 +220,13 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
                     case R.id.add_individiual:
+                        RELATIONSHIP_TAG = "INDIVIDUAL";
                         tv_response.setText("");
                         hideEntityData();
                         ll_search_individual.setVisibility(View.VISIBLE);
                         ll_search_entity.setVisibility(View.GONE);
                         ll_first_name.setVisibility(View.VISIBLE);
                         ll_last_name.setVisibility(View.VISIBLE);
-
                         rb_individual.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
                         rb_entity.setTextColor(getContext().getResources().getColor(R.color.white));
                         rb_entity.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
@@ -229,15 +234,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
                         rb_entity.setTextColor(getContext().getResources().getColor(R.color.black));
                         break;
                     case R.id.add_entity:
-                        //new code
-//                        et_search_individual.setText("");
-//                        et_search_individual.setText("");
-//                        enableAlpha();
-////                        clearIndividualData();
-//                        disableIndividualData();
-//                        groupsList.clear();
-//                        searchModelsList.clear();
-//                        callGroupsWebservice();
+                        RELATIONSHIP_TAG = "ENTITY";
                         callEntityWebService();
                        ll_search_individual.setVisibility(View.GONE);
                        ll_search_entity.setVisibility(View.VISIBLE);
@@ -350,21 +347,43 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 //                    callHealthProfileWebservice();
                 }else if(httpResult.getRequestType() == "Send Request"){
                     boolean error = result.getBoolean("error");
+                    callGroupsWebservice();
                     if(error){
-                        callGroupsWebservice();
+
                         AndroidUtils.showToast(result.getString("msg"),getContext());
                     }else {
                         AndroidUtils.showToast(result.getString("msg"), getContext());
                         et_search_individual.setText("");
-                        et_search_individual.setText("");
+
                         enableAlpha();
                         clearIndividualData();
                         disableIndividualData();
                         groupsList.clear();
                         searchModelsList.clear();
-                        callGroupsWebservice();
+
                     }
-                }else if(httpResult.getRequestType() == "Entities List"){
+                }else if(httpResult.getRequestType() == "Send Entity Request"){
+                    boolean error = result.getBoolean("error");
+                    callGroupsWebservice();
+                    if (error){
+                        AndroidUtils.showToast(result.getString("msg"),getContext());
+                    }
+                    else{
+                        AndroidUtils.showToast(result.getString("msg"),getContext());
+                        at_search_entity.setText("");
+                        entity_id = "";
+                        value = "";
+                        enableAlpha();
+                        clearIndividualData();
+                        disableIndividualData();
+                        groupsList.clear();
+                        tv_response.setText("");
+
+
+
+                    }
+                }
+                else if(httpResult.getRequestType() == "Entities List"){
                     JSONArray entity = result.getJSONArray("data");
                     Log.i("Tag","Info:"+entity);
                     loadEntitydata(entity);
@@ -372,6 +391,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
                     Log.i("TAG","EntityDATA:"+result.toString());
                     JSONObject data = result.getJSONObject("data");
                     loadSearchedEntityData(data);
+//                    entity_id = "";
+                    value = "";
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -429,7 +450,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         entityList.clear();
         for (int i=0;i<entity.length();i++){
            JSONObject jsonObject = entity.getJSONObject(i);
-           EntityModel entityModel = new EntityModel();
+            entityModel = new EntityModel();
            entityModel.setEntityID(jsonObject.getString("entityId"));
            entityModel.setName(jsonObject.getString("name"));
            entityModel.setContactName(jsonObject.getString("contactName"));
@@ -545,12 +566,23 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         btn_send_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!individualValidation()){
-                    try {
+                if (RELATIONSHIP_TAG == "INDIVIDUAL") {
+                    if (!individualValidation()) {
+                        try {
 
-                        callIndividualRequestWebservice();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                            callIndividualRequestWebservice();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }else {
+                    if (!individualValidation()) {
+                        try {
+
+                            callEntityRequestWebservice();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -566,6 +598,44 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 //        else {
 ////            cv_members_details.setVisibility(View.GONE);
 //        }
+    }
+
+    private void callEntityRequestWebservice() throws JSONException{
+        Log.i("Tag","Country_Name:"+country_name);
+        JSONObject postdata = new JSONObject();
+        JSONArray groups = new JSONArray();
+        if (groupsAdapter.getList_item().size()!=0) {
+            for (int i = 0; i < groupsAdapter.getList_item().size(); i++) {
+                ViewGroupModel viewGroupModel = groupsAdapter.getList_item().get(i);
+                if (viewGroupModel.isChecked()) {
+                    groups.put(viewGroupModel.getId());
+                }
+            }
+            if (groups.length() == 0) {
+                AndroidUtils.showToast("Please select atleast one group", getContext());
+
+            }else{
+
+                if(entity_id==""){
+                    postdata.put("country",country_name);
+                    postdata.put("email",tv_individual_email.getText().toString());
+                    postdata.put("fullname",tv_entity_name.getText().toString());
+                    postdata.put("contact_person",tv_entity_contact_person.getText().toString());
+                    postdata.put("contactPhone",tv_entity_phone_number.getText().toString());
+                    postdata.put("groupAcls",groups);
+                    WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.POST,"v2/relationship/invite/entity","Send Entity Request",postdata.toString());
+                }
+                else {
+                    postdata.put("entityId",entity_id);
+                    postdata.put("description","Description");
+                    postdata.put("groupAcls",groups);
+                    WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.POST,"v2/relationship/request/entity","Send Entity Request",postdata.toString());
+                }
+            }
+        }else{
+            AndroidUtils.showToast("No groups selected",getContext());
+        }
+
     }
 
     private void callIndividualRequestWebservice() throws JSONException {
@@ -655,6 +725,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_phone_number.setText("");
         et_search_individual.setText("");
 
+
         for (int i = 0; i < countriesList.size(); i++) {
             if (countriesList.get(i).getName().equals("Choose country")) {
                 sp_country.setSelection(i);
@@ -695,42 +766,83 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 
     private boolean individualValidation(){
         boolean status = false;
-        if(tv_individual_email.getText().toString().equals("")){
-            tv_individual_email.setError("Email is required");
-            tv_individual_email.requestFocus();
-            AndroidUtils.showToast("Email is required",getContext());
-            status = true;
-        }else if(tv_individual_confirm_email.getText().toString().equals("")){
-            tv_individual_confirm_email.setError("Confirm email is required");
-            tv_individual_confirm_email.requestFocus();
-            AndroidUtils.showToast("Confirm email is required",getContext());
-            status = true;
-        } else if (!tv_individual_email.getText().toString().equals(tv_individual_confirm_email.getText().toString())) {
-            tv_individual_confirm_email.setError("Email and Confirm Email doesn't match");
-            AndroidUtils.showToast("Email and Confirm Email doesn't match", getContext());
-            status = true;
-        }
-        else if(tv_individual_firstname.getText().toString().equals("")){
-            tv_individual_firstname.setError("First Name is required");
-            tv_individual_firstname.requestFocus();
-            AndroidUtils.showToast("First Name is required",getContext());
-            status = true;
-        }else if(tv_individual_last_name.getText().toString().equals("")){
-            tv_individual_last_name.setError("Last Name is required");
-            tv_individual_last_name.requestFocus();
-            AndroidUtils.showToast("Last Name is required",getContext());
-            status = true;
-        }else if(country_name.equals("Choose country")){
-            AndroidUtils.showToast("Please select a country",getContext());
+        if(RELATIONSHIP_TAG=="INDIVIDUAL") {
+            if (tv_individual_email.getText().toString().equals("")) {
+                tv_individual_email.setError("Email is required");
+                tv_individual_email.requestFocus();
+                AndroidUtils.showToast("Email is required", getContext());
+                status = true;
+            } else if (tv_individual_confirm_email.getText().toString().equals("")) {
+                tv_individual_confirm_email.setError("Confirm email is required");
+                tv_individual_confirm_email.requestFocus();
+                AndroidUtils.showToast("Confirm email is required", getContext());
+                status = true;
+            } else if (!tv_individual_email.getText().toString().equals(tv_individual_confirm_email.getText().toString())) {
+                tv_individual_confirm_email.setError("Email and Confirm Email doesn't match");
+                AndroidUtils.showToast("Email and Confirm Email doesn't match", getContext());
+                status = true;
+            } else if (tv_individual_firstname.getText().toString().equals("")) {
+                tv_individual_firstname.setError("First Name is required");
+                tv_individual_firstname.requestFocus();
+                AndroidUtils.showToast("First Name is required", getContext());
+                status = true;
+            } else if (tv_individual_last_name.getText().toString().equals("")) {
+                tv_individual_last_name.setError("Last Name is required");
+                tv_individual_last_name.requestFocus();
+                AndroidUtils.showToast("Last Name is required", getContext());
+                status = true;
+            } else if (country_name.equals("Choose country")) {
+                AndroidUtils.showToast("Please select a country", getContext());
+            } else {
+                if (!tv_individual_email.getText().toString().equals("") && Patterns.EMAIL_ADDRESS.matcher(tv_individual_email.getText().toString()).matches()) {
+                    status = false;
+                } else {
+                    tv_individual_email.setError("Enter a valid email address");
+                    AndroidUtils.showToast("Enter a valid email address", getContext());
+                    status = true;
+                }
+            }
         }else{
-             if(!tv_individual_email.getText().toString().equals("")&& Patterns.EMAIL_ADDRESS.matcher(tv_individual_email.getText().toString()).matches()){
-                status = false;
-            }else
-             {
-                 tv_individual_email.setError("Enter a valid email address");
-                 AndroidUtils.showToast("Enter a valid email address", getContext());
+             if (tv_entity_name.getText().toString().equals("")) {
+                 tv_entity_name.setError("Entity Name is required");
+                 tv_entity_name.requestFocus();
+                AndroidUtils.showToast("Entity Name is required", getContext());
+                status = true;
+            }else if (tv_entity_contact_person.getText().toString().equals("")) {
+                 tv_entity_contact_person.setError("Contact Person is required");
+                 tv_entity_contact_person.requestFocus();
+                 AndroidUtils.showToast("Contact Person is required", getContext());
                  status = true;
+             }else if(tv_entity_phone_number.getText().toString().equals("")){
+                 tv_entity_phone_number.setError("Contact Phone Number is required");
+                 tv_entity_phone_number.requestFocus();
+                 AndroidUtils.showToast("Contact Phone Number is required",getContext());
              }
+             else if (tv_individual_email.getText().toString().equals("")) {
+                tv_individual_email.setError("Email is required");
+                tv_individual_email.requestFocus();
+                AndroidUtils.showToast("Email is required", getContext());
+                status = true;
+            } else if (tv_individual_confirm_email.getText().toString().equals("")) {
+                tv_individual_confirm_email.setError("Confirm email is required");
+                tv_individual_confirm_email.requestFocus();
+                AndroidUtils.showToast("Confirm email is required", getContext());
+                status = true;
+            } else if (!tv_individual_email.getText().toString().equals(tv_individual_confirm_email.getText().toString())) {
+                tv_individual_confirm_email.setError("Email and Confirm Email doesn't match");
+                AndroidUtils.showToast("Email and Confirm Email doesn't match", getContext());
+                status = true;
+            }   else if (country_name.equals("Choose country")) {
+                AndroidUtils.showToast("Please select a country", getContext());
+            } else {
+                if (!tv_individual_email.getText().toString().equals("") && Patterns.EMAIL_ADDRESS.matcher(tv_individual_email.getText().toString()).matches()) {
+                    status = false;
+                } else {
+                    tv_individual_email.setError("Enter a valid email address");
+                    AndroidUtils.showToast("Enter a valid email address", getContext());
+                    status = true;
+                }
+            }
         }
 
         return status;

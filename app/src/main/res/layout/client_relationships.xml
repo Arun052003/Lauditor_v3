@@ -37,12 +37,7 @@
             android:text="@string/add_relationships"
             android:textSize="@dimen/Fifteen_dp" />
 
-        <View
-            android:id="@+id/vSep1"
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#0000FF"
-            android:visibility="visible" />
+
 
         <RadioButton
             android:id="@+id/view_relationship"
@@ -90,12 +85,7 @@
             android:text="Individual"
             android:textSize="@dimen/Fifteen_dp" />
 
-        <View
 
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#0000FF"
-            android:visibility="visible" />
 
         <RadioButton
             android:id="@+id/add_entity"
@@ -655,7 +645,7 @@
             </LinearLayout>
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.cardview.widget.CardView>
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <LinearLayout
         android:id="@+id/ll_select_all"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -682,11 +672,11 @@
             android:layout_gravity="center"
 
             />
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </LinearLayout>
     <LinearLayout
+        android:id="@+id/ll_groups"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ll_select_all"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -697,6 +687,55 @@
 
         </include>
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_relationships"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/ll_groups"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/search_view_relationships"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:hint="Search Relationships"
+
+            android:textColorHint="@color/black"
+            app:boxBackgroundMode="none"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cv_details_2"
+            app:layout_constraintVertical_bias="0.0">
+
+            <!--this is the actual edit text which takes the input-->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_search_view_relationships"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:background="@drawable/rectangle_grey_background"
+                android:drawableRight="@drawable/search_groups"
+                android:gravity="start" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_relationships"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:orientation="vertical"
+            android:visibility="visible"
+            android:layout_margin="10dp"
+
+            />
+    </LinearLayout>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

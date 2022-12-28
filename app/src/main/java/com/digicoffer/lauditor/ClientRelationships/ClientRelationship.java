@@ -27,9 +27,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.ClientRelationships.Adapter.RelationshipsAdapter;
 import com.digicoffer.lauditor.ClientRelationships.Model.CountriesDO;
 import com.digicoffer.lauditor.ClientRelationships.Model.EntityModel;
 import com.digicoffer.lauditor.ClientRelationships.Model.EntitySearchModel;
+import com.digicoffer.lauditor.ClientRelationships.Model.RelationshipsModel;
 import com.digicoffer.lauditor.ClientRelationships.Model.SearchModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.Members.GroupsAdapter;
@@ -55,13 +57,15 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     private RadioGroup rg_add_relationships, rg_individual_entity;
     ArrayList<SearchModel> searchModelsList = new ArrayList<>();
     ArrayList<String> entityList = new ArrayList<>();
+    ArrayList<RelationshipsModel> relationshipsList = new ArrayList<>();
+
     String value = "";
     EntitySearchModel entitySearchModel;
     EntityModel entityModel;
     ArrayList<EntityModel> updatedEntityList = new ArrayList<>();
     RadioButton rb_add_relationship, rb_view_relationships, rb_individual, rb_entity;
-    LinearLayout ll_entity_name, ll_contact_person, ll_first_name, ll_last_name, ll_contatc_phone,ll_search_individual,ll_search_entity;
-    TextInputEditText et_search_relationships, et_search_individual, tv_individual_email, tv_individual_confirm_email, tv_individual_firstname, tv_individual_last_name, tv_entity_name, tv_entity_contact_person, tv_entity_phone_number;
+    LinearLayout ll_entity_name, ll_contact_person, ll_first_name, ll_last_name, ll_contatc_phone,ll_search_individual,ll_search_entity,ll_relationships,ll_select_all,ll_groups;
+    TextInputEditText et_search_relationships, et_search_individual,et_search_view_relationships, tv_individual_email, tv_individual_confirm_email, tv_individual_firstname, tv_individual_last_name, tv_entity_name, tv_entity_contact_person, tv_entity_phone_number;
     Button btn_search_individual, btn_relationships_cancel, btn_send_request,btn_search_entity;
     TextView tv_response;
     AutoCompleteTextView at_search_entity;
@@ -69,7 +73,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     String entity_id = "";
     Spinner sp_country;
     GroupsAdapter groupsAdapter;
-    RecyclerView rv_relationship_groups;
+    RecyclerView rv_relationship_groups,rv_relationships;
     SearchModel searchModel;
     private CheckBox chk_select_all;
     ArrayList<ViewGroupModel> groupsList = new ArrayList<>();
@@ -161,12 +165,15 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         rg_individual_entity = view.findViewById(R.id.entity);
         rb_individual = view.findViewById(R.id.add_individiual);
         rv_relationship_groups = view.findViewById(R.id.rv_relationship_groups);
+        rv_relationships = view.findViewById(R.id.rv_relationships);
         rb_entity = view.findViewById(R.id.add_entity);
         ll_search_entity = view.findViewById(R.id.ll_search_entity);
         ll_search_individual = view.findViewById(R.id.ll_search_individual);
         ll_entity_name = view.findViewById(R.id.ll_entity_name);
         ll_first_name = view.findViewById(R.id.ll_first_name);
         ll_last_name = view.findViewById(R.id.ll_last_name);
+        ll_groups = view.findViewById(R.id.ll_groups);
+        ll_select_all = view.findViewById(R.id.ll_select_all);
         ll_contact_person = view.findViewById(R.id.ll_contact_person);
         ll_contatc_phone = view.findViewById(R.id.ll_entity_number);
         sp_country = view.findViewById(R.id.sp_country);
@@ -182,6 +189,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tv_entity_contact_person = view.findViewById(R.id.tv_entity_contact_person);
         tv_entity_name = view.findViewById(R.id.tv_entity_name);
         tv_entity_phone_number = view.findViewById(R.id.tv_entity_phone_number);
+        ll_relationships = view.findViewById(R.id.ll_relationships);
+        et_search_view_relationships = view.findViewById(R.id.et_search_view_relationships);
         tv_individual_confirm_email = view.findViewById(R.id.tv_individual_confirm_email);
         tv_individual_email = view.findViewById(R.id.tv_individual_email);
         tl_individual_country = view.findViewById(R.id.tl_individual_country);
@@ -204,6 +213,12 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
                         rb_view_relationships.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
                         rb_add_relationship.setTextColor(getContext().getResources().getColor(R.color.white));
                         rb_view_relationships.setTextColor(getContext().getResources().getColor(R.color.black));
+                        ll_relationships.setVisibility(View.GONE);
+                        cv_details.setVisibility(View.VISIBLE);
+                        ll_select_all.setVisibility(View.VISIBLE);
+                        ll_groups.setVisibility(View.GONE);
+                        relationshipsList.clear();
+                        rv_relationships.removeAllViews();
                         break;
                     case R.id.view_relationship:
 
@@ -211,6 +226,11 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
                         rb_view_relationships.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
                         rb_add_relationship.setTextColor(getContext().getResources().getColor(R.color.black));
                         rb_view_relationships.setTextColor(getContext().getResources().getColor(R.color.white));
+                        ll_relationships.setVisibility(View.VISIBLE);
+                        cv_details.setVisibility(View.GONE);
+                        ll_select_all.setVisibility(View.GONE);
+                        ll_groups.setVisibility(View.GONE);
+                        callIndividualWebservice();
                         break;
                 }
             }
@@ -258,6 +278,11 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tl_individual_country.setEnabled(false);
         sp_country.setEnabled(false);
 
+    }
+
+    private void callIndividualWebservice() {
+        JSONObject postdata = new JSONObject();
+        WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.GET,"v2/relationships/individuals","View Relationships",postdata.toString());
     }
 
     private void callEntityWebService() {
@@ -393,11 +418,63 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
                     loadSearchedEntityData(data);
 //                    entity_id = "";
                     value = "";
+                }else if(httpResult.getRequestType() == "View Relationships"){
+                    JSONObject data = result.getJSONObject("data");
+                    JSONArray relationships = data.getJSONArray("relationships");
+                    loadRelationshipsData(relationships);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void loadRelationshipsData(JSONArray relationships) throws JSONException {
+        for (int i = 0; i < relationships.length(); i++) {
+            RelationshipsModel relationshipsModel = new RelationshipsModel();
+            JSONObject jsonObject = relationships.getJSONObject(i);
+            relationshipsModel.setAdminName(jsonObject.getString("adminName"));
+            relationshipsModel.setCanAccept(jsonObject.getBoolean(""));
+            relationshipsModel.setClientType(jsonObject.getString("clientType"));
+            relationshipsModel.setClient_id(jsonObject.getString("client_id"));
+            relationshipsModel.setConsent(jsonObject.getString("consent"));
+            relationshipsModel.setCreated(jsonObject.getString("created"));
+            relationshipsModel.setGroups(jsonObject.getJSONArray("groups"));
+            relationshipsModel.setGuid(jsonObject.getString("guid"));
+            relationshipsModel.setId(jsonObject.getString("id"));
+            relationshipsModel.setAccepted(jsonObject.getBoolean("isAccepted"));
+            relationshipsModel.setClient(jsonObject.getBoolean("isClient"));
+            relationshipsModel.setEditable(jsonObject.getBoolean("isEditable"));
+            relationshipsModel.setMatterList(jsonObject.getJSONArray("matterList"));
+            relationshipsModel.setName(jsonObject.getString("name"));
+            relationshipsList.add(relationshipsModel);
+        }
+        loadRelationshipsRecylerview();
+    }
+
+    private void loadRelationshipsRecylerview() {
+        rv_relationships.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        RelationshipsAdapter adapter = new RelationshipsAdapter(relationshipsList);
+        rv_relationships.setAdapter(adapter);
+        rv_relationships.setHasFixedSize(true);
+        et_search_view_relationships.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                adapter.getFilter().filter(s);
+            }
+
+        });
+
+
     }
 
     private void loadSearchedEntityData(JSONObject data) throws JSONException{
@@ -766,7 +843,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 
     private boolean individualValidation(){
         boolean status = false;
-        if(RELATIONSHIP_TAG=="INDIVIDUAL") {
+        if(RELATIONSHIP_TAG =="INDIVIDUAL") {
             if (tv_individual_email.getText().toString().equals("")) {
                 tv_individual_email.setError("Email is required");
                 tv_individual_email.requestFocus();

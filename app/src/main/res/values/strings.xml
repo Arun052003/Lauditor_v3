@@ -44,4 +44,6 @@
     <string name="last_name">Last Name</string>
     <string name="contact_phone_number">Contact Phone Number</string>
     <string name="send_request">Send Request</string>
+    <string name="profile">Profile</string>
+    <string name="share_document">Share Document</string>
 </resources>

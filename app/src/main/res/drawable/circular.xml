@@ -8,9 +8,10 @@
     android:useLevel="false" >
 
     <solid
-        android:color="@android:color/transparent" />
+        android:color="@color/grey_color_dark"
+        />
 
     <stroke
         android:width="9dp"
-        android:color="@android:color/white" />
+        android:color="@color/grey_color_dark" />
 </shape>

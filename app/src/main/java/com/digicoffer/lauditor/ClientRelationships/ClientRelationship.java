@@ -282,7 +282,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 
     private void callIndividualWebservice() {
         JSONObject postdata = new JSONObject();
-        WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.GET,"v2/relationships/individuals","View Relationships",postdata.toString());
+        WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.GET,"v2/relationship/individuals","View Relationships",postdata.toString());
     }
 
     private void callEntityWebService() {
@@ -434,7 +434,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
             RelationshipsModel relationshipsModel = new RelationshipsModel();
             JSONObject jsonObject = relationships.getJSONObject(i);
             relationshipsModel.setAdminName(jsonObject.getString("adminName"));
-            relationshipsModel.setCanAccept(jsonObject.getBoolean(""));
+            relationshipsModel.setCanAccept(jsonObject.getBoolean("canAccept"));
             relationshipsModel.setClientType(jsonObject.getString("clientType"));
             relationshipsModel.setClient_id(jsonObject.getString("client_id"));
             relationshipsModel.setConsent(jsonObject.getString("consent"));
@@ -454,6 +454,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 
     private void loadRelationshipsRecylerview() {
         rv_relationships.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        Log.i("Tag","Info:"+relationshipsList.toString());
         RelationshipsAdapter adapter = new RelationshipsAdapter(relationshipsList);
         rv_relationships.setAdapter(adapter);
         rv_relationships.setHasFixedSize(true);

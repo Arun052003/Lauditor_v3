@@ -7,11 +7,10 @@
     android:thicknessRatio="2.0"
     android:useLevel="false" >
 
-    <solid
-        android:color="@color/grey_color_dark"
-        />
+    <gradient android:angle="45" android:centerColor="@color/dark_grey" android:endColor="@color/grey_color_dark" android:startColor="@color/grey_color_dark" android:type="linear" />
+
 
     <stroke
-        android:width="9dp"
-        android:color="@color/grey_color_dark" />
+        android:width="0dp"
+        android:color="@color/dark_grey" />
 </shape>

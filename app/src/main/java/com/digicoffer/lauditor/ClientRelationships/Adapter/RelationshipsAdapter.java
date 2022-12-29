@@ -1,5 +1,10 @@
 package com.digicoffer.lauditor.ClientRelationships.Adapter;
 
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +31,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
 
     public RelationshipsAdapter(ArrayList<RelationshipsModel> relationshipsList) {
         this.relationshipsList = relationshipsList;
-        itemsList = relationshipsList;
+        this.itemsList = relationshipsList;
     }
 
     @Override
@@ -44,8 +49,26 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
     @Override
     public void onBindViewHolder(@NonNull RelationshipsAdapter.MyViewHolder holder, int position) {
                     RelationshipsModel relationshipsModel = relationshipsList.get(position);
+                    Log.i("Tag","Relationship:"+relationshipsModel.getAdminName());
                     holder.tv_relationship_name.setText(relationshipsModel.getAdminName());
-                    holder.tv_created_date.setText(relationshipsModel.getCreated());
+                    holder.tv_created_date.setText("Created "+relationshipsModel.getCreated());
+                    holder.tv_consumer.setText(relationshipsModel.getClientType());
+                    if (relationshipsModel.isAccepted()){
+                        holder.tv_initiated.setText("Accepted");
+                    }else{
+                        holder.tv_initiated.setText("Not Accepted");
+                    }
+                    String text = "More Details";
+        SpannableString ss = new SpannableString(text);
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View view) {
+
+            }
+        };
+        ss.setSpan(clickableSpan,0,12, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        holder.tv_more_details.setText(ss);
+        holder.tv_more_details.setMovementMethod(LinkMovementMethod.getInstance());
 //                    holder.tv
     }
 

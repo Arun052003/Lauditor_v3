@@ -25,4 +25,14 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">0dp</item>
     </style>
+    <style name="MyRounded.MaterialComponents.MaterialAlertDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.App.CustomDialog.Rounded
+        </item>
+        <item name="colorSurface">@color/white</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.App.CustomDialog.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">24dp</item>
+    </style>
+
 </resources>

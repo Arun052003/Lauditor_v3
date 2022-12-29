@@ -57,6 +57,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     private RadioGroup rg_add_relationships, rg_individual_entity;
     ArrayList<SearchModel> searchModelsList = new ArrayList<>();
     ArrayList<String> entityList = new ArrayList<>();
+    ArrayList<ViewGroupModel> updatedMembersList = new ArrayList<>();
     ArrayList<RelationshipsModel> relationshipsList = new ArrayList<>();
 
     String value = "";
@@ -430,8 +431,9 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     }
 
     private void loadRelationshipsData(JSONArray relationships) throws JSONException {
+        RelationshipsModel relationshipsModel = null;
         for (int i = 0; i < relationships.length(); i++) {
-            RelationshipsModel relationshipsModel = new RelationshipsModel();
+             relationshipsModel = new RelationshipsModel();
             JSONObject jsonObject = relationships.getJSONObject(i);
             relationshipsModel.setAdminName(jsonObject.getString("adminName"));
             relationshipsModel.setCanAccept(jsonObject.getBoolean("canAccept"));
@@ -449,13 +451,22 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
             relationshipsModel.setName(jsonObject.getString("name"));
             relationshipsList.add(relationshipsModel);
         }
-        loadRelationshipsRecylerview();
+        loadRelationshipsRecylerview(relationshipsModel);
     }
 
-    private void loadRelationshipsRecylerview() {
+    private void loadRelationshipsRecylerview(RelationshipsModel relationshipsModel)throws JSONException {
+
+            for (int j=0;j<relationshipsModel.getGroups().length();j++){
+                ViewGroupModel viewGroupModel = new ViewGroupModel();
+                JSONObject jsonObject = relationshipsModel.getGroups().getJSONObject(j);
+                viewGroupModel.setGroup_id(jsonObject.getString("id"));
+                viewGroupModel.setGroup_name(jsonObject.getString("name"));
+                updatedMembersList.add(viewGroupModel);
+            }
+
         rv_relationships.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        Log.i("Tag","Info:"+relationshipsList.toString());
-        RelationshipsAdapter adapter = new RelationshipsAdapter(relationshipsList);
+        Log.i("Tag","Info:"+updatedMembersList.toString());
+        RelationshipsAdapter adapter = new RelationshipsAdapter(relationshipsList,getContext(),getActivity());
         rv_relationships.setAdapter(adapter);
         rv_relationships.setHasFixedSize(true);
         et_search_view_relationships.addTextChangedListener(new TextWatcher() {

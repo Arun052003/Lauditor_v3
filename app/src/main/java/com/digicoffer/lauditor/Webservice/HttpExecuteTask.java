@@ -202,7 +202,8 @@ public class HttpExecuteTask extends AsyncTask<String, Integer, HttpResultDo> {
                 AndroidUtils.showToast("Session expired, Login agiain", activity);
             } else
                 callback.onAsyncTaskComplete(httpResult);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
 //            AndroidUtils.logMsg("HttpExecuteTask.onPostExecute() : Exception " + e.getMessage());
         }
     }

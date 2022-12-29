@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.digicoffer.lauditor.ClientRelationships.Model.RelationshipsModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.Members.GroupsAdapter;
+import com.digicoffer.lauditor.Members.MembersAdapter;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
@@ -37,6 +38,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pgpainless.key.selection.key.util.And;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,22 +50,27 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
     Context mcontext;
     ArrayList<ViewGroupModel> updatedMembersList = new ArrayList<>();
     RelationshipsAdapter.MyViewHolder mholder;
+    RelationshipsModel relationshipsModel_new;
     ArrayList<ViewGroupModel> groupsList = new ArrayList<>();
     AlertDialog ad_dialog;
     ViewGroup mParent;
     FragmentActivity mActivity;
-    public RelationshipsAdapter(ArrayList<RelationshipsModel> relationshipsList, Context context, FragmentActivity activity) {
+    RelationshipsAdapter.EventListener eventListener;
+    public RelationshipsAdapter(ArrayList<RelationshipsModel> relationshipsList, Context context, FragmentActivity activity,RelationshipsAdapter.EventListener listener) {
         this.relationshipsList = relationshipsList;
         this.itemsList = relationshipsList;
         this.mcontext = context;
         this.mActivity = activity;
+        this.eventListener = listener;
     }
 
     @Override
     public Filter getFilter() {
         return null;
     }
-
+    public interface EventListener{
+        void RefreshViewRelationshipsData();
+    }
     @NonNull
     @Override
     public RelationshipsAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -131,6 +138,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        relationshipsModel_new = relationshipsModel;
         mholder = holder;
         JSONObject postdata = new JSONObject();
         WebServiceHelper.callHttpWebService(this, mcontext, WebServiceHelper.RestMethodType.GET, "v3/groups", "Get Groups", postdata.toString());
@@ -158,6 +166,19 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
             if (httpResult.getRequestType().equals("Get Groups")) {
                 JSONArray data = result.getJSONArray("data");
                 loadViewGroups(data);
+            }else if(httpResult.getRequestType().equals("Update Group Access")){
+//                AndroidUtils.showToast(result.getString("msg"),mcontext);
+                boolean error = result.getBoolean("error");
+                if (error){
+                    AndroidUtils.showToast(result.getString("msg"),mcontext);
+                }else{
+                    AndroidUtils.showToast(result.getString("msg"),mcontext);
+                    groupsList.clear();
+                    relationshipsList.clear();
+                    ad_dialog.dismiss();
+                    eventListener.RefreshViewRelationshipsData();
+                }
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -243,10 +264,35 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
                 dialog.dismiss();
             }
         });
+        btn_send_request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                et_search_relationships.setText("");
+                try {
+                    callUpdateGroupAcess(relationshipsModel_new.getId(), groupsAdapter.getList_item());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         dialog.setView(view);
         dialog.show();
     }
 
+    private void callUpdateGroupAcess(String id, ArrayList<ViewGroupModel> list_item) throws JSONException {
+        JSONObject postData = new JSONObject();
+        JSONArray acls = new JSONArray();
+        if (list_item.size() != 0) {
+            for (int i = 0; i < list_item.size(); i++) {
+                ViewGroupModel viewGroupModel = list_item.get(i);
+                if (viewGroupModel.isChecked()) {
+                    acls.put(viewGroupModel.getId());
+                }
+            }
+            postData.put("acls", acls);
+            WebServiceHelper.callHttpWebService(this, mcontext, WebServiceHelper.RestMethodType.PUT, "v2/relationship/" + id + "/acls", "Update Group Access", postData.toString());
+        }
+    }
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tv_relationship_name, tv_created_date, tv_consumer, tv_more_details, tv_initiated;
         ImageView iv_initiated, iv_groups_relationships, iv_clock_relationships, iv_delete_relationships;

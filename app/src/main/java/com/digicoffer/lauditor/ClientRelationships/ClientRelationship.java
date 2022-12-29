@@ -52,7 +52,7 @@ import org.pgpainless.key.selection.key.util.And;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class ClientRelationship extends Fragment implements AsyncTaskCompleteListener, View.OnClickListener {
+public class ClientRelationship extends Fragment implements AsyncTaskCompleteListener, View.OnClickListener, RelationshipsAdapter.EventListener {
 
     private RadioGroup rg_add_relationships, rg_individual_entity;
     ArrayList<SearchModel> searchModelsList = new ArrayList<>();
@@ -222,16 +222,8 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
                         rv_relationships.removeAllViews();
                         break;
                     case R.id.view_relationship:
+                        viewRelationshipsData();
 
-                        rb_add_relationship.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
-                        rb_view_relationships.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
-                        rb_add_relationship.setTextColor(getContext().getResources().getColor(R.color.black));
-                        rb_view_relationships.setTextColor(getContext().getResources().getColor(R.color.white));
-                        ll_relationships.setVisibility(View.VISIBLE);
-                        cv_details.setVisibility(View.GONE);
-                        ll_select_all.setVisibility(View.GONE);
-                        ll_groups.setVisibility(View.GONE);
-                        callIndividualWebservice();
                         break;
                 }
             }
@@ -279,6 +271,18 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         tl_individual_country.setEnabled(false);
         sp_country.setEnabled(false);
 
+    }
+
+    private void viewRelationshipsData() {
+        rb_add_relationship.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+        rb_view_relationships.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+        rb_add_relationship.setTextColor(getContext().getResources().getColor(R.color.black));
+        rb_view_relationships.setTextColor(getContext().getResources().getColor(R.color.white));
+        ll_relationships.setVisibility(View.VISIBLE);
+        cv_details.setVisibility(View.GONE);
+        ll_select_all.setVisibility(View.GONE);
+        ll_groups.setVisibility(View.GONE);
+        callIndividualWebservice();
     }
 
     private void callIndividualWebservice() {
@@ -466,7 +470,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 
         rv_relationships.setLayoutManager(new GridLayoutManager(getContext(), 1));
         Log.i("Tag","Info:"+updatedMembersList.toString());
-        RelationshipsAdapter adapter = new RelationshipsAdapter(relationshipsList,getContext(),getActivity());
+        RelationshipsAdapter adapter = new RelationshipsAdapter(relationshipsList,getContext(),getActivity(),this);
         rv_relationships.setAdapter(adapter);
         rv_relationships.setHasFixedSize(true);
         et_search_view_relationships.addTextChangedListener(new TextWatcher() {
@@ -935,5 +939,10 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         }
 
         return status;
+    }
+
+    @Override
+    public void RefreshViewRelationshipsData() {
+        viewRelationshipsData();
     }
 }

@@ -190,10 +190,10 @@
 
     <RadioGroup
         android:id="@+id/profile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:visibility="gone"
-        android:layout_margin="@dimen/thirty_dp"
+        android:layout_margin="10dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -205,68 +205,230 @@
 
         <RadioButton
             android:id="@+id/add_individiual"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@drawable/button_left_green_background"
             android:button="@android:color/transparent"
             android:fontFamily="sans-serif-condensed-medium"
             android:gravity="center"
             android:padding="15dp"
-            android:singleLine="true"
+            android:layout_weight="1"
+            android:singleLine="false"
             android:text="@string/profile"
-            android:textSize="@dimen/Fifteen_dp" />
+            android:textSize="10dp" />
 
 
 
         <RadioButton
             android:id="@+id/rb_share_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@drawable/radiobutton_centre_background"
             android:button="@android:color/transparent"
             android:fontFamily="sans-serif-condensed-medium"
             android:gravity="center"
             android:padding="15dp"
+            android:layout_weight="1"
             android:singleLine="false"
             android:text="@string/share_document"
-            android:textSize="@dimen/Fifteen_dp" />
+            android:textSize="10dp" />
 
 
 
         <RadioButton
             android:id="@+id/rb_share_matter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@drawable/radiobutton_centre_background"
             android:button="@android:color/transparent"
             android:fontFamily="sans-serif-condensed-medium"
             android:gravity="center"
             android:padding="15dp"
-            android:singleLine="true"
+            android:layout_weight="1"
+            android:singleLine="false"
             android:text="Share Matter"
-            android:textSize="@dimen/Fifteen_dp" />
+            android:textSize="10dp" />
 
 
 
         <RadioButton
             android:id="@+id/add_entity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
 
             android:background="@drawable/button_right_background"
             android:button="@android:color/transparent"
             android:fontFamily="sans-serif-condensed-medium"
             android:gravity="center"
             android:padding="15dp"
+            android:layout_weight="1"
             android:singleLine="true"
             android:text="Chat"
-            android:textSize="@dimen/Fifteen_dp" />
+            android:textSize="10dp" />
 
 
     </RadioGroup>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_profile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardCornerRadius="5dp"
+        android:elevation="50dp"
+        android:layout_margin="5dp"
+        android:padding="5dp"
+        android:visibility="gone"
 
+        app:layout_constraintTop_toBottomOf="@id/profile"
+
+       app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_gravity="center">
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:padding="10dp"
+           android:orientation="vertical">
+           <TextView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/black"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="@string/first_name">
+
+           </TextView>
+           <TextView
+               android:id="@+id/tv_first_name"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/Blue_text_color"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="">
+
+           </TextView>
+           <TextView
+               android:layout_marginTop="5dp"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/black"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="Email:">
+
+           </TextView>
+           <TextView
+               android:id="@+id/tv_email"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/Blue_text_color"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="">
+
+           </TextView>
+           <TextView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/black"
+               android:layout_marginTop="5dp"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="Country:">
+
+           </TextView>
+           <TextView
+               android:id="@+id/tv_country"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/Blue_text_color"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="">
+
+           </TextView>
+           <TextView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/black"
+               android:layout_marginTop="5dp"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="Contact Name:">
+
+           </TextView>
+           <TextView
+               android:id="@+id/tv_contact_name"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/Blue_text_color"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="">
+
+           </TextView>
+           <TextView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/black"
+               android:layout_marginTop="5dp"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="Mobile:">
+
+           </TextView>
+           <TextView
+               android:id="@+id/tv_mobile"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/Blue_text_color"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="">
+
+           </TextView>
+           <TextView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/black"
+               android:layout_marginTop="5dp"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="Website:">
+
+           </TextView>
+           <TextView
+               android:id="@+id/tv_website"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/Blue_text_color"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="">
+
+           </TextView>
+           <TextView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/black"
+               android:layout_marginTop="5dp"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="Billing Currency:">
+
+           </TextView>
+           <TextView
+               android:id="@+id/tv_billing_currency"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:textColor="@color/Blue_text_color"
+               android:fontFamily="sans-serif-medium"
+               android:textSize="@dimen/Fifteen_dp"
+               android:text="">
+
+           </TextView>
+       </LinearLayout>
+    </androidx.cardview.widget.CardView>
     <RadioGroup
         android:id="@+id/shared_status"
         android:layout_width="match_parent"
@@ -279,7 +441,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile"
+        app:layout_constraintTop_toBottomOf="@+id/cv_profile"
         app:layout_constraintVertical_bias="0.0">
 
         <RadioButton
@@ -359,20 +521,21 @@
 
 
     </RadioGroup>
+
     <RadioGroup
         android:id="@+id/document_type"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/thirty_dp"
+        android:layout_marginTop="32dp"
         android:gravity="center"
-        android:visibility="gone"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/ll_documents"
+
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shared_type"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toBottomOf="@+id/shared_type">
 
         <RadioButton
             android:id="@+id/rb_client_document"

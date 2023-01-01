@@ -21,10 +21,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.ClientRelationships.Model.ProfileDo;
 import com.digicoffer.lauditor.ClientRelationships.Model.RelationshipsModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.Members.GroupsAdapter;
@@ -46,6 +48,7 @@ import java.util.Date;
 public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdapter.MyViewHolder> implements Filterable, AsyncTaskCompleteListener {
     ArrayList<RelationshipsModel> relationshipsList = new ArrayList<>();
     ArrayList<RelationshipsModel> itemsList = new ArrayList<>();
+    ArrayList<ProfileDo> citizenList = new ArrayList<>();
     int position = 0;
     Context mcontext;
     ArrayList<ViewGroupModel> updatedMembersList = new ArrayList<>();
@@ -56,6 +59,8 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
     ViewGroup mParent;
     FragmentActivity mActivity;
     RelationshipsAdapter.EventListener eventListener;
+    private RelationshipsModel relationshipmodel_profile;
+
     public RelationshipsAdapter(ArrayList<RelationshipsModel> relationshipsList, Context context, FragmentActivity activity,RelationshipsAdapter.EventListener listener) {
         this.relationshipsList = relationshipsList;
         this.itemsList = relationshipsList;
@@ -122,13 +127,34 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         ss.setSpan(clickableSpan, 0, 12, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         holder.tv_more_details.setText(ss);
         holder.tv_more_details.setMovementMethod(LinkMovementMethod.getInstance());
+        holder.tv_more_details.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                holder.rb_profile.setVisibility(View.VISIBLE);
+                unhideProfileDetails(relationshipsModel,holder);
+            }
+        });
         holder.iv_delete_relationships.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 deleteRelationships(relationshipsModel,relationshipsModel.getName());
             }
         });
+
     }
+
+    private void unhideProfileDetails(RelationshipsModel relationshipsModel, MyViewHolder holder) {
+        mholder = holder;
+
+        relationshipmodel_profile = relationshipsModel;
+        callProfileWebservice(relationshipsModel.getId());
+    }
+
+    private void callProfileWebservice(String id) {
+        JSONObject jsonObject = new JSONObject();
+        WebServiceHelper.callHttpWebService(this,mcontext, WebServiceHelper.RestMethodType.GET,"v2/relationship/"+id+"/profile","Profile",jsonObject.toString());
+    }
+
 
     @SuppressLint("SetTextI18n")
     private void deleteRelationships(RelationshipsModel relationshipsModel, String name) {
@@ -208,9 +234,12 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         try {
             JSONObject result = new JSONObject(httpResult.getResponseContent());
             boolean error = result.getBoolean("error");
-            String msg = result.getString("msg");
+            String msg = "";
+
+
             if (httpResult.getRequestType().equals("Get Groups")) {
                 if (error){
+                    msg = result.getString("msg");
                     AndroidUtils.showToast(msg,mcontext);
                 }else{
                     JSONArray data = result.getJSONArray("data");
@@ -220,6 +249,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
             }else if(httpResult.getRequestType().equals("Update Group Access")){
 
                 if (error){
+                    msg = result.getString("msg");
                     AndroidUtils.showToast(msg,mcontext);
                 }else{
                     AndroidUtils.showToast(msg,mcontext);
@@ -231,19 +261,58 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
 
             }else if(httpResult.getRequestType().equals("Delete Relationship")){
                 if (error){
+                    msg = result.getString("msg");
                     AndroidUtils.showToast(msg,mcontext);
                 }
                 else
                 {
+                    msg = result.getString("msg");
                     AndroidUtils.showToast(msg,mcontext);
                     groupsList.clear();
                     relationshipsList.clear();
                     ad_dialog_delete.dismiss();
                     eventListener.RefreshViewRelationshipsData();
                 }
+            }else if( httpResult.getRequestType().equals("Profile")){
+                if (error){
+                    msg = result.getString("msg");
+                    AndroidUtils.showToast(msg,mcontext);
+                }else{
+                    JSONObject data  =result.getJSONObject("data");
+                    Log.d("TAG","Data:"+data.toString());
+                    loadProfile(data);
+                }
+
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void loadProfile(JSONObject data) throws JSONException {
+        try {
+            mholder.cv_Profile.setVisibility(View.VISIBLE);
+            mholder.tv_first_name.setText(relationshipmodel_profile.getName());
+            mholder.tv_email.setText(data.getString("email"));
+            mholder.tv_contact_name.setText(data.getString("first_name"));
+            mholder.tv_mobile.setText(data.getString("mobile"));
+            JSONArray citizen = data.getJSONArray("citizen");
+            for (int i=0;i<citizen.length();i++){
+                JSONObject jsonObject = citizen.getJSONObject(i);
+                ProfileDo profileDo = new ProfileDo();
+                profileDo.setIndex(jsonObject.getString("index"));
+                profileDo.setCountry(jsonObject.getString("country"));
+                citizenList.add(profileDo);
+            }
+            for (int i=0;i<citizenList.size();i++){
+                if (citizenList.get(i).getIndex().equals("citizen_primary")){
+                    mholder.tv_country.setText(citizenList.get(i).getCountry());
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            AndroidUtils.showToast(e.getMessage(),mcontext);
         }
     }
 
@@ -356,10 +425,10 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         }
     }
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView tv_relationship_name, tv_created_date, tv_consumer, tv_more_details, tv_initiated;
+        TextView tv_relationship_name, tv_created_date, tv_consumer, tv_more_details, tv_initiated,tv_first_name,tv_email,tv_country,tv_contact_name,tv_mobile,tv_website,tv_billing_currency;
         ImageView iv_initiated, iv_groups_relationships, iv_clock_relationships, iv_delete_relationships;
         RadioGroup rb_profile, rb_shared_status, rb_shared_type, rb_document_type;
-//        CardView cv_documents;
+        CardView cv_Profile;
 
 
 
@@ -379,8 +448,14 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
             rb_shared_status = itemView.findViewById(R.id.shared_status);
             rb_shared_type = itemView.findViewById(R.id.shared_type);
             rb_document_type = itemView.findViewById(R.id.document_type);
-
-
+            tv_first_name = itemView.findViewById(R.id.tv_first_name);
+            tv_email = itemView.findViewById(R.id.tv_email);
+            tv_country = itemView.findViewById(R.id.tv_country);
+            tv_contact_name = itemView.findViewById(R.id.tv_contact_name);
+            tv_mobile = itemView.findViewById(R.id.tv_mobile);
+            tv_website = itemView.findViewById(R.id.tv_website);
+            tv_billing_currency = itemView.findViewById(R.id.tv_billing_currency);
+            cv_Profile = itemView.findViewById(R.id.cv_profile);
 
         }
     }

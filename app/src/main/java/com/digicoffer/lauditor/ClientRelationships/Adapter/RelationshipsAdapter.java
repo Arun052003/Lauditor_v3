@@ -130,7 +130,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         holder.tv_more_details.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                holder.rb_profile.setVisibility(View.VISIBLE);
+
                 unhideProfileDetails(relationshipsModel,holder);
             }
         });
@@ -278,6 +278,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
                     msg = result.getString("msg");
                     AndroidUtils.showToast(msg,mcontext);
                 }else{
+                    mholder.rb_profile.setVisibility(View.VISIBLE);
                     JSONObject data  =result.getJSONObject("data");
                     Log.d("TAG","Data:"+data.toString());
                     loadProfile(data);

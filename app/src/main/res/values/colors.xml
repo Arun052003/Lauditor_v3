@@ -16,6 +16,7 @@
     <color name="orange_color">#F15F12</color>
     <color name="dashboard_background_shadow_color">#00000066</color>
     <color name="green_count_color">#00B3A7</color>
+    <color name="green_color">#64DD17</color>
     <color name="dark_grey">#DDDDDE</color>
     <color name="grey_color_dark">#A0A0A0</color>
     <color name="grey_medium">#585858</color>

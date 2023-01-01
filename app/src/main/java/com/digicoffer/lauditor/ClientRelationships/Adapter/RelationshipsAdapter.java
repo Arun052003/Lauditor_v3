@@ -1,5 +1,6 @@
 package com.digicoffer.lauditor.ClientRelationships.Adapter;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.text.Editable;
@@ -27,7 +28,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.digicoffer.lauditor.ClientRelationships.Model.RelationshipsModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.Members.GroupsAdapter;
-import com.digicoffer.lauditor.Members.MembersAdapter;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
@@ -52,7 +52,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
     RelationshipsAdapter.MyViewHolder mholder;
     RelationshipsModel relationshipsModel_new;
     ArrayList<ViewGroupModel> groupsList = new ArrayList<>();
-    AlertDialog ad_dialog;
+    AlertDialog ad_dialog,ad_dialog_delete;
     ViewGroup mParent;
     FragmentActivity mActivity;
     RelationshipsAdapter.EventListener eventListener;
@@ -100,12 +100,11 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
                 try {
                     groupsList.clear();
                     updatedMembersList.clear();
-                    callGroupsWebservice(holder,relationshipsModel);
+                    callGroupsWebservice(holder, relationshipsModel);
 //                    holder.tv_relationship_name.setText("Sai");
 //                    holder.cv_documents.setVisibility(View.VISIBLE);
 //                    holder.ll_documents.setVisibility(View.VISIBLE);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     AndroidUtils.showToast(e.getMessage(), view.getContext());
                     e.printStackTrace();
                 }
@@ -123,7 +122,52 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         ss.setSpan(clickableSpan, 0, 12, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         holder.tv_more_details.setText(ss);
         holder.tv_more_details.setMovementMethod(LinkMovementMethod.getInstance());
-//                    holder.tv
+        holder.iv_delete_relationships.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteRelationships(relationshipsModel,relationshipsModel.getName());
+            }
+        });
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void deleteRelationships(RelationshipsModel relationshipsModel, String name) {
+        try {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mcontext);
+            LayoutInflater inflater = mActivity.getLayoutInflater();
+            View view = inflater.inflate(R.layout.delete_relationship, null);
+            TextInputEditText tv_confirmation = view.findViewById(R.id.et_confirmation);
+            tv_confirmation.setText("You will be no longer be able to communicate and exchange information with " + name + ".Are you sure you want to end this digital relationship?");
+            AppCompatButton bt_yes = view.findViewById(R.id.btn_yes);
+            AppCompatButton btn_no = view.findViewById(R.id.btn_No);
+            btn_no.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ad_dialog_delete.dismiss();
+                }
+            });
+            bt_yes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    callDeleteGroupsWebservice(relationshipsModel.getId());
+                }
+            });
+            final AlertDialog dialog = dialogBuilder.create();
+            ad_dialog_delete = dialog;
+            dialog.setView(view);
+            dialog.show();
+        }catch (Exception e){
+            AndroidUtils.showToast(e.getMessage(),mcontext);
+        }
+    }
+
+    private void callDeleteGroupsWebservice(String id) {
+        try {
+            JSONObject jsonObject = new JSONObject();
+            WebServiceHelper.callHttpWebService(this, mcontext, WebServiceHelper.RestMethodType.POST, "v2/relationship/" + id + "/terminate/request", "Delete Relationship", jsonObject.toString());
+        } catch (Exception e) {
+            AndroidUtils.showToast(e.getMessage(),mcontext);
+        }
     }
 
     private void callGroupsWebservice(MyViewHolder holder, RelationshipsModel relationshipsModel) {
@@ -163,22 +207,40 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         if (httpResult.getResult() == WebServiceHelper.ServiceCallStatus.Success) ;
         try {
             JSONObject result = new JSONObject(httpResult.getResponseContent());
+            boolean error = result.getBoolean("error");
+            String msg = result.getString("msg");
             if (httpResult.getRequestType().equals("Get Groups")) {
-                JSONArray data = result.getJSONArray("data");
-                loadViewGroups(data);
-            }else if(httpResult.getRequestType().equals("Update Group Access")){
-//                AndroidUtils.showToast(result.getString("msg"),mcontext);
-                boolean error = result.getBoolean("error");
                 if (error){
-                    AndroidUtils.showToast(result.getString("msg"),mcontext);
+                    AndroidUtils.showToast(msg,mcontext);
                 }else{
-                    AndroidUtils.showToast(result.getString("msg"),mcontext);
+                    JSONArray data = result.getJSONArray("data");
+                    loadViewGroups(data);
+                }
+
+            }else if(httpResult.getRequestType().equals("Update Group Access")){
+
+                if (error){
+                    AndroidUtils.showToast(msg,mcontext);
+                }else{
+                    AndroidUtils.showToast(msg,mcontext);
                     groupsList.clear();
                     relationshipsList.clear();
                     ad_dialog.dismiss();
                     eventListener.RefreshViewRelationshipsData();
                 }
 
+            }else if(httpResult.getRequestType().equals("Delete Relationship")){
+                if (error){
+                    AndroidUtils.showToast(msg,mcontext);
+                }
+                else
+                {
+                    AndroidUtils.showToast(msg,mcontext);
+                    groupsList.clear();
+                    relationshipsList.clear();
+                    ad_dialog_delete.dismiss();
+                    eventListener.RefreshViewRelationshipsData();
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();

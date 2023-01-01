@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -60,6 +61,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
     FragmentActivity mActivity;
     RelationshipsAdapter.EventListener eventListener;
     private RelationshipsModel relationshipmodel_profile;
+    private String FLAG = "";
 
     public RelationshipsAdapter(ArrayList<RelationshipsModel> relationshipsList, Context context, FragmentActivity activity,RelationshipsAdapter.EventListener listener) {
         this.relationshipsList = relationshipsList;
@@ -84,12 +86,26 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         return new RelationshipsAdapter.MyViewHolder(view);
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onBindViewHolder(@NonNull RelationshipsAdapter.MyViewHolder holder, int position) {
 //        updatedMembersList.clear();
         RelationshipsModel relationshipsModel = relationshipsList.get(position);
         position = position;
-
+        if (relationshipsModel.isCanAccept()){
+            holder.btn_accept.setVisibility(View.VISIBLE);
+            holder.iv_groups_relationships.setVisibility(View.GONE);
+        }{
+            holder.btn_accept.setVisibility(View.GONE);
+            holder.iv_groups_relationships.setVisibility(View.VISIBLE);
+            if (relationshipsModel.isAccepted()){
+                holder.tv_initiated.setText("Active");
+                holder.iv_initiated.setBackgroundResource(R.drawable.green_circular);
+            }else{
+                holder.tv_initiated.setText("Initiated");
+                holder.iv_initiated.setBackground(mcontext.getResources().getDrawable(R.drawable.circular));
+            }
+        }
         Log.i("Tag", "Relationship:" + relationshipsModel.getAdminName());
         holder.tv_relationship_name.setText(relationshipsModel.getAdminName());
         holder.tv_created_date.setText("Created " + relationshipsModel.getCreated());
@@ -127,11 +143,18 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         ss.setSpan(clickableSpan, 0, 12, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         holder.tv_more_details.setText(ss);
         holder.tv_more_details.setMovementMethod(LinkMovementMethod.getInstance());
+        FLAG = "first_click";
         holder.tv_more_details.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                unhideProfileDetails(relationshipsModel,holder);
+                if (FLAG != "second_click") {
+                    unhideProfileDetails(relationshipsModel, holder);
+                } else {
+                    FLAG = "first_click";
+                 holder.cv_Profile.setVisibility(View.GONE);
+                 holder.rb_profile.setVisibility(View.GONE);
+                 citizenList.clear();
+                }
             }
         });
         holder.iv_delete_relationships.setOnClickListener(new View.OnClickListener() {
@@ -293,6 +316,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
 
     private void loadProfile(JSONObject data) throws JSONException {
         try {
+            FLAG = "second_click";
             mholder.cv_Profile.setVisibility(View.VISIBLE);
             mholder.tv_first_name.setText(relationshipmodel_profile.getName());
             mholder.tv_email.setText(data.getString("email"));
@@ -430,7 +454,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         ImageView iv_initiated, iv_groups_relationships, iv_clock_relationships, iv_delete_relationships;
         RadioGroup rb_profile, rb_shared_status, rb_shared_type, rb_document_type;
         CardView cv_Profile;
-
+        Button btn_accept;
 
 
         public MyViewHolder(@NonNull View itemView) {
@@ -457,7 +481,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
             tv_website = itemView.findViewById(R.id.tv_website);
             tv_billing_currency = itemView.findViewById(R.id.tv_billing_currency);
             cv_Profile = itemView.findViewById(R.id.cv_profile);
-
+            btn_accept = itemView.findViewById(R.id.accept);
         }
     }
 }

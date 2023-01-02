@@ -62,6 +62,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
     RelationshipsAdapter.EventListener eventListener;
     private RelationshipsModel relationshipmodel_profile;
     private String FLAG = "";
+    View view = null;
 
     public RelationshipsAdapter(ArrayList<RelationshipsModel> relationshipsList, Context context, FragmentActivity activity,RelationshipsAdapter.EventListener listener) {
         this.relationshipsList = relationshipsList;
@@ -82,7 +83,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
     @Override
     public RelationshipsAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         mParent = parent;
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_relationships_design, parent, false);
+         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_relationships_design, parent, false);
         return new RelationshipsAdapter.MyViewHolder(view);
     }
 
@@ -98,12 +99,14 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         }{
             holder.btn_accept.setVisibility(View.GONE);
             holder.iv_groups_relationships.setVisibility(View.VISIBLE);
+            ImageView iv_initiated = view.findViewById(R.id.iv_initiated);
             if (relationshipsModel.isAccepted()){
-                holder.tv_initiated.setText("Active");
-                holder.iv_initiated.setBackgroundResource(R.drawable.green_circular);
+                holder.tv_initiated.setText("Accepted");
+
+             iv_initiated.setImageDrawable(mcontext.getResources().getDrawable(R.drawable.green_circular));
             }else{
-                holder.tv_initiated.setText("Initiated");
-                holder.iv_initiated.setBackground(mcontext.getResources().getDrawable(R.drawable.circular));
+                holder.tv_initiated.setText("Not Accepted");
+                iv_initiated.setImageDrawable(mcontext.getResources().getDrawable(R.drawable.red_circular));
             }
         }
         Log.i("Tag", "Relationship:" + relationshipsModel.getAdminName());

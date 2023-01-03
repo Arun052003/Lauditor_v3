@@ -33,7 +33,7 @@ public class SharedDocumentsAdapter extends RecyclerView.Adapter<SharedDocuments
     SharedDocumentsAdapter.EventListener eventListener;
     public SharedDocumentsAdapter(ArrayList<SharedDocumentsDo> sharedList, String shared_tag, Context mcontext,SharedDocumentsAdapter.EventListener listner) {
         this.sharedList = sharedList;
-        this.list_item = list_item;
+        this.list_item = sharedList;
         this.Shared_tag = shared_tag;
         this.mContext = mcontext;
         this.eventListener = listner;
@@ -111,7 +111,7 @@ public class SharedDocumentsAdapter extends RecyclerView.Adapter<SharedDocuments
     @Override
     public void onBindViewHolder(@NonNull SharedDocumentsAdapter.ViewHolder holder, int position) {
         SharedDocumentsDo sharedDocumentsDo = sharedList.get(position);
-        list_item = sharedList;
+//        list_item = sharedList;
         if (Shared_tag == "byme") {
             holder.cb_documents.setChecked(sharedList.get(position).isChecked());
             holder.cb_documents.setTag(position);

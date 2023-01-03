@@ -579,37 +579,27 @@
 
     </RadioGroup>
 
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/document_type"
-        android:overScrollMode="never">
+        >
 
-
-        <LinearLayout
-            android:id="@id/ll_documents"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/search_tm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/search_tm"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:hint="Search Documents"
-                android:textColorHint="@color/black"
-                app:boxBackgroundMode="none"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cv_details_2"
-                app:layout_constraintVertical_bias="0.0">
+            android:layout_margin="10dp"
+            android:hint="Search Documents"
+            android:textColorHint="@color/black"
+            app:boxBackgroundMode="none"
+>
 
             <!--this is the actual edit text which takes the input-->
             <com.google.android.material.textfield.TextInputEditText
@@ -620,7 +610,13 @@
                 android:background="@drawable/rectangle_grey_background"
                 android:drawableRight="@drawable/search_groups"
                 android:gravity="start" />
-            </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
+        <LinearLayout
+            android:id="@id/ll_documents"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
             <androidx.cardview.widget.CardView
 
                 android:layout_width="match_parent"
@@ -636,11 +632,18 @@
                 android:id="@+id/rv_shared_documents"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:scrollbars="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
                 />
             </androidx.cardview.widget.CardView>
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>
 </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

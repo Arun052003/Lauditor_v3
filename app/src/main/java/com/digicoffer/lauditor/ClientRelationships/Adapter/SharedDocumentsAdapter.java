@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,12 +17,14 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.ClientRelationships.Model.SharedDocumentsDo;
+import com.digicoffer.lauditor.Groups.GroupModels.GroupModel;
 import com.digicoffer.lauditor.R;
+import com.digicoffer.lauditor.common.AndroidUtils;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 
-public class SharedDocumentsAdapter extends RecyclerView.Adapter<SharedDocumentsAdapter.ViewHolder> {
+public class SharedDocumentsAdapter extends RecyclerView.Adapter<SharedDocumentsAdapter.ViewHolder> implements Filterable {
     ArrayList<SharedDocumentsDo> sharedList = new ArrayList<>();
     ArrayList<SharedDocumentsDo> list_item = new ArrayList<>();
     String Shared_tag = "";
@@ -33,8 +37,53 @@ public class SharedDocumentsAdapter extends RecyclerView.Adapter<SharedDocuments
         this.mContext = mcontext;
         this.eventListener = listner;
     }
+    public ArrayList<SharedDocumentsDo> getList_item() {
+        return sharedList;
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    sharedList = list_item;
+                } else {
+                    ArrayList<SharedDocumentsDo> filteredList = new ArrayList<>();
+                    for (SharedDocumentsDo row : list_item) {
+//                            if (row.isChecked()){
+//                                row.setChecked(false);
+//                            }else
+//                            {
+//                                row.setChecked(true  );
+//                            }
+                        // name match condition. this might differ depending on your requirement
+                        // here we are looking for name or phone number match
+                        if (AndroidUtils.isNull(row.getName()).toLowerCase().contains(charString.toLowerCase()) ) {
+                            filteredList.add(row);
+                        }
+                    }
+                    sharedList = filteredList;
+                }
+                FilterResults filterResults = new FilterResults();
+                filterResults.count = sharedList.size();
+                filterResults.values = sharedList;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                sharedList = (ArrayList<SharedDocumentsDo>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
+
     public interface EventListener {
         void CopyDocument(SharedDocumentsDo sharedDocumentsDo);
+
+        void viewDocument(SharedDocumentsDo sharedDocumentsDo);
     }
     @NonNull
     @Override
@@ -78,12 +127,19 @@ public class SharedDocumentsAdapter extends RecyclerView.Adapter<SharedDocuments
 
                 }
             });
-        } else {
+        }
+        else {
                 holder.tv_doc_name.setText(sharedDocumentsDo.getName());
                 holder.iv_copy.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         eventListener.CopyDocument(sharedDocumentsDo);
+                    }
+                });
+                holder.iv_view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        eventListener.viewDocument(sharedDocumentsDo);
                     }
                 });
 //                holder

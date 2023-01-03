@@ -34,7 +34,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.digicoffer.lauditor.ClientRelationships.Model.ProfileDo;
 import com.digicoffer.lauditor.ClientRelationships.Model.RelationshipsModel;
 import com.digicoffer.lauditor.ClientRelationships.Model.SharedDocumentsDo;
-import com.digicoffer.lauditor.Groups.Adapters.GroupAdapters;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.Members.GroupsAdapter;
 import com.digicoffer.lauditor.R;
@@ -47,7 +46,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.pgpainless.key.selection.key.util.And;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -107,7 +105,8 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
             bt_yes.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                   callCopyDocumentWebservice(sharedDocumentsDo);
+                    String action = "copy";
+                   callCopyDocumentWebservice(sharedDocumentsDo,action);
                 }
             });
             final AlertDialog dialog = dialogBuilder.create();
@@ -119,9 +118,22 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         }
     }
 
-    private void callCopyDocumentWebservice(SharedDocumentsDo sharedDocumentsDo) {
+    @Override
+    public void viewDocument(SharedDocumentsDo sharedDocumentsDo) {
+        String action = "view";
+       callCopyDocumentWebservice(sharedDocumentsDo, action);
+    }
+
+    private void callCopyDocumentWebservice(SharedDocumentsDo sharedDocumentsDo, String action) {
         JSONObject jsonObject = new JSONObject();
-        WebServiceHelper.callHttpWebService(this,mcontext, WebServiceHelper.RestMethodType.GET,"v2/relationship/"+shared_relationship_id+"/"+sharedDocumentsDo.getId()+"/copy","Copy Document",jsonObject.toString());
+        String request = "";
+        if (action=="copy"){
+            request = "Copy Document";
+        }else
+        {
+            request = "View Document";
+        }
+        WebServiceHelper.callHttpWebService(this,mcontext, WebServiceHelper.RestMethodType.GET,"v2/relationship/"+shared_relationship_id+"/"+sharedDocumentsDo.getId()+"/"+action,request,jsonObject.toString());
     }
 
     public interface EventListener {
@@ -426,6 +438,8 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
                     ad_dialog_copy.dismiss();
                     AndroidUtils.showToast(msg, mcontext);
                 }
+            }else if(httpResult.getRequestType().equals("View Document")){
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -456,6 +470,23 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
        SharedDocumentsAdapter adapter = new SharedDocumentsAdapter(shared_list,shared_tag,mcontext,this);
         mholder.rv_documents.setAdapter(adapter);
         mholder.rv_documents.setHasFixedSize(true);
+        mholder.et_Search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                adapter.getFilter().filter(mholder.et_Search.getText().toString());
+            }
+
+        });
     }
 
     private void loadProfile(JSONObject data) throws JSONException {
@@ -604,6 +635,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         RecyclerView rv_documents;
         RadioButton rb_share_document, rb_profile, rb_shared_by_us, rb_shared_with_us;
         NestedScrollView nestedScrollView;
+        TextInputEditText et_Search;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -637,6 +669,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
             nestedScrollView = itemView.findViewById(R.id.nestedScrollView);
             ll_documents = itemView.findViewById(R.id.ll_documents);
             rv_documents = itemView.findViewById(R.id.rv_shared_documents);
+            et_Search = itemView.findViewById(R.id.et_search_documents);
         }
     }
 }

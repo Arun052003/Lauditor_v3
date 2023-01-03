@@ -5,6 +5,16 @@ import org.json.JSONArray;
 public class RelationshipsModel {
     private String adminName;
     private boolean canAccept;
+    private boolean isExpandable;
+
+    public boolean isExpandable() {
+        return isExpandable;
+    }
+
+    public void setExpandable(boolean expandable) {
+        isExpandable = expandable;
+    }
+
     private String clientType;
     private String client_id;
     private String consent;

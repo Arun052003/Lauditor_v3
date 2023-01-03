@@ -32,7 +32,7 @@
             android:fontFamily="sans-serif-condensed-medium"
             android:text="Date"
             android:textSize="@dimen/Fifteen_dp"
-            android:textColor="@color/cardview_dark_background"/>
+            android:textColor="@color/black"/>
 <LinearLayout
     android:layout_width="200dp"
     android:layout_height="wrap_content"

@@ -489,7 +489,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
             }
 
         });
-
+        adapter.notifyDataSetChanged();
 
     }
 

@@ -29,6 +29,7 @@ public class SharedDocumentsAdapter extends RecyclerView.Adapter<SharedDocuments
     ArrayList<SharedDocumentsDo> list_item = new ArrayList<>();
     String Shared_tag = "";
     Context mContext;
+    int selectedPosition = -1;
     SharedDocumentsAdapter.EventListener eventListener;
     public SharedDocumentsAdapter(ArrayList<SharedDocumentsDo> sharedList, String shared_tag, Context mcontext,SharedDocumentsAdapter.EventListener listner) {
         this.sharedList = sharedList;
@@ -98,18 +99,22 @@ public class SharedDocumentsAdapter extends RecyclerView.Adapter<SharedDocuments
     }
 
     @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull SharedDocumentsAdapter.ViewHolder holder, int position) {
         SharedDocumentsDo sharedDocumentsDo = sharedList.get(position);
         list_item = sharedList;
         if (Shared_tag == "byme") {
             holder.cb_documents.setChecked(sharedList.get(position).isChecked());
             holder.cb_documents.setTag(position);
-//            if(groupModel.isIsenabled()==null)
-            if (sharedList.get(position).isIsenabled()) {
-                holder.cb_documents.setEnabled(true);
-            } else {
-                holder.cb_documents.setEnabled(false);
-            }
             holder.tv_tm_name.setText(sharedDocumentsDo.getName());
             holder.cb_documents.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -151,7 +156,19 @@ public class SharedDocumentsAdapter extends RecyclerView.Adapter<SharedDocuments
     }
 
 
-
+    public void selectOrDeselectAll(boolean isChecked)
+    {
+        for(int i = 0; i<list_item.size(); i++)
+        {
+//            if (list_item.get(i).isIsenabled())
+//            if (list_item.get(i).isIsenabled()) {
+            list_item.get(i).setChecked(isChecked);
+//            }else {
+//                list_item.get(i).setChecked(false);
+//            }
+        }
+        notifyDataSetChanged();
+    }
 
 
     @Override

@@ -148,12 +148,30 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         return new RelationshipsAdapter.MyViewHolder(view);
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onBindViewHolder(@NonNull RelationshipsAdapter.MyViewHolder holder, int position) {
 //        updatedMembersList.clear();
         RelationshipsModel relationshipsModel = relationshipsList.get(position);
         position = position;
+        mholder = holder;
+//        notifyDataSetChanged();
+        boolean isExpandable = relationshipsList.get(position).isExpandable();
+        holder.ll_expandable_layout.setVisibility(isExpandable?View.VISIBLE:View.GONE);
+        if (isExpandable){
+            unhideProfileDetails(relationshipsModel,holder);
+        }else
+        {
+            citizenList.clear();
+            shared_list.clear();
+//            holder.rg_shared_status.clearCheck();
+//            holder.rg_profile.clearCheck();
+        }
         if (relationshipsModel.isCanAccept()) {
             holder.btn_accept.setVisibility(View.VISIBLE);
             holder.iv_groups_relationships.setVisibility(View.GONE);
@@ -166,9 +184,11 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
                 holder.tv_initiated.setText("Accepted");
 
                 iv_initiated.setImageDrawable(mcontext.getResources().getDrawable(R.drawable.green_circular));
+//                notifyDataSetChanged();
             } else {
                 holder.tv_initiated.setText("Not Accepted");
                 iv_initiated.setImageDrawable(mcontext.getResources().getDrawable(R.drawable.red_circular));
+//                notifyDataSetChanged();
             }
         }
         Log.i("Tag", "Relationship:" + relationshipsModel.getAdminName());
@@ -209,21 +229,43 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         holder.tv_more_details.setText(ss);
         holder.tv_more_details.setMovementMethod(LinkMovementMethod.getInstance());
         FLAG = "first_click";
-        holder.tv_more_details.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (FLAG != "second_click") {
-                    unhideProfileDetails(relationshipsModel, holder);
-                } else {
-                    FLAG = "first_click";
-                    holder.cv_Profile.setVisibility(View.GONE);
-                    holder.rg_profile.setVisibility(View.GONE);
-                    citizenList.clear();
-
-
-                }
-            }
-        });
+//        holder.tv_more_details.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (FLAG != "second_click") {
+////                    if (shared_tag==""){
+//
+//                        unhideProfileDetails(relationshipsModel, holder);
+////                    }else{
+////
+////                        FLAG = "first_click";
+////                        holder.cv_Profile.setVisibility(View.GONE);
+////                        holder.rg_profile.setVisibility(View.GONE);
+////
+////                        holder.rg_shared_status.setVisibility(View.GONE);
+//////                        holder.ll_documents.setVisibility(View.VISIBLE);
+////                        holder.nestedScrollView.setVisibility(View.GONE);
+////                        holder.ll_documents.setVisibility(View.GONE);
+////                        shared_list.clear();
+////                        shared_tag = "";
+////                    }
+//                } else {
+//                    FLAG = "first_click";
+//                    holder.rg_profile.clearCheck();
+//                    holder.rg_shared_status.clearCheck();
+//                    holder.rg_shared_status.clearCheck();
+//                    holder.cv_Profile.setVisibility(View.GONE);
+//                    holder.rg_profile.setVisibility(View.GONE);
+//                    holder.rg_shared_status.setVisibility(View.GONE);
+////                        holder.ll_documents.setVisibility(View.VISIBLE);
+//                    holder.nestedScrollView.setVisibility(View.GONE);
+//                    holder.ll_documents.setVisibility(View.GONE);
+//                    shared_list.clear();
+//                    shared_tag = "";
+//
+//                }
+//            }
+//        });
 
         holder.iv_delete_relationships.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -241,6 +283,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
 
                         break;
                     case R.id.rb_share_button:
+//                        holder.rb_shared_with_us.setChecked(true);
                         holder.cv_Profile.setVisibility(View.GONE);
                         holder.rb_share_document.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.radiobutton_centre_green_background));
                         holder.rb_profile.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.button_left_background));
@@ -248,7 +291,9 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
 //                        holder.ll_documents.setVisibility(View.VISIBLE);
                         holder.nestedScrollView.setVisibility(View.VISIBLE);
                         holder.ll_documents.setVisibility(View.VISIBLE);
+                        shared_list.clear();
                          shared_tag = "withme";
+
                         callSharedDocumentsWebservice(relationshipsModel.getId(),shared_tag,holder);
 //                        hideProfileData(holder);
                 }
@@ -257,9 +302,24 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         holder.rg_shared_status.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                holder.nestedScrollView.setVisibility(View.VISIBLE);
+                holder.ll_documents.setVisibility(View.VISIBLE);
                 switch (i) {
+                    case R.id.rb_shared_with_us:
+                        holder.rb_shared_with_us.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.button_left_green_background));
+                        holder.rb_shared_by_us.setBackground(mcontext.getResources().getDrawable(R.drawable.button_right_background));
+                        shared_tag = "withme";
+                        shared_list.clear();
+                        callSharedDocumentsWebservice(relationshipsModel.getId(),shared_tag,holder);
+
+                        break;
                     case R.id.rb_shared_by_us:
-                        holder.nestedScrollView.setVisibility(View.VISIBLE);
+                        holder.rb_shared_with_us.setBackground(mcontext.getResources().getDrawable(R.drawable.button_left_background));
+                        holder.rb_shared_by_us.setBackground(mcontext.getResources().getDrawable(R.drawable.button_right_green_count));
+                        shared_tag = "byme";
+                        shared_list.clear();
+                        callSharedDocumentsWebservice(relationshipsModel.getId(),shared_tag,holder);
+                        break;
                 }
             }
         });
@@ -286,6 +346,8 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         holder.nestedScrollView.setVisibility(View.GONE);
         holder.ll_documents.setVisibility(View.GONE);
         callProfileWebservice(relationshipsModel.getId());
+        shared_list.clear();
+        shared_tag = "";
     }
 
     private void callProfileWebservice(String id) {
@@ -362,6 +424,11 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
     @Override
     public void onClick(View view) {
 
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override
@@ -447,46 +514,68 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
     }
 
     private void loadSharedWithmeDocuments(JSONObject documents)throws JSONException {
-        JSONArray identity = documents.getJSONArray("identity");
-        for (int i=0;i<identity.length();i++){
-            SharedDocumentsDo sharedDocumentsDo = new SharedDocumentsDo();
-            JSONObject docs = identity.getJSONObject(i);
-            sharedDocumentsDo.setCategory(docs.getString("category"));
-            sharedDocumentsDo.setCreated(docs.getString("created"));
-            sharedDocumentsDo.setDescription(docs.getString("description"));
-            sharedDocumentsDo.setDoctype(docs.getString("doctype"));
-            sharedDocumentsDo.setId(docs.getString("id"));
-            sharedDocumentsDo.setShareOn(docs.getString("sharedOn"));
-            sharedDocumentsDo.setName(docs.getString("name"));
-            shared_list.add(sharedDocumentsDo);
+        if (shared_tag=="withme") {
+            JSONArray identity = documents.getJSONArray("identity");
+            for (int i = 0; i < identity.length(); i++) {
+                SharedDocumentsDo sharedDocumentsDo = new SharedDocumentsDo();
+                JSONObject docs = identity.getJSONObject(i);
+                sharedDocumentsDo.setCategory(docs.getString("category"));
+                sharedDocumentsDo.setCreated(docs.getString("created"));
+                sharedDocumentsDo.setDescription(docs.getString("description"));
+                sharedDocumentsDo.setDoctype(docs.getString("doctype"));
+                sharedDocumentsDo.setId(docs.getString("id"));
+                sharedDocumentsDo.setShareOn(docs.getString("sharedOn"));
+                sharedDocumentsDo.setName(docs.getString("name"));
+                shared_list.add(sharedDocumentsDo);
+            }
+        }else {
+            JSONArray general = documents.getJSONArray("general");
+            for (int i=0;i<general.length();i++){
+
+                SharedDocumentsDo sharedDocumentsDo = new SharedDocumentsDo();
+                JSONObject docs = general.getJSONObject(i);
+                sharedDocumentsDo.setCategory(docs.getString("category"));
+                sharedDocumentsDo.setCreated(docs.getString("created"));
+                sharedDocumentsDo.setDescription(docs.getString("description"));
+                sharedDocumentsDo.setDoctype(docs.getString("doctype"));
+                sharedDocumentsDo.setId(docs.getString("id"));
+                sharedDocumentsDo.setShareOn(docs.getString("sharedOn"));
+                sharedDocumentsDo.setName(docs.getString("name"));
+                shared_list.add(sharedDocumentsDo);
+            }
         }
         loadDocumentsRecyclerview();
     }
 
     private void loadDocumentsRecyclerview() {
-        mholder.rv_documents.removeAllViews();
-        mholder.rv_documents.setLayoutManager(new GridLayoutManager(mcontext, 1));
+        if (shared_list.size()==0){
+            AndroidUtils.showToast("No Documents to display",mcontext);
+            mholder.et_Search.setVisibility(View.GONE);
+        }else {
+            mholder.rv_documents.removeAllViews();
+            mholder.rv_documents.setLayoutManager(new GridLayoutManager(mcontext, 1));
 
-       SharedDocumentsAdapter adapter = new SharedDocumentsAdapter(shared_list,shared_tag,mcontext,this);
-        mholder.rv_documents.setAdapter(adapter);
-        mholder.rv_documents.setHasFixedSize(true);
-        mholder.et_Search.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            SharedDocumentsAdapter adapter = new SharedDocumentsAdapter(shared_list, shared_tag, mcontext, this);
+            mholder.rv_documents.setAdapter(adapter);
+            mholder.rv_documents.setHasFixedSize(true);
+            mholder.et_Search.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-            }
+                }
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
+                }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                adapter.getFilter().filter(mholder.et_Search.getText().toString());
-            }
+                @Override
+                public void afterTextChanged(Editable s) {
+                    adapter.getFilter().filter(mholder.et_Search.getText().toString());
+                }
 
-        });
+            });
+        }
     }
 
     private void loadProfile(JSONObject data) throws JSONException {
@@ -629,9 +718,9 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         TextView tv_relationship_name, tv_created_date, tv_consumer, tv_more_details, tv_initiated, tv_first_name, tv_email, tv_country, tv_contact_name, tv_mobile, tv_website, tv_billing_currency;
         ImageView iv_initiated, iv_groups_relationships, iv_clock_relationships, iv_delete_relationships;
         RadioGroup rg_profile, rg_shared_status, rg_shared_type, rg_document_type;
-        CardView cv_Profile;
+        CardView cv_Profile,cv_relationships;
         Button btn_accept;
-        LinearLayout ll_documents;
+        LinearLayout ll_documents,ll_expandable_layout;
         RecyclerView rv_documents;
         RadioButton rb_share_document, rb_profile, rb_shared_by_us, rb_shared_with_us;
         NestedScrollView nestedScrollView;
@@ -670,6 +759,15 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
             ll_documents = itemView.findViewById(R.id.ll_documents);
             rv_documents = itemView.findViewById(R.id.rv_shared_documents);
             et_Search = itemView.findViewById(R.id.et_search_documents);
+            ll_expandable_layout = itemView.findViewById(R.id.ll_expandable_layout);
+            tv_more_details.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    RelationshipsModel relationshipsModel = relationshipsList.get(getAdapterPosition());
+                    relationshipsModel.setExpandable(!relationshipsModel.isExpandable());
+                    notifyItemChanged(getAdapterPosition());
+                }
+            });
         }
     }
 }

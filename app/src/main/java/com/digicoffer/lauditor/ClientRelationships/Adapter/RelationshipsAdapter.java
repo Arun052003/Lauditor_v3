@@ -24,8 +24,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,6 +35,8 @@ import com.digicoffer.lauditor.ClientRelationships.Model.ProfileDo;
 import com.digicoffer.lauditor.ClientRelationships.Model.RelationshipsModel;
 import com.digicoffer.lauditor.ClientRelationships.Model.SharedDocumentsDo;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
+import com.digicoffer.lauditor.LoginActivity.LoginActivity;
+import com.digicoffer.lauditor.MainActivity;
 import com.digicoffer.lauditor.Members.GroupsAdapter;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
@@ -55,6 +57,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
     ArrayList<RelationshipsModel> itemsList = new ArrayList<>();
     ArrayList<ProfileDo> citizenList = new ArrayList<>();
     int position = 0;
+    AlertDialog progress_dialog;
     Context mcontext;
     ArrayList<ViewGroupModel> updatedMembersList = new ArrayList<>();
     ArrayList<SharedDocumentsDo>shared_list = new ArrayList<>();
@@ -70,18 +73,54 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
     private RelationshipsModel relationshipmodel_profile;
     private String FLAG = "";
     View view = null;
+//    ScrollView sv_relationships;
 
-    public RelationshipsAdapter(ArrayList<RelationshipsModel> relationshipsList, Context context, FragmentActivity activity, RelationshipsAdapter.EventListener listener) {
+    public RelationshipsAdapter(ArrayList<RelationshipsModel> relationshipsList, Context context, FragmentActivity activity, EventListener listener) {
         this.relationshipsList = relationshipsList;
         this.itemsList = relationshipsList;
         this.mcontext = context;
         this.mActivity = activity;
         this.eventListener = listener;
+//        this.sv_relationships = sv_relationships;
     }
 
     @Override
     public Filter getFilter() {
-        return null;
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    relationshipsList = itemsList;
+                } else {
+                    ArrayList<RelationshipsModel> filteredList = new ArrayList<>();
+                    for (RelationshipsModel row : itemsList) {
+//                            if (row.isChecked()){
+//                                row.setChecked(false);
+//                            }else
+//                            {
+//                                row.setChecked(true  );
+//                            }
+                        // name match condition. this might differ depending on your requirement
+                        // here we are looking for name or phone number match
+                        if (AndroidUtils.isNull(row.getName()).toLowerCase().contains(charString.toLowerCase()) ) {
+                            filteredList.add(row);
+                        }
+                    }
+                    relationshipsList = filteredList;
+                }
+                FilterResults filterResults = new FilterResults();
+                filterResults.count = relationshipsList.size();
+                filterResults.values = relationshipsList;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                relationshipsList = (ArrayList<RelationshipsModel>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     @Override
@@ -162,16 +201,18 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         mholder = holder;
 //        notifyDataSetChanged();
         boolean isExpandable = relationshipsList.get(position).isExpandable();
-        holder.ll_expandable_layout.setVisibility(isExpandable?View.VISIBLE:View.GONE);
+
         if (isExpandable){
             unhideProfileDetails(relationshipsModel,holder);
         }else
         {
             citizenList.clear();
             shared_list.clear();
+//            holder.ll_expandable_layout.setVisibility(View.GONE);
 //            holder.rg_shared_status.clearCheck();
 //            holder.rg_profile.clearCheck();
         }
+        holder.ll_expandable_layout.setVisibility(isExpandable?View.VISIBLE:View.GONE);
         if (relationshipsModel.isCanAccept()) {
             holder.btn_accept.setVisibility(View.VISIBLE);
             holder.iv_groups_relationships.setVisibility(View.GONE);
@@ -283,19 +324,13 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
 
                         break;
                     case R.id.rb_share_button:
-//                        holder.rb_shared_with_us.setChecked(true);
-                        holder.cv_Profile.setVisibility(View.GONE);
+                        shared_tag = "withme";
                         holder.rb_share_document.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.radiobutton_centre_green_background));
                         holder.rb_profile.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.button_left_background));
-                        holder.rg_shared_status.setVisibility(View.VISIBLE);
-//                        holder.ll_documents.setVisibility(View.VISIBLE);
-                        holder.nestedScrollView.setVisibility(View.VISIBLE);
-                        holder.ll_documents.setVisibility(View.VISIBLE);
-                        shared_list.clear();
-                         shared_tag = "withme";
 
-                        callSharedDocumentsWebservice(relationshipsModel.getId(),shared_tag,holder);
-//                        hideProfileData(holder);
+                        unhideSharedDocumentsdata(holder,shared_tag,relationshipsModel);
+//                        holder.rb_shared_with_us.setChecked(true);
+//                               hideProfileData(holder);
                 }
             }
         });
@@ -306,23 +341,123 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
                 holder.ll_documents.setVisibility(View.VISIBLE);
                 switch (i) {
                     case R.id.rb_shared_with_us:
-                        holder.rb_shared_with_us.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.button_left_green_background));
-                        holder.rb_shared_by_us.setBackground(mcontext.getResources().getDrawable(R.drawable.button_right_background));
                         shared_tag = "withme";
-                        shared_list.clear();
-                        callSharedDocumentsWebservice(relationshipsModel.getId(),shared_tag,holder);
-
+                        holder.rb_shared_with_us.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.button_left_green_background));
+                        holder.rb_shared_by_us.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.button_right_background));
+                        unhideSharedDocumentsdata(holder,shared_tag,relationshipsModel);
+//
                         break;
                     case R.id.rb_shared_by_us:
                         holder.rb_shared_with_us.setBackground(mcontext.getResources().getDrawable(R.drawable.button_left_background));
                         holder.rb_shared_by_us.setBackground(mcontext.getResources().getDrawable(R.drawable.button_right_green_count));
                         shared_tag = "byme";
-                        shared_list.clear();
-                        callSharedDocumentsWebservice(relationshipsModel.getId(),shared_tag,holder);
+                        unhideSharedDocumentsdata(holder,shared_tag,relationshipsModel);
+//                     callSharedDocumentsWebservice(relationshipsModel.getId(),shared_tag,holder);
                         break;
                 }
             }
         });
+    }
+
+    private void unhideSharedDocumentsdata(MyViewHolder holder, String shared_tag, RelationshipsModel relationshipsModel) {
+        holder.cv_Profile.setVisibility(View.GONE);
+         holder.rg_shared_status.setVisibility(View.VISIBLE);
+//                        holder.ll_documents.setVisibility(View.VISIBLE);
+        holder.nestedScrollView.setVisibility(View.GONE);
+        holder.ll_documents.setVisibility(View.GONE);
+        shared_list.clear();
+
+        callSharedDocumentsWebservice(relationshipsModel.getId(), shared_tag,holder);
+//
+    }
+
+    private void openSharedPopupWindow(ArrayList<SharedDocumentsDo> shared_list) {
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mcontext);
+        LayoutInflater inflater = mActivity.getLayoutInflater();
+        View view = inflater.inflate(R.layout.shared_document_recyclerview_popup, null);
+//        sv_relationships.getForeground().setAlpha(220);
+        RecyclerView rv_relationship_groups;
+        TextInputEditText et_search_relationships;
+        TextView tv_header_name,tv_message;
+        LinearLayoutCompat ll_buttons;
+        ImageView iv_cancel;
+        AppCompatButton btn_send_request, btn_relationships_cancel;
+        rv_relationship_groups = view.findViewById(R.id.rv_relationship_documents);
+        et_search_relationships = view.findViewById(R.id.et_search_relationships);
+        btn_send_request = view.findViewById(R.id.btn_send_request);
+        ll_buttons = view.findViewById(R.id.ll_buttons);
+        tv_header_name = view.findViewById(R.id.header_name);
+        String header_name = "";
+        if (shared_tag=="withme"){
+         header_name    = "Documents Shared With Us";
+         ll_buttons.setVisibility(View.GONE);
+        }else
+        {
+            ll_buttons.setVisibility(View.VISIBLE);
+            header_name = "Documents Shared By Us";
+        }
+
+        tv_header_name.setText(header_name);
+        tv_message  = view.findViewById(R.id.tv_message);
+        if (shared_list.size()==0){
+            tv_message.setVisibility(View.VISIBLE);
+        }
+
+        btn_relationships_cancel = view.findViewById(R.id.btn_relationships_cancel);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mcontext, LinearLayoutManager.VERTICAL, false);
+        rv_relationship_groups.setLayoutManager(layoutManager);
+        rv_relationship_groups.setHasFixedSize(true);
+        SharedDocumentsAdapter documentsAdapter = new SharedDocumentsAdapter(shared_list, shared_tag, mcontext, this);
+        rv_relationship_groups.setAdapter(documentsAdapter);
+        et_search_relationships.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                documentsAdapter.getFilter().filter(et_search_relationships.getText().toString());
+            }
+
+        });
+        final AlertDialog dialog = dialogBuilder.create();
+        ad_dialog = dialog;
+        btn_relationships_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                et_search_relationships.setText("");
+                shared_list.clear();
+                dialog.dismiss();
+            }
+        });
+        iv_cancel =view.findViewById(R.id.close_documents);
+        iv_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                et_search_relationships.setText("");
+                shared_list.clear();
+                dialog.dismiss();
+            }
+        });
+        btn_send_request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                et_search_relationships.setText("");
+//                try {
+////                    callUpdateGroupAcess(relationshipsModel_new.getId(), documentsAdapter.getList_item());
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+            }
+        });
+        dialog.setView(view);
+        dialog.show();
     }
 
     private void callSharedDocumentsWebservice(String id, String shared_tag, MyViewHolder holder) {
@@ -398,6 +533,8 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
 
     private void callGroupsWebservice(MyViewHolder holder, RelationshipsModel relationshipsModel) {
         try {
+
+            progress_dialog = AndroidUtils.get_progress(mActivity);
             for (int j = 0; j < relationshipsModel.getGroups().length(); j++) {
                 ViewGroupModel viewGroupModel = new ViewGroupModel();
                 JSONObject jsonObject = relationshipsModel.getGroups().getJSONObject(j);
@@ -433,83 +570,88 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
 
     @Override
     public void onAsyncTaskComplete(HttpResultDo httpResult) {
-//        if (progress_dialog != null && progress_dialog.isShowing())
-//            AndroidUtils.dismiss_dialog(progress_dialog);
-        if (httpResult.getResult() == WebServiceHelper.ServiceCallStatus.Success) ;
-        try {
-            JSONObject result = new JSONObject(httpResult.getResponseContent());
-            boolean error = result.getBoolean("error");
-            String msg = "";
+        if (progress_dialog != null && progress_dialog.isShowing()) {
+            AndroidUtils.dismiss_dialog(progress_dialog);
+            if (httpResult.getResult() == WebServiceHelper.ServiceCallStatus.Success) ;
+            try {
+                JSONObject result = new JSONObject(httpResult.getResponseContent());
+//            boolean error = result.getBoolean("error");
+                String msg = "";
 
 
-            if (httpResult.getRequestType().equals("Get Groups")) {
-                if (error) {
-                    msg = result.getString("msg");
-                    AndroidUtils.showToast(msg, mcontext);
-                } else {
+                if (httpResult.getRequestType().equals("Get Groups")) {
+//                if (error) {
+//                    msg = result.getString("msg");
+//                    AndroidUtils.showToast(msg, mcontext);
+//                } else {
                     JSONArray data = result.getJSONArray("data");
                     loadViewGroups(data);
-                }
+//                }
 
-            } else if (httpResult.getRequestType().equals("Update Group Access")) {
+                } else if (httpResult.getRequestType().equals("Update Group Access")) {
+                    boolean error = result.getBoolean("error");
+                    if (error) {
+                        msg = result.getString("msg");
+                        AndroidUtils.showToast(msg, mcontext);
+                    } else {
+                        msg = result.getString("msg");
+                        AndroidUtils.showToast(msg, mcontext);
+                        groupsList.clear();
+                        relationshipsList.clear();
+                        ad_dialog.dismiss();
+                        eventListener.RefreshViewRelationshipsData();
+                    }
 
-                if (error) {
+                } else if (httpResult.getRequestType().equals("Delete Relationship")) {
+                    boolean error = result.getBoolean("error");
+                    if (error) {
+                        msg = result.getString("msg");
+                        AndroidUtils.showToast(msg, mcontext);
+                    } else {
+                        msg = result.getString("msg");
+                        AndroidUtils.showToast(msg, mcontext);
+                        groupsList.clear();
+                        relationshipsList.clear();
+                        ad_dialog_delete.dismiss();
+                        eventListener.RefreshViewRelationshipsData();
+                    }
+                } else if (httpResult.getRequestType().equals("Profile")) {
+                    boolean error = result.getBoolean("error");
+                    if (error) {
+                        msg = result.getString("msg");
+                        AndroidUtils.showToast(msg, mcontext);
+                    } else {
+                        mholder.rg_profile.setVisibility(View.VISIBLE);
+                        JSONObject data = result.getJSONObject("data");
+                        Log.d("TAG", "Data:" + data.toString());
+                        loadProfile(data);
+                    }
+                } else if (httpResult.getRequestType().equals("Shared Documents")) {
+                    boolean error = result.getBoolean("error");
+                    if (error) {
+                        msg = result.getString("msg");
+                        AndroidUtils.showToast(msg, mcontext);
+                    } else {
+                        JSONObject documents = result.getJSONObject("documents");
+                        loadSharedWithmeDocuments(documents);
+                    }
+                } else if (httpResult.getRequestType().equals("Copy Document")) {
+                    boolean error = result.getBoolean("error");
                     msg = result.getString("msg");
-                    AndroidUtils.showToast(msg, mcontext);
-                } else {
-                    AndroidUtils.showToast(msg, mcontext);
-                    groupsList.clear();
-                    relationshipsList.clear();
-                    ad_dialog.dismiss();
-                    eventListener.RefreshViewRelationshipsData();
-                }
-
-            } else if (httpResult.getRequestType().equals("Delete Relationship")) {
-                if (error) {
-                    msg = result.getString("msg");
-                    AndroidUtils.showToast(msg, mcontext);
-                } else {
-                    msg = result.getString("msg");
-                    AndroidUtils.showToast(msg, mcontext);
-                    groupsList.clear();
-                    relationshipsList.clear();
-                    ad_dialog_delete.dismiss();
-                    eventListener.RefreshViewRelationshipsData();
-                }
-            } else if (httpResult.getRequestType().equals("Profile")) {
-                if (error) {
-                    msg = result.getString("msg");
-                    AndroidUtils.showToast(msg, mcontext);
-                } else {
-                    mholder.rg_profile.setVisibility(View.VISIBLE);
-                    JSONObject data = result.getJSONObject("data");
-                    Log.d("TAG", "Data:" + data.toString());
-                    loadProfile(data);
-                }
-            }else if(httpResult.getRequestType().equals("Shared Documents")){
-                if (error) {
-                    msg = result.getString("msg");
-                    AndroidUtils.showToast(msg, mcontext);
-                }else {
-                    JSONObject documents = result.getJSONObject("documents");
-                    loadSharedWithmeDocuments(documents);
-                }
-            }else if(httpResult.getRequestType().equals("Copy Document")){
-                msg = result.getString("msg");
-                if (error){
-                    ad_dialog_copy.dismiss();
-                    AndroidUtils.showAlert(msg, mcontext);
+                    if (error) {
+                        ad_dialog_copy.dismiss();
+                        AndroidUtils.showAlert(msg, mcontext);
 //                    AndroidUtils.showToast(msg, mcontext);
-                }else
-                {
-                    ad_dialog_copy.dismiss();
-                    AndroidUtils.showToast(msg, mcontext);
-                }
-            }else if(httpResult.getRequestType().equals("View Document")){
+                    } else {
+                        ad_dialog_copy.dismiss();
+                        AndroidUtils.showToast(msg, mcontext);
+                    }
+                } else if (httpResult.getRequestType().equals("View Document")) {
 
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 
@@ -544,7 +686,8 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
                 shared_list.add(sharedDocumentsDo);
             }
         }
-        loadDocumentsRecyclerview();
+        openSharedPopupWindow(shared_list);
+//        loadDocumentsRecyclerview();
     }
 
     private void loadDocumentsRecyclerview() {
@@ -558,6 +701,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
             SharedDocumentsAdapter adapter = new SharedDocumentsAdapter(shared_list, shared_tag, mcontext, this);
             mholder.rv_documents.setAdapter(adapter);
             mholder.rv_documents.setHasFixedSize(true);
+
             mholder.et_Search.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -566,7 +710,6 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
 
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
                 }
 
                 @Override
@@ -647,6 +790,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         View view = inflater.inflate(R.layout.groups_recylerview_popup, null);
         RecyclerView rv_relationship_groups;
         TextInputEditText et_search_relationships;
+        ImageView iv_close;
         AppCompatButton btn_send_request, btn_relationships_cancel;
         rv_relationship_groups = view.findViewById(R.id.rv_relationship_groups);
         et_search_relationships = view.findViewById(R.id.et_search_relationships);
@@ -676,6 +820,16 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         final AlertDialog dialog = dialogBuilder.create();
         ad_dialog = dialog;
         btn_relationships_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                et_search_relationships.setText("");
+                groupsList.clear();
+                updatedMembersList.clear();
+                dialog.dismiss();
+            }
+        });
+        iv_close = view.findViewById(R.id.close_groups);
+        iv_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 et_search_relationships.setText("");
@@ -720,10 +874,10 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         RadioGroup rg_profile, rg_shared_status, rg_shared_type, rg_document_type;
         CardView cv_Profile,cv_relationships;
         Button btn_accept;
-        LinearLayout ll_documents,ll_expandable_layout;
+        LinearLayout ll_documents,ll_expandable_layout,nestedScrollView;
         RecyclerView rv_documents;
         RadioButton rb_share_document, rb_profile, rb_shared_by_us, rb_shared_with_us;
-        NestedScrollView nestedScrollView;
+//        NestedScrollView ;
         TextInputEditText et_Search;
 
         public MyViewHolder(@NonNull View itemView) {

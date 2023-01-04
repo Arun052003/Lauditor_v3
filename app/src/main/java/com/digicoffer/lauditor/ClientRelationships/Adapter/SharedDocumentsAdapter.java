@@ -187,7 +187,7 @@ public class SharedDocumentsAdapter extends RecyclerView.Adapter<SharedDocuments
             cb_documents = itemView.findViewById(R.id.chk_selected);
             tv_tm_name = itemView.findViewById(R.id.tv_tm_name);
             tv_doc_name = itemView.findViewById(R.id.tv_doc_name);
-            ll_dashed_line = itemView.findViewById(R.id.ll_dashed_line);
+//            ll_dashed_line = itemView.findViewById(R.id.ll_dashed_line);
             iv_view = itemView.findViewById(R.id.iv_view);
             iv_copy = itemView.findViewById(R.id.iv_copy);
         }

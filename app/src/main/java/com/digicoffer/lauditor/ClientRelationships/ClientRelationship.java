@@ -17,6 +17,7 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -82,6 +83,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     private static String RELATIONSHIP_TAG = "";
     CardView cv_details;
     private String country_name;
+    private ScrollView sv_relationships;
 
 
     @Override
@@ -161,6 +163,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rg_add_relationships = view.findViewById(R.id.rgTask);
+        sv_relationships = (ScrollView) view.findViewById(R.id.sv_relationships);
         rb_add_relationship = view.findViewById(R.id.add_relationship);
         rb_view_relationships = view.findViewById(R.id.view_relationship);
         rg_individual_entity = view.findViewById(R.id.entity);

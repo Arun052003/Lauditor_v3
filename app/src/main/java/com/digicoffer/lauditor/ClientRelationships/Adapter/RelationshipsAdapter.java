@@ -373,7 +373,6 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         shared_relationship_id = id;
         JSONObject jsonObject = new JSONObject();
         WebServiceHelper.callHttpWebService(this,mcontext, WebServiceHelper.RestMethodType.GET,"v3/documents/"+shared_tag,"Existing Documents",jsonObject.toString());
-
     }
 
     private void unhideSharedDocumentsdata(MyViewHolder holder, String shared_tag, RelationshipsModel relationshipsModel) {

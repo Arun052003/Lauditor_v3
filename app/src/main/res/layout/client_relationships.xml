@@ -103,6 +103,53 @@
 
 
     </RadioGroup>
+    <RadioGroup
+        android:id="@+id/relationship"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/thirty_dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.771"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/entity"
+        app:layout_constraintVertical_bias="0.0">
+
+        <RadioButton
+            android:id="@+id/add_individiual_relationship"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:background="@drawable/button_left_green_background"
+            android:button="@android:color/transparent"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:gravity="center"
+            android:padding="15dp"
+            android:singleLine="true"
+            android:text="Individual"
+            android:textSize="@dimen/Fifteen_dp" />
+
+
+
+        <RadioButton
+            android:id="@+id/add_entity_relationship"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:background="@drawable/button_right_background"
+            android:button="@android:color/transparent"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:gravity="center"
+            android:padding="15dp"
+            android:singleLine="true"
+            android:text="Entity"
+            android:textSize="@dimen/Fifteen_dp" />
+
+
+    </RadioGroup>
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_details"
         android:layout_width="match_parent"
@@ -115,7 +162,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/entity"
+        app:layout_constraintTop_toBottomOf="@id/relationship"
         app:layout_constraintVertical_bias="0.0">
 
         <androidx.appcompat.widget.LinearLayoutCompat

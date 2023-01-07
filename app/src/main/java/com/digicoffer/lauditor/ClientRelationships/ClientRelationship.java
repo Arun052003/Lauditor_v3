@@ -55,17 +55,18 @@ import java.util.Date;
 
 public class ClientRelationship extends Fragment implements AsyncTaskCompleteListener, View.OnClickListener, RelationshipsAdapter.EventListener {
 
-    private RadioGroup rg_add_relationships, rg_individual_entity;
+    private RadioGroup rg_add_relationships, rg_individual_entity,rg_relationship;
     ArrayList<SearchModel> searchModelsList = new ArrayList<>();
     ArrayList<String> entityList = new ArrayList<>();
     ArrayList<ViewGroupModel> updatedMembersList = new ArrayList<>();
     ArrayList<RelationshipsModel> relationshipsList = new ArrayList<>();
-
+    String TAG = "";
     String value = "";
+    String Relationship_Type = "";
     EntitySearchModel entitySearchModel;
     EntityModel entityModel;
     ArrayList<EntityModel> updatedEntityList = new ArrayList<>();
-    RadioButton rb_add_relationship, rb_view_relationships, rb_individual, rb_entity;
+    RadioButton rb_add_relationship, rb_view_relationships, rb_individual, rb_entity,rb_individual_relationship,rb_business_relationship;
     LinearLayout ll_entity_name, ll_contact_person, ll_first_name, ll_last_name, ll_contatc_phone,ll_search_individual,ll_search_entity,ll_relationships,ll_select_all,ll_groups;
     TextInputEditText et_search_relationships, et_search_individual,et_search_view_relationships, tv_individual_email, tv_individual_confirm_email, tv_individual_firstname, tv_individual_last_name, tv_entity_name, tv_entity_contact_person, tv_entity_phone_number;
     Button btn_search_individual, btn_relationships_cancel, btn_send_request,btn_search_entity;
@@ -163,6 +164,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rg_add_relationships = view.findViewById(R.id.rgTask);
+        rg_relationship = view.findViewById(R.id.relationship);
         sv_relationships = (ScrollView) view.findViewById(R.id.sv_relationships);
         rb_add_relationship = view.findViewById(R.id.add_relationship);
         rb_view_relationships = view.findViewById(R.id.view_relationship);
@@ -204,14 +206,20 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         btn_relationships_cancel = view.findViewById(R.id.btn_relationships_cancel);
         enableAlpha();
         btn_search_individual.setOnClickListener(this);
+        rb_individual_relationship = view.findViewById(R.id.add_individiual_relationship);
+        rb_business_relationship = view.findViewById(R.id.add_entity_relationship);
         btn_search_entity.setOnClickListener(this);
         rb_add_relationship.setTextColor(getContext().getResources().getColor(R.color.white));
         rb_view_relationships.setTextColor(getContext().getResources().getColor(R.color.black));
+        rg_individual_entity.setVisibility(View.VISIBLE);
         rg_add_relationships.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
+
                 switch (i) {
                     case R.id.add_relationship:
+                        rg_individual_entity.setVisibility(View.VISIBLE);
+                        rg_relationship.setVisibility(View.GONE);
                         rb_add_relationship.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
                         rb_add_relationship.setTextColor(getContext().getResources().getColor(R.color.white));
                         rb_view_relationships.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
@@ -225,6 +233,9 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
                         rv_relationships.removeAllViews();
                         break;
                     case R.id.view_relationship:
+                        rb_individual_relationship.setBackground(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+                        rb_business_relationship.setBackground(getContext().getResources().getDrawable(R.drawable.button_right_background));
+                        Relationship_Type = "individuals";
                         viewRelationshipsData();
 
                         break;
@@ -271,12 +282,36 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
                 }
             }
         });
+        rg_relationship.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.add_individiual_relationship:
+                        Relationship_Type = "individuals";
+                        rb_individual_relationship.setBackground(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+                        rb_business_relationship.setBackground(getContext().getResources().getDrawable(R.drawable.button_right_background));
+                        viewRelationshipsData();
+                        break;
+                    case R.id.add_entity_relationship:
+                        Relationship_Type = "business";
+                        rb_individual_relationship.setBackground(getContext().getResources().getDrawable(R.drawable.button_left_background));
+                        rb_business_relationship.setBackground(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+
+                        viewRelationshipsData();
+                        break;
+                }
+            }
+        });
         tl_individual_country.setEnabled(false);
         sp_country.setEnabled(false);
 
     }
 
     private void viewRelationshipsData() {
+        relationshipsList.clear();
+        rv_relationships.removeAllViews();
+        rg_individual_entity.setVisibility(View.GONE);
+        rg_relationship.setVisibility(View.VISIBLE);
         rb_add_relationship.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         rb_view_relationships.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         rb_add_relationship.setTextColor(getContext().getResources().getColor(R.color.black));
@@ -290,7 +325,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
 
     private void callIndividualWebservice() {
         JSONObject postdata = new JSONObject();
-        WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.GET,"v2/relationship/individuals","View Relationships",postdata.toString());
+        WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.GET,"v2/relationship/"+Relationship_Type,"View Relationships",postdata.toString());
     }
 
     private void callEntityWebService() {

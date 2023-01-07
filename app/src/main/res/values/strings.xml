@@ -46,4 +46,5 @@
     <string name="send_request">Send Request</string>
     <string name="profile">Profile</string>
     <string name="share_document">Share Document</string>
+    <string name="unshare">Unshare</string>
 </resources>

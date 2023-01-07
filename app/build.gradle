@@ -50,5 +50,6 @@ dependencies {
     implementation "org.igniterealtime.smack:smack-android:$smackVersion"
     implementation "org.igniterealtime.smack:smack-android-extensions:$smackVersion"
     implementation 'info.guardianproject.netcipher:netcipher:2.1.0'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation 'com.applandeo:material-calendar-view:1.9.0-rc03'
 }

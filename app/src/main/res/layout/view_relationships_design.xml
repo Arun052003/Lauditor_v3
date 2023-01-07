@@ -199,16 +199,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:visibility="gone"
+    android:visibility="visible"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintTop_toBottomOf="@id/cv_relationships_details">
+
+
     <RadioGroup
         android:id="@+id/profile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_margin="10dp"
         android:gravity="center"
         android:orientation="horizontal"
@@ -443,20 +445,24 @@
            </TextView>
        </LinearLayout>
     </androidx.cardview.widget.CardView>
-    <RadioGroup
-        android:id="@+id/shared_status"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/thirty_dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        >
+
+    <RadioGroup
+        android:id="@+id/shared_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/Fifteen_dp"
+
         android:visibility="gone"
+        android:layout_marginRight="20dp"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cv_profile"
-        app:layout_constraintVertical_bias="0.0">
+     >
 
         <RadioButton
             android:id="@+id/rb_shared_with_us"
@@ -487,6 +493,17 @@
 
 
     </RadioGroup>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_share_docs"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:visibility="gone"
+           android:layout_margin="10dp"
+            android:layout_toRightOf="@id/shared_status"
+            android:src="@mipmap/share_icon_round"
+            app:shapeAppearanceOverlay="@style/Circula" />
+    </RelativeLayout>
     <RadioGroup
         android:id="@+id/shared_type"
         android:layout_width="match_parent"

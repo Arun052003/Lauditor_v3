@@ -111,6 +111,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="sans-serif-condensed-medium"
                     android:gravity="center"
+
                     android:text="No Documents to Show"
                     android:textColor="@color/Blue_text_color"
                     android:textSize="@dimen/twenty_dp"

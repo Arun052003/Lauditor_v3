@@ -89,11 +89,15 @@ public class SharedDocumentsAdapter extends RecyclerView.Adapter<SharedDocuments
     @NonNull
     @Override
     public SharedDocumentsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (Shared_tag == "byme") {
+        if (Shared_tag == "withme") {
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.shared_with_us, parent, false);
+            return new SharedDocumentsAdapter.ViewHolder(itemView);
+        } else if (Shared_tag == "byme"){
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.shared_documents_by_us, parent, false);
             return new SharedDocumentsAdapter.ViewHolder(itemView);
-        } else {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.shared_with_us, parent, false);
+
+        }else{
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.client_firm_documents,parent,false);
             return new SharedDocumentsAdapter.ViewHolder(itemView);
         }
     }
@@ -133,7 +137,7 @@ public class SharedDocumentsAdapter extends RecyclerView.Adapter<SharedDocuments
                 }
             });
         }
-        else {
+        else if(Shared_tag == "withme"){
                 holder.tv_doc_name.setText(sharedDocumentsDo.getName());
                 holder.iv_copy.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -148,6 +152,26 @@ public class SharedDocumentsAdapter extends RecyclerView.Adapter<SharedDocuments
                     }
                 });
 //                holder
+        }else{
+            holder.cb_documents.setChecked(sharedList.get(position).isChecked());
+            holder.cb_documents.setTag(position);
+            holder.tv_tm_name.setText(sharedDocumentsDo.getName());
+            holder.cb_documents.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Integer pos = (Integer) holder.cb_documents.getTag();
+                    if (sharedList.get(pos).isChecked()) {
+                        sharedList.get(pos).setChecked(false);
+
+//                        itemsArrayList.add(itemsArrayList.get(pos));
+                    } else {
+                        sharedList.get(pos).setChecked(true);
+//                        itemsArrayList.remove(itemsArrayList.get(pos));
+                    }
+
+
+                }
+            });
         }
 //        if (position == position - 1){
 //            holder.ll_dashed_line.setVisibility(View.GONE);

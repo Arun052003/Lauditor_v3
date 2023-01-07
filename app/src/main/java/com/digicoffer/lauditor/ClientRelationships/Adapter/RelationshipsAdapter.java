@@ -48,7 +48,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.pgpainless.key.selection.key.util.And;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -222,15 +221,15 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         {
             holder.btn_accept.setVisibility(View.GONE);
             holder.iv_groups_relationships.setVisibility(View.VISIBLE);
-            ImageView iv_initiated = view.findViewById(R.id.iv_initiated);
+//            ImageView iv_initiated = view.findViewById(R.id.iv_initiated);
             if (relationshipsModel.isAccepted()) {
                 holder.tv_initiated.setText("Accepted");
 
-                iv_initiated.setImageDrawable(mcontext.getResources().getDrawable(R.drawable.green_circular));
+                holder.iv_initiated.setImageDrawable(mcontext.getResources().getDrawable(R.drawable.green_circular));
 //                notifyDataSetChanged();
             } else {
                 holder.tv_initiated.setText("Not Accepted");
-                iv_initiated.setImageDrawable(mcontext.getResources().getDrawable(R.drawable.red_circular));
+                holder.iv_initiated.setImageDrawable(mcontext.getResources().getDrawable(R.drawable.red_circular));
 //                notifyDataSetChanged();
             }
         }
@@ -302,6 +301,10 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         holder.iv_share_docs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                holder.iv_share_docs.setBackgroundColor(mcontext.getResources().getColor(R.color.green_count_color));
+//
+                holder.rb_shared_with_us.setBackground(mcontext.getResources().getDrawable(R.drawable.button_left_background));
+                holder.rb_shared_by_us.setBackground(mcontext.getResources().getDrawable(R.drawable.button_right_background));
                 holder.rg_document_type.setVisibility(View.VISIBLE);
             }
         });
@@ -343,7 +346,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
                     case R.id.rb_client_document:
                         holder.rb_client_document.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.button_left_green_background));
                         holder.rb_firm_document.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.button_right_background));
-                        shared_tag  = "filter";
+                        shared_tag  = "client";
 
                         callDocumentTypeWebservice(relationshipsModel.getId(),shared_tag,holder,doc_nature);
                         break;
@@ -363,7 +366,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
         mholder = holder;
         shared_relationship_id = id;
         JSONObject jsonObject = new JSONObject();
-        WebServiceHelper.callHttpWebService(this,mcontext, WebServiceHelper.RestMethodType.GET,"v3/documents/"+shared_tag,"Shared Documents",jsonObject.toString());
+        WebServiceHelper.callHttpWebService(this,mcontext, WebServiceHelper.RestMethodType.GET,"v3/documents/"+shared_tag,"Existing Documents",jsonObject.toString());
 
     }
 
@@ -414,13 +417,22 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
          header_name    = "Documents Shared With Us";
          ll_buttons.setVisibility(View.GONE);
 
-
 //            https://apidev2.digicoffer.com/cors/professional/v2/relationship/6390695ea1db7204220cff88/docs/share
-        }else
+        }else if (shared_tag=="byme")
         {
             ll_buttons.setVisibility(View.VISIBLE);
             header_name = "Documents Shared By Us";
 
+        }
+        else if (shared_tag=="client"){
+            header_name = "Client Documents";
+            btn_message_send_request.setText("Share");
+            btn_send_request.setText("Share");
+        }
+        else{
+            header_name = "Firm Documents";
+            btn_message_send_request.setText("Share");
+            btn_send_request.setText("Share");
         }
 
         tv_header_name.setText(header_name);
@@ -431,7 +443,6 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
             el_search.setVisibility(View.GONE);
             et_message.setVisibility(View.GONE);
         }
-
         btn_relationships_cancel = view.findViewById(R.id.btn_relationships_cancel);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mcontext, LinearLayoutManager.VERTICAL, false);
         rv_relationship_groups.setLayoutManager(layoutManager);
@@ -516,7 +527,6 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
             @Override
             public void onClick(View view) {
                 try {
-
                     callUnshareDocumentWebservice(shared_relationship_id, remove,et_message.getText().toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -540,9 +550,16 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
 
 
         if(remove.length()!=0) {
-            jsonObject.put("add", add);
+            if (shared_tag == "byme"){
+                jsonObject.put("remove", remove);
+                jsonObject.put("add", add);
+            }else {
+                jsonObject.put("remove", add);
+                jsonObject.put("add", remove);
+            }
+
             jsonObject.put("message", s);
-            jsonObject.put("remove", remove);
+
 //        AndroidUtils.showAlert(jsonObject.toString(),mcontext);
             WebServiceHelper.callHttpWebService(this, mcontext, WebServiceHelper.RestMethodType.PUT, "v2/relationship/" + id + "/docs/share", "UnshareDocuments", jsonObject.toString());
         }else{
@@ -743,11 +760,47 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
                     AndroidUtils.showToast(msg,mcontext);
                     shared_list.clear();
                     ad_dialog_docs.dismiss();
+                }else if(httpResult.getRequestType().equals("Existing Documents")){
+                    boolean error = result.getBoolean("error");
+                    if (error) {
+                        msg = result.getString("msg");
+                        AndroidUtils.showToast(msg, mcontext);
+                    } else {
+                        JSONArray documents = result.getJSONArray("docs");
+                        loadOtherDocs(documents);
+//                        loadSharedWithmeDocuments(documents);
+                    }
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+
+    private void loadOtherDocs(JSONArray docs) throws JSONException {
+
+
+            for (int i=0;i<docs.length();i++){
+                SharedDocumentsDo sharedDocumentsDo = new SharedDocumentsDo();
+                JSONObject docs_new = docs.getJSONObject(i);
+                sharedDocumentsDo.setContent_type(docs_new.getString("content_type"));
+                sharedDocumentsDo.setCreated(docs_new.getString("created"));
+                sharedDocumentsDo.setDescription(docs_new.getString("description"));
+                sharedDocumentsDo.setExpiration_date(docs_new.getString("expiration_date"));
+                sharedDocumentsDo.setFilename(docs_new.getString("filename"));
+                sharedDocumentsDo.setId(docs_new.getString("id"));
+                sharedDocumentsDo.setIs_disabled(docs_new.getBoolean("is_disabled"));
+                sharedDocumentsDo.setIs_encrypted(docs_new.getBoolean("is_encrypted"));
+                sharedDocumentsDo.setIs_password(docs_new.getBoolean("is_password"));
+                sharedDocumentsDo.setName(docs_new.getString("name"));
+                sharedDocumentsDo.setOrigin(docs_new.getString("origin"));
+                sharedDocumentsDo.setUploaded_by(docs_new.getString("uploaded_by"));
+                shared_list.add(sharedDocumentsDo);
+
+
+            }
+        openSharedPopupWindow(shared_list);
+    }
 
 
     private void loadSharedWithmeDocuments(JSONObject documents)throws JSONException {
@@ -781,6 +834,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
                 shared_list.add(sharedDocumentsDo);
             }
         }
+
         openSharedPopupWindow(shared_list);
 //        loadDocumentsRecyclerview();
     }

@@ -306,6 +306,11 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
                 holder.rb_shared_with_us.setBackground(mcontext.getResources().getDrawable(R.drawable.button_left_background));
                 holder.rb_shared_by_us.setBackground(mcontext.getResources().getDrawable(R.drawable.button_right_background));
                 holder.rg_document_type.setVisibility(View.VISIBLE);
+                holder.rb_client_document.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.button_left_green_background));
+                holder.rb_firm_document.setBackgroundDrawable(mcontext.getResources().getDrawable(R.drawable.button_right_background));
+                shared_tag  = "client";
+                callDocumentTypeWebservice(relationshipsModel.getId(),shared_tag,holder,doc_nature);
+
             }
         });
         holder.rg_shared_status.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -363,6 +368,7 @@ public class RelationshipsAdapter extends RecyclerView.Adapter<RelationshipsAdap
     }
 
     private void callDocumentTypeWebservice(String id, String shared_tag, MyViewHolder holder, String doc_nature) {
+        progress_dialog = AndroidUtils.get_progress(mActivity);
         mholder = holder;
         shared_relationship_id = id;
         JSONObject jsonObject = new JSONObject();

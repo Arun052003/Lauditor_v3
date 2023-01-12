@@ -47,4 +47,9 @@
     <string name="profile">Profile</string>
     <string name="share_document">Share Document</string>
     <string name="unshare">Unshare</string>
+    <string name="tag_type">Tag Type</string>
+    <string name="tag">Tag</string>
+    <string name="edit_meta_data">Edit Meta Data</string>
+    <string name="document_name">Document Name</string>
+    <string name="expiration_date">Expiration Date</string>
 </resources>

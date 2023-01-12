@@ -1,0 +1,559 @@
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".MainActivity">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/upload_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="50dp"
+            android:paddingTop="@dimen/twenty_dp"
+            android:paddingEnd="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.593"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.013">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_weight="1"
+    android:gravity="center"
+    >
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/upload_icon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_weight="1"
+        android:src="@mipmap/upload_icon"
+        android:background="@color/green_count_color"
+        android:fontFamily="sans-serif-condensed-medium"
+        app:shapeAppearanceOverlay="@style/Circula"
+        android:text="@string/create_group"
+        android:textColor="@color/black"
+        android:textSize="@dimen/Fifteen_dp">
+
+    </com.google.android.material.imageview.ShapeableImageView>
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/upload_icon"
+    android:text="Upload"
+    android:layout_marginLeft="15dp"
+    android:fontFamily="sans-serif-condensed-medium"
+    android:gravity="center">
+
+</TextView>
+
+</RelativeLayout>
+
+            <RelativeLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                >
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/view_icon"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    android:src="@mipmap/eye_icon_black"
+                    android:background="@color/green_count_color"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    app:shapeAppearanceOverlay="@style/Circula"
+                    android:text="@string/create_group"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/Fifteen_dp">
+
+                </com.google.android.material.imageview.ShapeableImageView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/view_icon"
+                    android:text="View"
+                    android:layout_marginLeft="15dp"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:gravity="center">
+
+                </TextView>
+
+            </RelativeLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/client_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="50dp"
+            android:paddingTop="@dimen/twenty_dp"
+            android:paddingEnd="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.593"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/upload_view"
+            app:layout_constraintVertical_bias="0.013">
+
+            <TextView
+                android:id="@+id/tv_create_group"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/button_left_background"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:padding="10dp"
+                android:text="Client"
+                android:textColor="@color/black"
+                android:textSize="@dimen/Fifteen_dp">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/tv_view_group"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/button_right_background"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:padding="10dp"
+                android:text="Firm"
+                android:textColor="@color/black"
+                android:textSize="@dimen/Fifteen_dp">
+
+            </TextView>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_client_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="5dp"
+            android:elevation="50dp"
+            android:layout_margin="15dp"
+            android:padding="5dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/client_type"
+            app:layout_constraintVertical_bias="0.0">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <LinearLayout
+                android:id="@+id/ll_client_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:text="Client Name"
+                    android:textColor="@color/Blue_text_color"
+                    android:textSize="@dimen/Fifteen_dp">
+
+                </TextView>
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/asterisk_icon">
+
+                </ImageView>
+
+            </LinearLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/search_tm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_weight="1"
+                android:layout_below="@id/ll_client_name"
+                android:hint="@string/search"
+                android:background="@drawable/rectangle_grey_background"
+                android:textColorHint="@color/black"
+                app:boxBackgroundMode="none"
+                android:layout_gravity="center"
+                android:gravity="center"
+                >
+          <AutoCompleteTextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@drawable/rectangle_grey_background">
+
+          </AutoCompleteTextView>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_matter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_below="@id/ll_client_name"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        android:text="Matter"
+                        android:textColor="@color/Blue_text_color"
+                        android:textSize="@dimen/Fifteen_dp">
+
+                    </TextView>
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="10dp"
+                        android:src="@drawable/asterisk_icon">
+
+                    </ImageView>
+
+                </LinearLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tl_matter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangle_grey_background"
+                    app:boxBackgroundMode="none"
+                    android:textColorHint="@color/black">
+
+
+                    <Spinner
+                        android:id="@+id/sp_matter"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:spinnerMode="dropdown"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_select_doc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_below="@id/ll_matter"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        android:text="Select Document(s)"
+                        android:textColor="@color/Blue_text_color"
+                        android:textSize="@dimen/Fifteen_dp">
+
+                    </TextView>
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="10dp"
+                        android:src="@drawable/asterisk_icon">
+
+                    </ImageView>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tl_individual_country"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rectangle_grey_background"
+                    app:boxBackgroundMode="none"
+                    android:hint="Select Document"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:textColorHint="@color/black">
+
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        android:layout_gravity="top"
+
+                        android:textColor="@color/Blue_text_color"
+                        android:textSize="@dimen/Fifteen_dp"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+                    <Button
+                        android:layout_width="200dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.7"
+                        android:text="Browse">
+
+                    </Button>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+        </androidx.cardview.widget.CardView>
+        <RelativeLayout
+            android:id="@+id/rl_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_margin="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintTop_toBottomOf="@id/cv_client_details"
+            >
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/tag_meta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+
+                android:paddingTop="10dp"
+                android:paddingEnd="30dp"
+
+                >
+
+                <TextView
+                    android:id="@+id/tv_add_tag"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_left_background"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:padding="10dp"
+                    android:text="Add Tag"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/Fifteen_dp">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/tv_edit_meta"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_right_background"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:padding="10dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="Edit Meta"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/Fifteen_dp">
+
+                </TextView>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            <CheckBox
+                android:id="@+id/chk_select_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="80dp"
+                android:layout_marginTop="10dp"
+
+                android:layout_marginBottom="10dp"
+                android:layout_toRightOf="@id/tag_meta"
+                android:background="@drawable/checkbox_background"
+                android:buttonTint="@color/grey_color_dark"
+                android:paddingEnd="20dp"
+                android:text="@string/select_all" />
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/ll_download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/tag_meta"
+                android:layout_marginTop="20dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="30dp"
+
+                >
+
+                <TextView
+                    android:id="@+id/tv_enable_download"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_left_background"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:padding="10dp"
+                    android:text="Enable Download"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/Fifteen_dp">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/tv_disable_download"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_right_background"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:padding="10dp"
+
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="Disable Download"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/Fifteen_dp">
+
+                </TextView>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        </RelativeLayout>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_details_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:padding="10dp"
+            app:cardCornerRadius="10dp"
+            android:elevation="10dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rl_buttons"
+           >
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linearLayoutCompat2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:paddingBottom="30dp"
+                >
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Select Head of the Practice"
+                    android:textSize="@dimen/twenty_dp"
+                    android:textColor="@color/Blue_text_color"
+                    android:visibility="gone"
+                    android:fontFamily="sans-serif-condensed">
+
+                </TextView>
+                <TextView
+                    android:id="@+id/group_head_name"
+                    android:layout_width="match_parent"
+                    android:visibility="gone"
+                    android:padding="10dp"
+                    android:textColor="@color/black"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:textSize="@dimen/Fifteen_dp"
+                    android:drawableLeft="@drawable/person_image_email"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangle_grey_background"
+                    android:layout_margin="10dp">
+
+                </TextView>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_selected_tm"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:orientation="vertical"
+                    android:layout_margin="10dp"
+                    />
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/ll_buttons"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:orientation="horizontal"
+
+                    >
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_cancel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="20dp"
+                        android:elevation="20dp"
+
+                        android:layout_marginRight="20dp"
+                        android:background="@drawable/cancel_button_background"
+                        android:textAllCaps="false"
+                        android:text="@string/cancel">
+
+                    </androidx.appcompat.widget.AppCompatButton>
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_save"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:elevation="@dimen/Fifteen_dp"
+
+                        android:background="@drawable/save_button_background"
+                        android:textColor="@color/white"
+                        android:textAllCaps="false"
+
+                        android:text="Add Tag">
+
+                    </androidx.appcompat.widget.AppCompatButton>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

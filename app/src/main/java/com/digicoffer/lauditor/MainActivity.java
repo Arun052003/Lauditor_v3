@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                     closeMenu();
                 }
             });
-            fab_matter.setOnClickListener(new View.OnClickListener() {
+            fab_relationships.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Fragment fragment1 = new ClientRelationship();

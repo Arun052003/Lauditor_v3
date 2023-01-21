@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
 import com.digicoffer.lauditor.R;
@@ -55,7 +56,23 @@ public class AndroidUtils {
                     }
                 });
     }
-
+    public static  void showDialog(final String msg, final Context context,
+                           final String permission) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
+        alertBuilder.setCancelable(true);
+        alertBuilder.setTitle("Permission necessary");
+        alertBuilder.setMessage(msg + " permission is necessary");
+        alertBuilder.setPositiveButton(android.R.string.yes,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions((Activity) context,
+                                new String[]{permission},
+                                123);
+                    }
+                });
+        AlertDialog alert = alertBuilder.create();
+        alert.show();
+    }
     public static void showAlert(String message, Context context) {
         AlertDialog.Builder dlgAlert = new AlertDialog.Builder(context);
 

@@ -52,4 +52,6 @@
     <string name="edit_meta_data">Edit Meta Data</string>
     <string name="document_name">Document Name</string>
     <string name="expiration_date">Expiration Date</string>
+    <string name="photo_library">Photo Library</string>
+    <string name="document">Document</string>
 </resources>

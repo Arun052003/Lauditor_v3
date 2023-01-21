@@ -154,6 +154,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             >
             <LinearLayout
                 android:id="@+id/ll_client_name"
@@ -190,22 +191,19 @@
                 android:id="@+id/search_tm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:layout_weight="1"
-                android:layout_below="@id/ll_client_name"
-                android:hint="@string/search"
                 android:background="@drawable/rectangle_grey_background"
-                android:textColorHint="@color/black"
                 app:boxBackgroundMode="none"
-                android:layout_gravity="center"
-                android:gravity="center"
-                >
-          <AutoCompleteTextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="@drawable/rectangle_grey_background">
+                android:textColorHint="@color/black">
 
-          </AutoCompleteTextView>
+            >
+                <Spinner
+                    android:id="@+id/at_search_client"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+
+                    android:spinnerMode="dropdown"
+                    />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -256,6 +254,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_weight="1"
+
                         android:spinnerMode="dropdown"
                         />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -299,33 +298,38 @@
 
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tl_individual_country"
+                    android:id="@+id/tl_selected_file"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_below="@id/ll_client_name"
+                    android:hint="Search Documents"
                     android:background="@drawable/rectangle_grey_background"
+                    android:textColorHint="@color/black"
                     app:boxBackgroundMode="none"
-                    android:hint="Select Document"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:orientation="horizontal"
-                    android:textColorHint="@color/black">
+                   >
 
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/tv_selected_file"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-condensed-medium"
                         android:layout_gravity="top"
 
+
                         android:textColor="@color/Blue_text_color"
-                        android:textSize="@dimen/Fifteen_dp"/>
+                        android:textSize="15dp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
                     <Button
+                        android:id="@+id/btn_browse"
                         android:layout_width="200dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="70dp"
                         android:layout_weight="0.7"
+                        android:layout_margin="5dp"
                         android:text="Browse">
 
                     </Button>
@@ -346,7 +350,6 @@
             android:layout_margin="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-
             app:layout_constraintTop_toBottomOf="@id/cv_client_details"
             >
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -536,8 +539,8 @@
                         android:text="@string/cancel">
 
                     </androidx.appcompat.widget.AppCompatButton>
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btn_save"
+                    <Button
+                        android:id="@+id/btn_upload"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -551,7 +554,7 @@
 
                         android:text="Add Tag">
 
-                    </androidx.appcompat.widget.AppCompatButton>
+                    </Button>
                 </androidx.appcompat.widget.LinearLayoutCompat>
             </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.cardview.widget.CardView>

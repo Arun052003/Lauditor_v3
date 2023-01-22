@@ -206,7 +206,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             final AppCompatButton btn_cancel = view.findViewById(R.id.btn_cancel_tag);
             final AppCompatButton btn_save_tag = view.findViewById(R.id.btn_save_tag);
             final ImageView iv_cancel = view.findViewById(R.id.close_tags);
-
+            final LinearLayout ll_added_tags = view.findViewById(R.id.ll_added_tags);
             final AlertDialog dialog = dialogBuilder.create();
             iv_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -223,16 +223,23 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             btn_add.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    tags_list.clear();
                     DocumentsModel documentsModel = new DocumentsModel();
                     documentsModel.setTag_type(tv_tag_type.getText().toString());
                     documentsModel.setTag_name(tv_tag_name.getText().toString());
                     tags_list.add(documentsModel);
-
+                    for (int i=0;i<tags_list.size();i++){
+                        View view_added_tags = LayoutInflater.from(getContext()).inflate(R.layout.displays_documents_list, null);
+                        TextView tv_document_name = view_added_tags.findViewById(R.id.tv_document_name);
+                        ImageView iv_edit_tag = view_added_tags.findViewById(R.id.iv_edit_meta);
+                        iv_edit_tag.setVisibility(View.VISIBLE);
+                        ImageView iv_cancel_tags = view_added_tags.findViewById(R.id.iv_cancel);
+                        tv_document_name.setText(tags_list.get(i).getTag_type());
+                        ll_added_tags.addView(view_added_tags);
+                    }
                 }
             });
-            for (int i=0;i<tags_list.size();i++){
-                View view_added_tags = LayoutInflater.from(getContext()).inflate(R.layout.displays_documents_list, null);
-            }
+
             dialog.setView(view);
             dialog.show();
         }else{

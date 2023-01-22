@@ -11,15 +11,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Documents.models.DocumentsModel;
+import com.digicoffer.lauditor.Groups.GroupModels.GroupModel;
 import com.digicoffer.lauditor.R;
 
 import java.util.ArrayList;
 
 public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAdapter.ViewHolder> {
     ArrayList<DocumentsModel> itemsArrayList;
+    ArrayList<DocumentsModel> list_item;
     String tag = "";
     public DocumentsListAdapter(ArrayList<DocumentsModel> itemsArrayList, String tag) {
         this.itemsArrayList = itemsArrayList;
+        this.list_item = itemsArrayList;
         this.tag = tag;
     }
 
@@ -34,6 +37,7 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
     @Override
     public void onBindViewHolder(@NonNull DocumentsListAdapter.ViewHolder holder, int position) {
         DocumentsModel documentsModel = itemsArrayList.get(position);
+        itemsArrayList = list_item;
         holder.tv_document_name.setText(documentsModel.getName());
         holder.cb_documents_list.setChecked(itemsArrayList.get(position).isChecked());
         holder.cb_documents_list.setTag(position);
@@ -63,7 +67,26 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
 //            holder.cb_team_members.setChecked(true);
 //        holder.tv_tm_name.setText(groupModel.getName());
     }
-
+    public ArrayList<DocumentsModel> getList_item() {
+        return itemsArrayList;
+    }
+    public void selectOrDeselectAll(boolean isChecked)
+    {
+        for(int i = 0; i<list_item.size(); i++)
+        {
+//            if (list_item.get(i).isIsenabled())
+//            if (list_item.get(i).isIsenabled()) {
+            list_item.get(i).setChecked(isChecked);
+//            }else {
+//                list_item.get(i).setChecked(false);
+//            }
+        }
+        notifyDataSetChanged();
+    }
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
     @Override
     public int getItemCount() {
         return itemsArrayList.size();

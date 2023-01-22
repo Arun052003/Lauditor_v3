@@ -574,7 +574,21 @@
                         android:textColor="@color/white"
                         android:textAllCaps="false"
 
-                        android:text="@string/upload">
+                        android:text="@string/upload"/>
+                    <Button
+                        android:id="@+id/btn_add_tag"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:elevation="@dimen/Fifteen_dp"
+                        android:visibility="gone"
+                        android:background="@drawable/save_button_background"
+                        android:textColor="@color/white"
+                        android:textAllCaps="false"
+
+                        android:text="@string/add_tag">
 
                     </Button>
                 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -20,6 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -27,6 +29,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -51,6 +54,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pgpainless.key.selection.key.util.And;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,16 +68,20 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     BottomSheetUploadFile bottommSheetUploadDocument;
     private Bitmap mSelectedBitmap;
     private ImageView imageView;
+    DocumentsListAdapter adapter;
+    ArrayList<DocumentsModel> tags_list = new ArrayList<>();
     private File mSelectedUri;
+    JSONArray selected_documents_list = new JSONArray();
     LinearLayout ll_documents;
     boolean DOWNLOAD_TAG = false;
     String CATEGORY_TAG = "";
+    CheckBox chk_select_all;
     String filename;
     RecyclerView rv_documents;
     ArrayList<DocumentsModel> docsList = new ArrayList<>();
     AlertDialog progress_dialog;
     TextView tv_add_tag, tv_client, tv_firm,tv_enable_download,tv_disable_download,tv_edit_meta;
-    Button btn_upload;
+    Button btn_upload,btn_add_tags;
     //    AutoCompleteTextView ;
     File file;
     String value = "";
@@ -101,6 +109,10 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         btn_upload = v.findViewById(R.id.btn_upload);
         tv_client = v.findViewById(R.id.tv_client);
         tv_firm = v.findViewById(R.id.tv_firm);
+        chk_select_all = v.findViewById(R.id.chk_select_all);
+        chk_select_all.getBackground().setAlpha(100);
+        chk_select_all.setEnabled(false);
+        btn_add_tags = v.findViewById(R.id.btn_add_tag);
         tv_enable_download = v.findViewById(R.id.tv_enable_download);
         tv_disable_download = v.findViewById(R.id.tv_disable_download);
         ll_hide_document_details = v.findViewById(R.id.ll_hide_doc_details);
@@ -166,8 +178,66 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                     tv_selected_file.setHint("Select Document");
             }
         });
+        btn_add_tags.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for (int i=0;i<adapter.getList_item().size();i++){
+                    DocumentsModel documentsModel = adapter.getList_item().get(i);
+                    if (documentsModel.isChecked()){
+                        selected_documents_list.put(documentsModel.getId());
+                    }
+
+                }
+                open_add_tags_popup();
+            }
+        });
         return v;
 
+    }
+
+    private void open_add_tags_popup() {
+        if (selected_documents_list.length()!=0) {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View view = inflater.inflate(R.layout.add_tag, null);
+            final TextInputEditText tv_tag_type = (TextInputEditText) view.findViewById(R.id.tv_tag_type);
+            final TextInputEditText tv_tag_name = view.findViewById(R.id.tv_tag_name);
+            final Button btn_add = view.findViewById(R.id.btn_add_tags);
+            final AppCompatButton btn_cancel = view.findViewById(R.id.btn_cancel_tag);
+            final AppCompatButton btn_save_tag = view.findViewById(R.id.btn_save_tag);
+            final ImageView iv_cancel = view.findViewById(R.id.close_tags);
+
+            final AlertDialog dialog = dialogBuilder.create();
+            iv_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            btn_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            btn_add.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DocumentsModel documentsModel = new DocumentsModel();
+                    documentsModel.setTag_type(tv_tag_type.getText().toString());
+                    documentsModel.setTag_name(tv_tag_name.getText().toString());
+                    tags_list.add(documentsModel);
+
+                }
+            });
+            for (int i=0;i<tags_list.size();i++){
+                View view_added_tags = LayoutInflater.from(getContext()).inflate(R.layout.displays_documents_list, null);
+            }
+            dialog.setView(view);
+            dialog.show();
+        }else{
+            AndroidUtils.showToast("Please select atleast one document to add tags",getContext());
+        }
     }
 
     private void hidefirmBackground() {
@@ -344,6 +414,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         DocumentsModel documentsModel = new DocumentsModel();
         documentsModel.setName(file_name);
         documentsModel.setFile(file);
+        documentsModel.setIsenabled(true);
         docsList.add(documentsModel);
         if (docsList.size()==1){
             ll_hide_document_details.setVisibility(View.VISIBLE);
@@ -361,10 +432,15 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
     private void loadRecyclerview(String tag) {
         rv_documents.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        DocumentsListAdapter adapter = new DocumentsListAdapter(docsList,tag);
+  adapter = new DocumentsListAdapter(docsList,tag);
         rv_documents.setAdapter(adapter);
         rv_documents.setHasFixedSize(true);
-
+        chk_select_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                adapter.selectOrDeselectAll(isChecked);
+            }
+        });
     }
 
     private void hideDisableDownloadBackground() {
@@ -374,7 +450,10 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
     }
     private void AddTag(){
-        btn_upload.setText("Add Tag");
+        chk_select_all.setBackground(getContext().getResources().getDrawable(R.drawable.checkbox_background));
+        chk_select_all.setEnabled(true);
+        btn_upload.setVisibility(View.GONE);
+        btn_add_tags.setVisibility(View.VISIBLE);
         tv_edit_meta.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
         tv_add_tag.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         String tag = "add_tag";
@@ -382,6 +461,8 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     }
     private void EditMeta(){
         String tag = "edit_meta";
+        btn_upload.setVisibility(View.VISIBLE);
+        btn_add_tags.setVisibility(View.GONE);
         tv_add_tag.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_edit_meta.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         loadRecyclerview(tag);

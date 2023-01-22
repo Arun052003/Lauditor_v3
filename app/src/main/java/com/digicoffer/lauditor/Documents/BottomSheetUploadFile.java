@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -23,6 +24,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
 import com.digicoffer.lauditor.R;
@@ -79,20 +81,20 @@ public class BottomSheetUploadFile extends BottomSheetDialogFragment implements 
 //                    i.setType("*/*");
                 mGetContent.launch("*/*");
 //                    startActivityForResult(i, PICK_FILE_REQUEST_CODE);
-                    break;
+                break;
 
             case R.id.bt_camera:
                 if (ContextCompat.checkSelfPermission(getContext(),
-                            Manifest.permission.CAMERA)
-                            != PackageManager.PERMISSION_GRANTED) {
-                        requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
-                    }
-                    else
-                    {
-                        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        startActivityForResult(cameraIntent, CAMERA_REQUEST);
-                    }
-                    break;
+                        Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+                }
+                else
+                {
+                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                }
+                break;
             case R.id.bt_document_lib:
 //                Intent intent = new Intent();
 //                intent.setType("*/*");
@@ -111,7 +113,7 @@ public class BottomSheetUploadFile extends BottomSheetDialogFragment implements 
                 break;
         }
 
-        }
+    }
 
     ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
             new ActivityResultCallback<Uri>() {
@@ -166,6 +168,7 @@ public class BottomSheetUploadFile extends BottomSheetDialogFragment implements 
             });
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -210,10 +213,7 @@ public class BottomSheetUploadFile extends BottomSheetDialogFragment implements 
                 Uri imageuri = data.getData();
                 if (imageuri != null) {
                     try {
-                        String path = null;
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                            path = FileUtils.getPath(getContext(), data.getData());
-                        }
+                        String path = FileUtils.getPath(getContext(), data.getData());
                         file = new File(path);
                         onPhotoSelectedListner.getImagepath(file, imageuri);
                     } catch (Exception e) {

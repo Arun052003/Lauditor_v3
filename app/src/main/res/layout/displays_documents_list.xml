@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="5dp"
+        android:background="@drawable/cancel_button_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.029">
+        <TextView
+            android:id="@+id/tv_document_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_title"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:layout_gravity="center"
+            android:padding="5dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="Date"
+            android:textSize="@dimen/Fifteen_dp"
+            android:textColor="@color/cardview_dark_background"/>
+        <CheckBox
+            android:id="@+id/chk_selected_documents"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:paddingEnd="20dp"
+            android:visibility="gone"
+            android:layout_margin="10dp"
+            android:buttonTint="@color/grey_color_dark"
+            android:background="@color/white"
+            android:layout_gravity="center"
+
+            />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/cancel_icon">
+
+        </ImageView>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

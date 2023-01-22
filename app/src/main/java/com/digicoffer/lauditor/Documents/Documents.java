@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -29,8 +30,12 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.Documents.DocumentsListAdpater.DocumentsListAdapter;
 import com.digicoffer.lauditor.Documents.models.ClientsModel;
+import com.digicoffer.lauditor.Documents.models.DocumentsModel;
 import com.digicoffer.lauditor.Documents.models.MattersModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
@@ -54,38 +59,43 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class Documents extends Fragment implements BottomSheetUploadFile.OnPhotoSelectedListner , AsyncTaskCompleteListener {
-        Button btn_browse;
+public class Documents extends Fragment implements BottomSheetUploadFile.OnPhotoSelectedListner, AsyncTaskCompleteListener {
+    Button btn_browse;
     BottomSheetUploadFile bottommSheetUploadDocument;
     private Bitmap mSelectedBitmap;
     private ImageView imageView;
     private File mSelectedUri;
+    LinearLayout ll_documents;
     String filename;
+    RecyclerView rv_documents;
+    ArrayList<DocumentsModel> docsList = new ArrayList<>();
     AlertDialog progress_dialog;
     TextView tv_add_tag;
-  Button btn_upload;
-//    AutoCompleteTextView ;
+    Button btn_upload;
+    //    AutoCompleteTextView ;
     File file;
     String value = "";
     String entity_id = "";
     String matter_id = "";
     String client_id = "";
     ArrayList<ClientsModel> clientsList = new ArrayList<>();
-    Spinner sp_matter,sp_client;
+    Spinner sp_matter, sp_client;
     ArrayList<MattersModel> matterlist = new ArrayList<>();
     ArrayList<ClientsModel> updatedClients = new ArrayList<>();
     TextInputEditText tv_selected_file;
     TextInputLayout tl_selected_file;
+
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-       View v = inflater.inflate(R.layout.upload_document, container, false);
-       btn_browse = v.findViewById(R.id.btn_browse);
+        View v = inflater.inflate(R.layout.upload_document, container, false);
+        btn_browse = v.findViewById(R.id.btn_browse);
         tv_selected_file = v.findViewById(R.id.tv_selected_file);
         tl_selected_file = v.findViewById(R.id.tl_selected_file);
         sp_client = v.findViewById(R.id.at_search_client);
         sp_matter = v.findViewById(R.id.sp_matter);
         tv_add_tag = v.findViewById(R.id.tv_add_tag);
         btn_upload = v.findViewById(R.id.btn_upload);
+        rv_documents = v.findViewById(R.id.rv_documents);
         tv_add_tag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,12 +103,12 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             }
         });
         callClientWebservice();
-       btn_browse.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
-               checkPermissionREAD_EXTERNAL_STORAGE(getContext());
-           }
-       });
+        btn_browse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkPermissionREAD_EXTERNAL_STORAGE(getContext());
+            }
+        });
         tl_selected_file.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus)
@@ -115,59 +125,65 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                     tv_selected_file.setHint("Select Document");
             }
         });
-        return  v;
+        return v;
 
     }
 
     private void callUploadDocumentWebservice() {
         try {
-            progress_dialog = AndroidUtils.get_progress(getActivity());
-            JSONObject jsonObject = new JSONObject();
-            JSONArray clients = new JSONArray();
-            JSONObject clients_jobject = new JSONObject();
-            JSONArray matter = new JSONArray();
-            JSONArray tags = new JSONArray();
-            String docname = "";
-            filename = file.getName();
-            String doc_type = "pdf";
-            String content_string = file.getName().replace(".", "/");
-            String[] content_type = content_string.split("/");
-            if (content_type.length >= 2) {
-                doc_type = content_type[1];
-                docname = content_type[0];
-            }
+            for (int i = 0; i < docsList.size(); i++) {
+                progress_dialog = AndroidUtils.get_progress(getActivity());
+                JSONObject jsonObject = new JSONObject();
+                JSONArray clients = new JSONArray();
+                JSONObject clients_jobject = new JSONObject();
+                JSONArray matter = new JSONArray();
+                JSONArray tags = new JSONArray();
+                String docname = "";
+                DocumentsModel documentsModel = docsList.get(i);
+                filename = documentsModel.getName();
+                File new_file = documentsModel.getFile();
+                String doc_type = "pdf";
+                String content_string = new_file.getName().replace(".", "/");
+                String[] content_type = content_string.split("/");
+                if (content_type.length >= 2) {
+                    doc_type = content_type[1];
+                    docname = content_type[0];
+                }
 
-               for (int j=0;j<clientsList.size();j++){
-                   if (clientsList.get(j).getId().matches(client_id)){
-                       ClientsModel clientsModel = clientsList.get(j);
-                       clients_jobject.put("id",clientsModel.getId());
-                       clients_jobject.put("type",clientsModel.getType());
-                       clients.put(clients_jobject   );
-                   }
-               }
-            matter.put(matter_id);
-            jsonObject.put("name",docname);
-            jsonObject.put("description",docname);
-            jsonObject.put("filename",docname);
-            jsonObject.put("category","client");
-            jsonObject.put("clients",clients);
-            jsonObject.put("matters",matter);
-            jsonObject.put("downloadDisabled",false);
-            jsonObject.put("tags",tags);
-            if (doc_type.equalsIgnoreCase("apng")||doc_type.equalsIgnoreCase("avif")||doc_type.equalsIgnoreCase("gif")||doc_type.equalsIgnoreCase("jpeg")||doc_type.equalsIgnoreCase("png")||doc_type.equalsIgnoreCase("svg")||doc_type.equalsIgnoreCase("webp")||doc_type.equalsIgnoreCase("jpg")){
-                jsonObject.put("content_type", "image/" + doc_type);
-            }else{
-                jsonObject.put("content_type", "application/" + doc_type);
-            }
+                for (int j = 0; j < clientsList.size(); j++) {
+                    if (clientsList.get(j).getId().matches(client_id)) {
+                        ClientsModel clientsModel = clientsList.get(j);
+                        clients_jobject.put("id", clientsModel.getId());
+                        clients_jobject.put("type", clientsModel.getType());
+                        clients.put(clients_jobject);
+                    }
+                }
+                matter.put(matter_id);
+                jsonObject.put("name", docname);
+                jsonObject.put("description", docname);
+                jsonObject.put("filename", docname);
+                jsonObject.put("category", "client");
+                jsonObject.put("clients", clients);
+                jsonObject.put("matters", matter);
+                jsonObject.put("downloadDisabled", false);
+                jsonObject.put("tags", tags);
+                if (doc_type.equalsIgnoreCase("apng") || doc_type.equalsIgnoreCase("avif") || doc_type.equalsIgnoreCase("gif") || doc_type.equalsIgnoreCase("jpeg") || doc_type.equalsIgnoreCase("png") || doc_type.equalsIgnoreCase("svg") || doc_type.equalsIgnoreCase("webp") || doc_type.equalsIgnoreCase("jpg")) {
+                    jsonObject.put("content_type", "image/" + doc_type);
+                } else {
+                    jsonObject.put("content_type", "application/" + doc_type);
+                }
 
 //            AndroidUtils.showAlert(jsonObject.toString(),getContext());
-            WebServiceHelper.callHttpUploadWebService(this,getContext(), WebServiceHelper.RestMethodType.POST,"v3/document/upload","Upload Document",file,jsonObject.toString());
-        } catch (Exception e) {
-            if (progress_dialog!=null&&progress_dialog.isShowing()){
-                AndroidUtils.dismiss_dialog(progress_dialog);
+                WebServiceHelper.callHttpUploadWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/document/upload", "Upload Document", new_file, jsonObject.toString());
+
             }
-            e.printStackTrace();
-        }
+        } catch(Exception e){
+                if (progress_dialog != null && progress_dialog.isShowing()) {
+                    AndroidUtils.dismiss_dialog(progress_dialog);
+                }
+                e.printStackTrace();
+            }
+
 
     }
 
@@ -176,8 +192,8 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             progress_dialog = AndroidUtils.get_progress(getActivity());
             JSONObject jsonObject = new JSONObject();
             WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v2/relationship/client/list", "Clients List", jsonObject.toString());
-        }catch (Exception e){
-            if (progress_dialog!=null&&progress_dialog.isShowing()){
+        } catch (Exception e) {
+            if (progress_dialog != null && progress_dialog.isShowing()) {
                 AndroidUtils.dismiss_dialog(progress_dialog);
             }
         }
@@ -192,7 +208,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 if (ActivityCompat.shouldShowRequestPermissionRationale(
                         (Activity) context,
                         Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                   AndroidUtils.showDialog("External storage", context,
+                    AndroidUtils.showDialog("External storage", context,
                             Manifest.permission.READ_EXTERNAL_STORAGE);
 
                 } else {
@@ -212,7 +228,8 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             return true;
         }
     }
-//    public void showDialog(final String msg, final Context context,
+
+    //    public void showDialog(final String msg, final Context context,
 //                           final String permission) {
 //        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
 //        alertBuilder.setCancelable(true);
@@ -248,19 +265,43 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             file = imagepath;
             Cursor c = getContext().getContentResolver().query(ImageURI, null, null, null, null);
             c.moveToFirst();
-
             String[] content_type = file.getName().split(".");
+            String file_name = c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+            tv_selected_file.setText(file_name);
 
-            tv_selected_file.setText(c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME)));
+            load_documents(docsList, file_name, file);
         } else {
-
             file = getFile(getContext(), ImageURI);
             Log.i("FILE", "Info:" + file.toString());
-            tv_selected_file.setText(file.getName());
-
+            String file_name = file.getName();
+            tv_selected_file.setText(file_name);
+//            DocumentsModel documentsModel = new DocumentsModel();
+//            documentsModel.setName(file.getName());
+//            docsList.add(documentsModel);
+            load_documents(docsList, file_name, file);
+//            docsList.add()
         }
 
     }
+
+    private void load_documents(ArrayList<DocumentsModel> docsList, String file_name, File file) {
+//        for (int i = 0; i < docsList.size(); i++) {
+//            View view = LayoutInflater.from(getContext()).inflate(R.layout.displays_documents_list, null);
+//            TextView tv_docname = view.findViewById(R.id.tv_document_name);
+//            tv_docname.setText(docsList.get(i).getName());
+        DocumentsModel documentsModel = new DocumentsModel();
+        documentsModel.setName(file_name);
+        documentsModel.setFile(file);
+        docsList.add(documentsModel);
+
+        rv_documents.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        DocumentsListAdapter adapter = new DocumentsListAdapter(docsList);
+        rv_documents.setAdapter(adapter);
+        rv_documents.setHasFixedSize(true);
+//            ll_documents.addView(view);
+//        }
+    }
+
     public static File getFile(Context context, Uri uri) throws IOException {
         File destinationFilename = new File(context.getFilesDir().getPath() + File.separatorChar + queryName(context, uri));
         try (InputStream ins = context.getContentResolver().openInputStream(uri)) {
@@ -271,6 +312,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         }
         return destinationFilename;
     }
+
     public static void createFileFromStream(InputStream ins, File destination) {
         try (OutputStream os = new FileOutputStream(destination)) {
             byte[] buffer = new byte[4096];
@@ -284,6 +326,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             ex.printStackTrace();
         }
     }
+
     private static String queryName(Context context, Uri uri) {
         Cursor returnCursor =
                 context.getContentResolver().query(uri, null, null, null, null);
@@ -294,6 +337,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         returnCursor.close();
         return name;
     }
+
     @Override
     public void getImageBitmap(Bitmap bitmap) {
         imageView.setImageBitmap(bitmap);
@@ -302,7 +346,6 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 //        tv_upload_file.setEnabled(false);
         File filesDir = getContext().getFilesDir();
         File imageFile = new File(filesDir, "bitmap" + ".jpg");
-
         OutputStream os;
         try {
             os = new FileOutputStream(imageFile);
@@ -311,10 +354,14 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             os.close();
             file = imageFile;
             tv_selected_file.setText(file.getName());
+            DocumentsModel documentsModel = new DocumentsModel();
+            documentsModel.setName(file.getName());
+            docsList.add(documentsModel);
         } catch (Exception e) {
             Log.e(getClass().getSimpleName(), "Error writing bitmap", e);
         }
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -328,10 +375,11 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
             file = new File(picturePath);
-           filename = file.getName();
+            filename = file.getName();
             tv_selected_file.setText(file.getName());
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
@@ -362,19 +410,19 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         if (httpResult.getResult() == WebServiceHelper.ServiceCallStatus.Success) {
             try {
                 JSONObject result = new JSONObject(httpResult.getResponseContent());
-                if(httpResult.getRequestType().equals("Clients List")){
+                if (httpResult.getRequestType().equals("Clients List")) {
                     JSONObject data = result.getJSONObject("data");
                     try {
                         loadClients(data);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }else if(httpResult.getRequestType().equals("Legal Matter")){
+                } else if (httpResult.getRequestType().equals("Legal Matter")) {
                     JSONArray matters = result.getJSONArray("matterList");
                     loadMatters(matters);
-                }else if(httpResult.getRequestType().equals("Upload Document")){
+                } else if (httpResult.getRequestType().equals("Upload Document")) {
                     String msg = result.getString("msg");
-                    AndroidUtils.showToast(msg,getContext());
+                    AndroidUtils.showToast(msg, getContext());
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -382,21 +430,21 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         }
     }
 
-    private void loadMatters(JSONArray matters) throws  JSONException{
-            for (int i=0;i<matters.length();i++){
-                JSONObject jsonObject = matters.getJSONObject(i);
-                MattersModel mattersModel = new MattersModel();
-                mattersModel.setId(jsonObject.getString("id"));
-                mattersModel.setTitle(jsonObject.getString("title"));
-               mattersModel.setType(jsonObject.getString("type"));
-                matterlist.add(mattersModel);
-            }
+    private void loadMatters(JSONArray matters) throws JSONException {
+        for (int i = 0; i < matters.length(); i++) {
+            JSONObject jsonObject = matters.getJSONObject(i);
+            MattersModel mattersModel = new MattersModel();
+            mattersModel.setId(jsonObject.getString("id"));
+            mattersModel.setTitle(jsonObject.getString("title"));
+            mattersModel.setType(jsonObject.getString("type"));
+            matterlist.add(mattersModel);
+        }
         initMatter();
     }
 
     private void initMatter() {
         CommonSpinnerAdapter adapter = new CommonSpinnerAdapter(getActivity(), matterlist);
-        Log.i("ArrayList","Info:"+matterlist);
+        Log.i("ArrayList", "Info:" + matterlist);
 //        ArrayAdapter adaptador = new ArrayAdapter(User_Profile.this, android.R.layout.simple_spinner_item, sorted_countriesList);
 //        adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -442,34 +490,34 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
     }
 
-            private void loadClients(JSONObject data) throws JSONException {
-                JSONArray relationships = data.getJSONArray("relationships");
+    private void loadClients(JSONObject data) throws JSONException {
+        JSONArray relationships = data.getJSONArray("relationships");
 
-                for (int i = 0; i < relationships.length(); i++) {
-                    JSONObject jsonObject = relationships.getJSONObject(i);
-                    ClientsModel clientsModel = new ClientsModel();
-                    clientsModel.setId(jsonObject.getString("id"));
-                    clientsModel.setName(jsonObject.getString("name"));
-                    clientsModel.setType(jsonObject.getString("type"));
-                    clientsList.add(clientsModel);
+        for (int i = 0; i < relationships.length(); i++) {
+            JSONObject jsonObject = relationships.getJSONObject(i);
+            ClientsModel clientsModel = new ClientsModel();
+            clientsModel.setId(jsonObject.getString("id"));
+            clientsModel.setName(jsonObject.getString("name"));
+            clientsModel.setType(jsonObject.getString("type"));
+            clientsList.add(clientsModel);
 //                    updatedClients.add(clientsModel);
-                }
-                initUI(clientsList);
-            }
+        }
+        initUI(clientsList);
+    }
 
-            private void callLegalMatter() {
-                try {
-                    progress_dialog = AndroidUtils.get_progress(getActivity());
-                    JSONObject jsonObject = new JSONObject();
-                    WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/matter/all/"+client_id, "Legal Matter", jsonObject.toString());
+    private void callLegalMatter() {
+        try {
+            progress_dialog = AndroidUtils.get_progress(getActivity());
+            JSONObject jsonObject = new JSONObject();
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/matter/all/" + client_id, "Legal Matter", jsonObject.toString());
 
-                } catch (Exception e) {
-                    if (progress_dialog != null && progress_dialog.isShowing()) {
-                        AndroidUtils.dismiss_dialog(progress_dialog);
-                    }
-                    e.printStackTrace();
-                }
+        } catch (Exception e) {
+            if (progress_dialog != null && progress_dialog.isShowing()) {
+                AndroidUtils.dismiss_dialog(progress_dialog);
             }
+            e.printStackTrace();
+        }
+    }
 
 
 }

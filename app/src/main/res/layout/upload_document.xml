@@ -189,6 +189,7 @@
             </LinearLayout>
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/search_tm"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rectangle_grey_background"
@@ -318,8 +319,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-condensed-medium"
                         android:layout_gravity="top"
-
-
+                        android:enabled="false"
                         android:textColor="@color/Blue_text_color"
                         android:textSize="15dp"/>
 
@@ -354,10 +354,9 @@
             >
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/tag_meta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
                 android:orientation="horizontal"
-
                 android:paddingTop="10dp"
                 android:paddingEnd="30dp"
 
@@ -365,13 +364,14 @@
 
                 <TextView
                     android:id="@+id/tv_add_tag"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@drawable/button_left_background"
                     android:fontFamily="sans-serif-condensed-medium"
                     android:padding="10dp"
                     android:text="Add Tag"
+
                     android:gravity="center"
                     android:layout_gravity="center"
                     android:textColor="@color/black"
@@ -381,7 +381,7 @@
 
                 <TextView
                     android:id="@+id/tv_edit_meta"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@drawable/button_right_background"
@@ -394,71 +394,79 @@
                     android:textSize="@dimen/Fifteen_dp">
 
                 </TextView>
+                <CheckBox
+                    android:id="@+id/chk_select_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+
+
+
+
+                    android:background="@drawable/checkbox_background"
+                    android:buttonTint="@color/grey_color_dark"
+
+                    android:text="@string/select_all" />
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-
-            <CheckBox
-                android:id="@+id/chk_select_all"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="80dp"
-                android:layout_marginTop="10dp"
-
-                android:layout_marginBottom="10dp"
-                android:layout_toRightOf="@id/tag_meta"
-                android:background="@drawable/checkbox_background"
-                android:buttonTint="@color/grey_color_dark"
-                android:paddingEnd="20dp"
-                android:text="@string/select_all" />
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/ll_download"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_below="@id/tag_meta"
-                android:layout_marginTop="20dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="30dp"
-
-                >
-
-                <TextView
-                    android:id="@+id/tv_enable_download"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/button_left_background"
-                    android:fontFamily="sans-serif-condensed-medium"
-                    android:padding="10dp"
-                    android:text="Enable Download"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/Fifteen_dp">
-
-                </TextView>
-
-                <TextView
-                    android:id="@+id/tv_disable_download"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/button_right_background"
-                    android:fontFamily="sans-serif-condensed-medium"
-                    android:padding="10dp"
-
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="Disable Download"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/Fifteen_dp">
-
-                </TextView>
-            </androidx.appcompat.widget.LinearLayoutCompat>
 
 
         </RelativeLayout>
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/ll_download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingEnd="30dp"
+            app:layout_constraintBottom_toTopOf="@id/cv_details_2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.145"
+            app:layout_constraintStart_toStartOf="parent"
+
+            app:layout_constraintTop_toBottomOf="@id/rl_buttons"
+            app:layout_constraintVertical_bias="0.0">
+
+            <TextView
+                android:id="@+id/tv_enable_download"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/button_left_background"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="Enable Download"
+                android:textColor="@color/black"
+                android:textSize="@dimen/Fifteen_dp">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/tv_disable_download"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/button_right_background"
+                android:fontFamily="sans-serif-condensed-medium"
+
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="Disable Download"
+                android:textColor="@color/black"
+                android:textSize="@dimen/Fifteen_dp">
+
+            </TextView>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_details_2"
             android:layout_width="match_parent"
@@ -509,20 +517,25 @@
                     android:layout_margin="10dp">
 
                 </TextView>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_selected_tm"
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:orientation="vertical"
-                    android:layout_margin="10dp"
-                    />
+                    android:layout_height="wrap_content"
+                    >
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_documents"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:orientation="vertical"
+                        android:layout_margin="10dp"
+                        />
+                </ScrollView>
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/ll_buttons"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="10dp"
                     android:orientation="horizontal"
-
                     >
 
                     <androidx.appcompat.widget.AppCompatButton

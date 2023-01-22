@@ -54,4 +54,6 @@
     <string name="expiration_date">Expiration Date</string>
     <string name="photo_library">Photo Library</string>
     <string name="document">Document</string>
+    <string name="add_tag">Add Tag</string>
+    <string name="upload">Upload</string>
 </resources>

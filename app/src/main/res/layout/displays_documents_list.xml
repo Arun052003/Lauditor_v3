@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_margin="5dp"
+        android:padding="5dp"
         android:background="@drawable/cancel_button_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,9 +45,20 @@
 
             />
         <ImageView
+            android:id="@+id/iv_edit_meta"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/cancel_icon">
+            android:visibility="gone"
+            android:layout_margin="3dp"
+            android:src="@drawable/edit_documents_icon">
+
+        </ImageView>
+        <ImageView
+            android:id="@+id/iv_cancel"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="3dp"
+            android:src="@drawable/cancel_red_icon">
 
         </ImageView>
     </LinearLayout>

@@ -66,11 +66,13 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     private ImageView imageView;
     private File mSelectedUri;
     LinearLayout ll_documents;
+    boolean DOWNLOAD_TAG = false;
+    String CATEGORY_TAG = "";
     String filename;
     RecyclerView rv_documents;
     ArrayList<DocumentsModel> docsList = new ArrayList<>();
     AlertDialog progress_dialog;
-    TextView tv_add_tag;
+    TextView tv_add_tag, tv_client, tv_firm,tv_enable_download,tv_disable_download,tv_edit_meta;
     Button btn_upload;
     //    AutoCompleteTextView ;
     File file;
@@ -78,6 +80,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     String entity_id = "";
     String matter_id = "";
     String client_id = "";
+    LinearLayout ll_hide_document_details;
     ArrayList<ClientsModel> clientsList = new ArrayList<>();
     Spinner sp_matter, sp_client;
     ArrayList<MattersModel> matterlist = new ArrayList<>();
@@ -94,12 +97,50 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         sp_client = v.findViewById(R.id.at_search_client);
         sp_matter = v.findViewById(R.id.sp_matter);
         tv_add_tag = v.findViewById(R.id.tv_add_tag);
+        tv_edit_meta = v.findViewById(R.id.tv_edit_meta);
         btn_upload = v.findViewById(R.id.btn_upload);
+        tv_client = v.findViewById(R.id.tv_client);
+        tv_firm = v.findViewById(R.id.tv_firm);
+        tv_enable_download = v.findViewById(R.id.tv_enable_download);
+        tv_disable_download = v.findViewById(R.id.tv_disable_download);
+        ll_hide_document_details = v.findViewById(R.id.ll_hide_doc_details);
+        ll_hide_document_details.setVisibility(View.GONE);
+        hidefirmBackground();
+        tv_enable_download.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hideEnableDownloadBackground();
+            }
+        });
+        tv_disable_download.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hideDisableDownloadBackground();
+            }
+        });
+        tv_client.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hidefirmBackground();
+            }
+        });
+        tv_firm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hideClientBackground();
+            }
+        });
         rv_documents = v.findViewById(R.id.rv_documents);
         tv_add_tag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                callUploadDocumentWebservice();
+             AddTag();
+            }
+        });
+        tv_edit_meta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditMeta();
             }
         });
         callClientWebservice();
@@ -127,6 +168,16 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         });
         return v;
 
+    }
+
+    private void hidefirmBackground() {
+        tv_firm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+        tv_client.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+    }
+
+    private void hideClientBackground() {
+        tv_client.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+        tv_firm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
     }
 
     private void callUploadDocumentWebservice() {
@@ -177,12 +228,12 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 WebServiceHelper.callHttpUploadWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/document/upload", "Upload Document", new_file, jsonObject.toString());
 
             }
-        } catch(Exception e){
-                if (progress_dialog != null && progress_dialog.isShowing()) {
-                    AndroidUtils.dismiss_dialog(progress_dialog);
-                }
-                e.printStackTrace();
+        } catch (Exception e) {
+            if (progress_dialog != null && progress_dialog.isShowing()) {
+                AndroidUtils.dismiss_dialog(progress_dialog);
             }
+            e.printStackTrace();
+        }
 
 
     }
@@ -289,17 +340,57 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 //            View view = LayoutInflater.from(getContext()).inflate(R.layout.displays_documents_list, null);
 //            TextView tv_docname = view.findViewById(R.id.tv_document_name);
 //            tv_docname.setText(docsList.get(i).getName());
+
         DocumentsModel documentsModel = new DocumentsModel();
         documentsModel.setName(file_name);
         documentsModel.setFile(file);
         docsList.add(documentsModel);
+        if (docsList.size()==1){
+            ll_hide_document_details.setVisibility(View.VISIBLE);
+            hideDisableDownloadBackground();
+        }else if(docsList.size()<1){
+            ll_hide_document_details.setVisibility(View.GONE);
+//            hideDisableDownloadBackground();
+        }
+        String tag = "";
+        loadRecyclerview(tag);
 
-        rv_documents.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        DocumentsListAdapter adapter = new DocumentsListAdapter(docsList);
-        rv_documents.setAdapter(adapter);
-        rv_documents.setHasFixedSize(true);
 //            ll_documents.addView(view);
 //        }
+    }
+
+    private void loadRecyclerview(String tag) {
+        rv_documents.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        DocumentsListAdapter adapter = new DocumentsListAdapter(docsList,tag);
+        rv_documents.setAdapter(adapter);
+        rv_documents.setHasFixedSize(true);
+
+    }
+
+    private void hideDisableDownloadBackground() {
+        DOWNLOAD_TAG = false;
+        tv_enable_download.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+        tv_disable_download.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+
+    }
+    private void AddTag(){
+        btn_upload.setText("Add Tag");
+        tv_edit_meta.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+        tv_add_tag.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+        String tag = "add_tag";
+        loadRecyclerview(tag);
+    }
+    private void EditMeta(){
+        String tag = "edit_meta";
+        tv_add_tag.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+        tv_edit_meta.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+        loadRecyclerview(tag);
+    }
+    private void hideEnableDownloadBackground() {
+        DOWNLOAD_TAG = true;
+         tv_disable_download.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+        tv_enable_download.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+
     }
 
     public static File getFile(Context context, Uri uri) throws IOException {

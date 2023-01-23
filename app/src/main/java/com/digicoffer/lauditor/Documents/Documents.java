@@ -54,6 +54,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pgpainless.key.selection.key.util.And;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -240,7 +241,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
                         subtag = "view_tags";
                     }
-                   String tag = "";
+                   String tag = "add_tag";
 //                        for(int i=0;i<docsList.size();i++){
                             for (int j=0;j<selected_documents_list.size();j++){
 //                                if (docsList.get(i).getName().matches(selected_documents_list.get(j).getName())){
@@ -260,9 +261,23 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                                 documentsModel.setTags(tags);
 
                                 }
+                            for (int i=0;i<docsList.size();i++){
+                                for (int j=0;j<selected_documents_list.size();j++){
+                                    if (docsList.get(i).getName().matches(selected_documents_list.get(j).getName())){
+                                        DocumentsModel documentsModel = selected_documents_list.get(j);
+                                        documentsModel.setTags(selected_documents_list.get(j).getTags());
+                                        docsList.set(i,documentsModel);
+                                    }
+                                }
+                            }
+//                    AndroidUtils.showAlert(selected_documents_list.toString(),getContext());
 //                            }
 //                        }
+//                    adapter.getList_item().clear();
+//                    chk_select_all.setChecked(false);
                     loadRecyclerview(tag,subtag);
+                            dialog.dismiss();
+
                 }
             });
 

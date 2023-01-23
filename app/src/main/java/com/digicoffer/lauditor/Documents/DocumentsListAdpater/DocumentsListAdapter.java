@@ -40,9 +40,13 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
     public void onBindViewHolder(@NonNull DocumentsListAdapter.ViewHolder holder, int position) {
         DocumentsModel documentsModel = itemsArrayList.get(position);
         itemsArrayList = list_item;
-        if (subtag=="view_tags"){
-            holder.btn_view_tags.setVisibility(View.VISIBLE);
-        }else
+//        if (subtag=="view_tags"){
+//            holder.btn_view_tags.setVisibility(View.VISIBLE);
+//        }
+        if (documentsModel.getTags()!=null){
+        holder.btn_view_tags.setVisibility(View.VISIBLE);
+        }
+        else
         {
             holder.btn_view_tags.setVisibility(View.GONE);
         }

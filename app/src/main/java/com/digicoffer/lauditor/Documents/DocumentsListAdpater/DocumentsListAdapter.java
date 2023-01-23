@@ -3,6 +3,7 @@ package com.digicoffer.lauditor.Documents.DocumentsListAdpater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Documents.models.DocumentsModel;
-import com.digicoffer.lauditor.Groups.GroupModels.GroupModel;
 import com.digicoffer.lauditor.R;
 
 import java.util.ArrayList;
@@ -20,10 +20,12 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
     ArrayList<DocumentsModel> itemsArrayList;
     ArrayList<DocumentsModel> list_item;
     String tag = "";
-    public DocumentsListAdapter(ArrayList<DocumentsModel> itemsArrayList, String tag) {
+    String subtag = "";
+    public DocumentsListAdapter(ArrayList<DocumentsModel> itemsArrayList, String tag, String subtag) {
         this.itemsArrayList = itemsArrayList;
         this.list_item = itemsArrayList;
         this.tag = tag;
+        this.subtag = subtag;
     }
 
 
@@ -38,6 +40,12 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
     public void onBindViewHolder(@NonNull DocumentsListAdapter.ViewHolder holder, int position) {
         DocumentsModel documentsModel = itemsArrayList.get(position);
         itemsArrayList = list_item;
+        if (subtag=="view_tags"){
+            holder.btn_view_tags.setVisibility(View.VISIBLE);
+        }else
+        {
+            holder.btn_view_tags.setVisibility(View.GONE);
+        }
         holder.tv_document_name.setText(documentsModel.getName());
         holder.cb_documents_list.setChecked(itemsArrayList.get(position).isChecked());
         holder.cb_documents_list.setTag(position);
@@ -96,20 +104,24 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
         private CheckBox cb_documents_list;
         private TextView tv_document_name;
         private ImageView iv_cancel,iv_edit_meta;
+        private Button btn_view_tags;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             cb_documents_list = itemView.findViewById(R.id.chk_selected_documents);
             tv_document_name = itemView.findViewById(R.id.tv_document_name);
             iv_cancel = itemView.findViewById(R.id.iv_cancel);
             iv_edit_meta = itemView.findViewById(R.id.iv_edit_meta);
-
+            btn_view_tags = itemView.findViewById(R.id.btn_view_tags);
             if (tag=="add_tag"){
                 cb_documents_list.setVisibility(View.VISIBLE);
                 iv_edit_meta.setVisibility(View.GONE);
+                btn_view_tags.setVisibility(View.GONE);
             }else if(tag == "edit_meta"){
                 iv_edit_meta.setVisibility(View.VISIBLE);
                 cb_documents_list.setVisibility(View.GONE);
-            }else{
+                btn_view_tags.setVisibility(View.GONE);
+            }
+            else {
                 iv_edit_meta.setVisibility(View.GONE);
                 cb_documents_list.setVisibility(View.GONE);
             }

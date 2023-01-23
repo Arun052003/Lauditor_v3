@@ -1,5 +1,8 @@
 package com.digicoffer.lauditor.Documents.models;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.File;
 
 public class DocumentsModel {
@@ -11,6 +14,15 @@ public class DocumentsModel {
     File file;
     String tag_type;
     String tag_name;
+    JSONObject tags;
+
+    public JSONObject getTags() {
+        return tags;
+    }
+
+    public void setTags(JSONObject tags) {
+        this.tags = tags;
+    }
 
     public String getTag_type() {
         return tag_type;

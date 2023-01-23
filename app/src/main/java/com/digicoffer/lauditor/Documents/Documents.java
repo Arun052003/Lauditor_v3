@@ -190,7 +190,10 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                     DocumentsModel documentsModel = adapter.getList_item().get(i);
                     if (documentsModel.isChecked()) {
                        ;
-                        selected_documents_list.add(documentsModel);
+                       if (documentsModel.getTags()==null){
+                           selected_documents_list.add(documentsModel);
+                       }
+
                     }
                 }
                 open_add_tags_popup();
@@ -275,6 +278,9 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 //                        }
 //                    adapter.getList_item().clear();
 //                    chk_select_all.setChecked(false);
+//                    for (int i=0;i<adapter.getList_item().size();i++){
+////                        DocumentsModel documentsModel =
+//                    }
                     loadRecyclerview(tag,subtag);
                             dialog.dismiss();
 

@@ -50,11 +50,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.tuyenmonkey.mkloader.model.Line;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.pgpainless.key.selection.key.util.And;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -62,8 +62,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 
-public class Documents extends Fragment implements BottomSheetUploadFile.OnPhotoSelectedListner, AsyncTaskCompleteListener {
+public class Documents extends Fragment implements BottomSheetUploadFile.OnPhotoSelectedListner, AsyncTaskCompleteListener, DocumentsListAdapter.EventListener {
     Button btn_browse;
     BottomSheetUploadFile bottommSheetUploadDocument;
     private Bitmap mSelectedBitmap;
@@ -585,7 +586,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
     private void loadRecyclerview(String tag,String subtag) {
         rv_documents.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        adapter = new DocumentsListAdapter(docsList, tag,subtag);
+        adapter = new DocumentsListAdapter(docsList, tag,subtag,this);
         rv_documents.setAdapter(adapter);
         rv_documents.setHasFixedSize(true);
         chk_select_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -848,6 +849,51 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     }
 
 
+    @Override
+    public void ViewTags(DocumentsModel documentsModel, ArrayList<DocumentsModel> itemsArrayList) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view_edit_tags = inflater.inflate(R.layout.edit_existing_tags, null);
+        LinearLayout ll_existing_tags = view_edit_tags.findViewById(R.id.ll_view_tags);
+        ImageView iv_close_existing_tags =view_edit_tags.findViewById(R.id.close_exisiting_tags);
+
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(documentsModel.getTags());
+        Iterator<String> iter = documentsModel.getTags().keys();
+        while (iter.hasNext()){
+            String key  = iter.next();
+            try{
+//                String value = String.valueOf(documentsModel.getTags().get(key));
+                View view_added_tags = LayoutInflater.from(getContext()).inflate(R.layout.displays_documents_list, null);
+                TextView tv_tag_name = view_added_tags.findViewById(R.id.tv_document_name);
+                ImageView iv_remove_tag = view_added_tags.findViewById(R.id.iv_cancel);
+                iv_remove_tag.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+//                        documentsModel.getTags().remove()
+                    }
+                });
+
+                tv_tag_name.setText(key+" - "+ documentsModel.getTags().get(key));
+                ll_existing_tags.addView(view_added_tags);
+//                Object value = documentsModel.getTags().get(key);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        AlertDialog dialog = dialogBuilder.create();
+        iv_close_existing_tags.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        dialog.setView(view_edit_tags);
+        dialog.show();
+
+    }
 }
 
 

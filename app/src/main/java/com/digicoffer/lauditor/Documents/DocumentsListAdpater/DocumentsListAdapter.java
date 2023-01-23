@@ -21,13 +21,18 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
     ArrayList<DocumentsModel> list_item;
     String tag = "";
     String subtag = "";
-    public DocumentsListAdapter(ArrayList<DocumentsModel> itemsArrayList, String tag, String subtag) {
+    DocumentsListAdapter.EventListener eventListener;
+    public DocumentsListAdapter(ArrayList<DocumentsModel> itemsArrayList, String tag, String subtag,DocumentsListAdapter.EventListener eventListener) {
         this.itemsArrayList = itemsArrayList;
         this.list_item = itemsArrayList;
         this.tag = tag;
         this.subtag = subtag;
+        this.eventListener = eventListener;
     }
+        public interface EventListener{
 
+            void ViewTags(DocumentsModel documentsModel, ArrayList<DocumentsModel> itemsArrayList);
+        }
 
     @NonNull
     @Override
@@ -74,6 +79,12 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
                 }
 
 
+            }
+        });
+        holder.btn_view_tags.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                eventListener.ViewTags(documentsModel,itemsArrayList);
             }
         });
 //            holder.cb_team_members.setChecked(true);

@@ -411,63 +411,68 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
     private void callUploadDocumentWebservice() {
         try {
-            progress_dialog = AndroidUtils.get_progress(getActivity());
-            for (int i = 0; i < docsList.size(); i++) {
+            if (docsList.size()==0){
+                AndroidUtils.showToast("Please select atleast one document",getContext());
+            }else {
+                progress_dialog = AndroidUtils.get_progress(getActivity());
+                for (int i = 0; i < docsList.size(); i++) {
 
-                JSONObject jsonObject = new JSONObject();
-                JSONArray clients = new JSONArray();
-                JSONObject clients_jobject = new JSONObject();
-                JSONArray matter = new JSONArray();
+                    JSONObject jsonObject = new JSONObject();
+                    JSONArray clients = new JSONArray();
+                    JSONObject clients_jobject = new JSONObject();
+                    JSONArray matter = new JSONArray();
 //                JSONArray tags = new JSONArray();
-                String docname = "";
-                DocumentsModel documentsModel = docsList.get(i);
-                filename = documentsModel.getName();
-                File new_file = documentsModel.getFile();
-                String doc_type = "pdf";
-                String content_string = new_file.getName().replace(".", "/");
-                String[] content_type = content_string.split("/");
-                if (content_type.length >= 2) {
-                    doc_type = content_type[1];
-                    docname = content_type[0];
-                }
-
-                for (int j = 0; j < clientsList.size(); j++) {
-                    if (clientsList.get(j).getId().matches(client_id)) {
-                        ClientsModel clientsModel = clientsList.get(j);
-                        clients_jobject.put("id", clientsModel.getId());
-                        clients_jobject.put("type", clientsModel.getType());
-                        clients.put(clients_jobject);
+                    String docname = "";
+                    DocumentsModel documentsModel = docsList.get(i);
+                    filename = documentsModel.getName();
+                    File new_file = documentsModel.getFile();
+                    String doc_type = "pdf";
+                    String content_string = new_file.getName().replace(".", "/");
+                    String[] content_type = content_string.split("/");
+                    if (content_type.length >= 2) {
+                        doc_type = content_type[1];
+                        docname = content_type[0];
                     }
-                }
-                matter.put(matter_id);
-                jsonObject.put("name", docsList.get(i).getName());
-                jsonObject.put("description", docsList.get(i).getDescription());
-                jsonObject.put("filename", docname);
-                jsonObject.put("category", "client");
-                jsonObject.put("clients", clients);
-                jsonObject.put("matters", matter);
-                jsonObject.put("downloadDisabled", DOWNLOAD_TAG);
-                if(docsList.get(i).getTags()==null){
-                    jsonObject.put("tags","");
-                }else{
-                    jsonObject.put("tags", docsList.get(i).getTags());
-                }
 
-                if (doc_type.equalsIgnoreCase("apng") || doc_type.equalsIgnoreCase("avif") || doc_type.equalsIgnoreCase("gif") || doc_type.equalsIgnoreCase("jpeg") || doc_type.equalsIgnoreCase("png") || doc_type.equalsIgnoreCase("svg") || doc_type.equalsIgnoreCase("webp") || doc_type.equalsIgnoreCase("jpg")) {
-                    jsonObject.put("content_type", "image/" + doc_type);
-                } else {
-                    jsonObject.put("content_type", "application/" + doc_type);
-                }
+                    for (int j = 0; j < clientsList.size(); j++) {
+                        if (clientsList.get(j).getId().matches(client_id)) {
+                            ClientsModel clientsModel = clientsList.get(j);
+                            clients_jobject.put("id", clientsModel.getId());
+                            clients_jobject.put("type", clientsModel.getType());
+                            clients.put(clients_jobject);
+                        }
+                    }
+                    matter.put(matter_id);
+                    jsonObject.put("name", docsList.get(i).getName());
+                    jsonObject.put("description", docsList.get(i).getDescription());
+                    jsonObject.put("filename", docname);
+                    jsonObject.put("category", "client");
+                    jsonObject.put("clients", clients);
+                    jsonObject.put("matters", matter);
+                    jsonObject.put("downloadDisabled", DOWNLOAD_TAG);
+                    if (docsList.get(i).getTags() == null) {
+                        jsonObject.put("tags", "");
+                    } else {
+                        jsonObject.put("tags", docsList.get(i).getTags());
+                    }
+
+                    if (doc_type.equalsIgnoreCase("apng") || doc_type.equalsIgnoreCase("avif") || doc_type.equalsIgnoreCase("gif") || doc_type.equalsIgnoreCase("jpeg") || doc_type.equalsIgnoreCase("png") || doc_type.equalsIgnoreCase("svg") || doc_type.equalsIgnoreCase("webp") || doc_type.equalsIgnoreCase("jpg")) {
+                        jsonObject.put("content_type", "image/" + doc_type);
+                    } else {
+                        jsonObject.put("content_type", "application/" + doc_type);
+                    }
 
 //            AndroidUtils.showAlert(jsonObject.toString(),getContext());
-                WebServiceHelper.callHttpUploadWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/document/upload", "Upload Document", new_file, jsonObject.toString());
+                    WebServiceHelper.callHttpUploadWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/document/upload", "Upload Document", new_file, jsonObject.toString());
 
+                }
             }
         } catch (Exception e) {
             if (progress_dialog != null && progress_dialog.isShowing()) {
                 AndroidUtils.dismiss_dialog(progress_dialog);
             }
             e.printStackTrace();
+
         }
 
 
@@ -910,7 +915,6 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         tv_doc_name.setText(documentsModel.getName());
         tv_description.setText(documentsModel.getDescription());
         AppCompatButton btn_save_tag = view_edit_documents.findViewById(R.id.btn_save_tag);
-
         final AlertDialog dialog = dialogBuilder.create();
         iv_cancel_edit_doc.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -928,6 +932,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             @Override
             public void onClick(View view) {
                 for (int i=0;i<itemsArrayList.size();i++){
+
                     if (documentsModel.getName().matches(itemsArrayList.get(i).getName())){
                         DocumentsModel documentsModel1 = itemsArrayList.get(i);
                         documentsModel1.setName(tv_doc_name.getText().toString());
@@ -936,6 +941,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                         dialog.dismiss();
                         String tag = "edit_meta";
                        loadRecyclerview(tag,"");
+
                     }
                 }
             }

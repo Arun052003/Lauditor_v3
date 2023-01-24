@@ -33,7 +33,9 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
 
             void ViewTags(DocumentsModel documentsModel, ArrayList<DocumentsModel> itemsArrayList);
 
-            void EditDocuments(DocumentsModel documentsModel, int position, ArrayList<DocumentsModel> itemsArrayList);
+            void EditDocuments(DocumentsModel documentsModel,  ArrayList<DocumentsModel> itemsArrayList);
+
+            void RemoveDocument(DocumentsModel documentsModel, ArrayList<DocumentsModel> itemsArrayList, String tag);
         }
 
     @NonNull
@@ -92,7 +94,13 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
         holder.iv_edit_meta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventListener.EditDocuments(documentsModel,position,itemsArrayList);
+                eventListener.EditDocuments(documentsModel,itemsArrayList);
+            }
+        });
+        holder.iv_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                eventListener.RemoveDocument(documentsModel,itemsArrayList,tag);
             }
         });
 //            holder.cb_team_members.setChecked(true);
@@ -135,6 +143,7 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
             iv_cancel = itemView.findViewById(R.id.iv_cancel);
             iv_edit_meta = itemView.findViewById(R.id.iv_edit_meta);
             btn_view_tags = itemView.findViewById(R.id.btn_view_tags);
+            iv_cancel = itemView.findViewById(R.id.iv_cancel);
             if (tag=="add_tag"){
                 cb_documents_list.setVisibility(View.VISIBLE);
                 iv_edit_meta.setVisibility(View.GONE);

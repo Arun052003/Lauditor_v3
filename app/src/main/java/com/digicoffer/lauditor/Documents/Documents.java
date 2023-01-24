@@ -899,7 +899,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     }
 
     @Override
-    public void EditDocuments(DocumentsModel documentsModel, int position, ArrayList<DocumentsModel> itemsArrayList) {
+    public void EditDocuments(DocumentsModel documentsModel,  ArrayList<DocumentsModel> itemsArrayList) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view_edit_documents = inflater.inflate(R.layout.edit_meta_data, null);
@@ -944,6 +944,19 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         dialog.setView(view_edit_documents);
         dialog.show();
 
+    }
+
+    @Override
+    public void RemoveDocument(DocumentsModel documentsModel, ArrayList<DocumentsModel> itemsArrayList, String tag) {
+        for (int i=0;i<itemsArrayList.size();i++){
+            if (documentsModel.getName().matches(itemsArrayList.get(i).getName())){
+                DocumentsModel documentsModel1 = itemsArrayList.get(i);
+                itemsArrayList.remove(i);
+//                dialog.dismiss();
+//                String tag = "edit_meta";
+                loadRecyclerview(tag,"");
+            }
+        }
     }
 }
 

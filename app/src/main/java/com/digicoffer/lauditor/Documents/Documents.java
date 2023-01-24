@@ -892,7 +892,6 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         });
         dialog.setView(view_edit_tags);
         dialog.show();
-
     }
 }
 

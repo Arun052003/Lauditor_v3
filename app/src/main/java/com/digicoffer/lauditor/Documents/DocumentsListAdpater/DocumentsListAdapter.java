@@ -48,7 +48,7 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
 //        if (subtag=="view_tags"){
 //            holder.btn_view_tags.setVisibility(View.VISIBLE);
 //        }
-        if (documentsModel.getTags()!=null){
+        if (documentsModel.getTags()!=null&&tag=="add_tag"){
         holder.btn_view_tags.setVisibility(View.VISIBLE);
         }
         else
@@ -85,6 +85,12 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
             @Override
             public void onClick(View view) {
                 eventListener.ViewTags(documentsModel,itemsArrayList);
+            }
+        });
+        holder.iv_edit_meta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
 //            holder.cb_team_members.setChecked(true);

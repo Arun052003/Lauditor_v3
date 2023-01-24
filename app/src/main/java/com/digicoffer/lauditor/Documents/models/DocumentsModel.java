@@ -15,6 +15,15 @@ public class DocumentsModel {
     String tag_type;
     String tag_name;
     JSONObject tags;
+    String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public JSONObject getTags() {
         return tags;

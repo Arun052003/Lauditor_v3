@@ -50,7 +50,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.tuyenmonkey.mkloader.model.Line;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -504,23 +503,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         }
     }
 
-    //    public void showDialog(final String msg, final Context context,
-//                           final String permission) {
-//        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
-//        alertBuilder.setCancelable(true);
-//        alertBuilder.setTitle("Permission necessary");
-//        alertBuilder.setMessage(msg + " permission is necessary");
-//        alertBuilder.setPositiveButton(android.R.string.yes,
-//                new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        ActivityCompat.requestPermissions((Activity) context,
-//                                new String[]{permission},
-//                                123);
-//                    }
-//                });
-//        AlertDialog alert = alertBuilder.create();
-//        alert.show();
-//    }
+
     private void BottomSheetUploadfile() {
         bottommSheetUploadDocument = new BottomSheetUploadFile();
         bottommSheetUploadDocument.show(getParentFragmentManager(), "");
@@ -564,9 +547,17 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 //            View view = LayoutInflater.from(getContext()).inflate(R.layout.displays_documents_list, null);
 //            TextView tv_docname = view.findViewById(R.id.tv_document_name);
 //            tv_docname.setText(docsList.get(i).getName());
-
+        String doc_type = "";
+        String docname = "";
+        String content_string = file_name.replace(".", "/");
+        String[] content_type = content_string.split("/");
+        if (content_type.length >= 2) {
+            doc_type = content_type[1];
+            docname = content_type[0];
+        }
         DocumentsModel documentsModel = new DocumentsModel();
-        documentsModel.setName(file_name);
+        documentsModel.setName(docname);
+        documentsModel.setDescription(docname);
         documentsModel.setFile(file);
         documentsModel.setIsenabled(true);
         docsList.add(documentsModel);
@@ -878,7 +869,8 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 tv_tag_name.setText(key+" - "+ documentsModel.getTags().get(key));
                 ll_existing_tags.addView(view_added_tags);
 //                Object value = documentsModel.getTags().get(key);
-            } catch (JSONException e) {
+            }
+            catch (JSONException e) {
                 e.printStackTrace();
             }
 
@@ -892,6 +884,36 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         });
         dialog.setView(view_edit_tags);
         dialog.show();
+    }
+
+    @Override
+    public void EditDocuments(DocumentsModel documentsModel, int position) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view_edit_documents = inflater.inflate(R.layout.edit_meta_data, null);
+        ImageView iv_cancel_edit_doc = view_edit_documents.findViewById(R.id.close_edit_docs);
+        AppCompatButton btn_close_edit_docs = view_edit_documents.findViewById(R.id.btn_cancel_edit_docs);
+        TextInputEditText tv_doc_name = view_edit_documents.findViewById(R.id.edit_doc_name);
+        TextInputEditText tv_description =view_edit_documents.findViewById(R.id.edit_description);
+        tv_doc_name.setText(documentsModel.getName());
+        tv_description.setText(documentsModel.getDescription());
+        final AlertDialog dialog = dialogBuilder.create();
+        iv_cancel_edit_doc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        btn_close_edit_docs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.setView(view_edit_documents);
+        dialog.show();
+
     }
 }
 

@@ -9,22 +9,39 @@
         android:id="@+id/ll_add_tag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/Blue_text_color"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:id="@+id/close_edit_docs"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:background="@drawable/cancel_icon"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:padding="10dp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/Fifteen_dp"
+            android:visibility="visible">
+
+        </ImageView>
+
         <TextView
+            android:id="@+id/header_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@color/Blue_text_color"
-            android:fontFamily="sans-serif-condensed"
+            android:layout_margin="10dp"
+            android:fontFamily="sans-serif-condensed-medium"
             android:gravity="center"
-            android:padding="15dp"
-            android:text="@string/edit_meta_data"
+            android:padding="10dp"
+            android:text="Edit Meta Data"
             android:textColor="@color/white"
-            android:textSize="@dimen/twenty_dp">
+            android:textSize="@dimen/Fifteen_dp"
+            android:visibility="visible">
 
         </TextView>
     </LinearLayout>
@@ -81,6 +98,7 @@
             >
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_doc_name"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_gravity="center"
@@ -134,6 +152,7 @@
             >
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_description"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_gravity="top"
@@ -226,7 +245,7 @@
             >
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_cancel_tag"
+                android:id="@+id/btn_cancel_edit_docs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

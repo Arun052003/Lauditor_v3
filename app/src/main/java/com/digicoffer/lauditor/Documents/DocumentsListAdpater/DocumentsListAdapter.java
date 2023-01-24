@@ -33,7 +33,7 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
 
             void ViewTags(DocumentsModel documentsModel, ArrayList<DocumentsModel> itemsArrayList);
 
-            void EditDocuments(DocumentsModel documentsModel, int position);
+            void EditDocuments(DocumentsModel documentsModel, int position, ArrayList<DocumentsModel> itemsArrayList);
         }
 
     @NonNull
@@ -92,7 +92,7 @@ public class DocumentsListAdapter extends  RecyclerView.Adapter<DocumentsListAda
         holder.iv_edit_meta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventListener.EditDocuments(documentsModel,position);
+                eventListener.EditDocuments(documentsModel,position,itemsArrayList);
             }
         });
 //            holder.cb_team_members.setChecked(true);

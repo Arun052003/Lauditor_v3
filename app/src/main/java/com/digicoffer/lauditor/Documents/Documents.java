@@ -199,6 +199,12 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 open_add_tags_popup();
             }
         });
+        btn_upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callUploadDocumentWebservice();
+            }
+        });
         return v;
 
     }
@@ -405,13 +411,14 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
     private void callUploadDocumentWebservice() {
         try {
+            progress_dialog = AndroidUtils.get_progress(getActivity());
             for (int i = 0; i < docsList.size(); i++) {
-                progress_dialog = AndroidUtils.get_progress(getActivity());
+
                 JSONObject jsonObject = new JSONObject();
                 JSONArray clients = new JSONArray();
                 JSONObject clients_jobject = new JSONObject();
                 JSONArray matter = new JSONArray();
-                JSONArray tags = new JSONArray();
+//                JSONArray tags = new JSONArray();
                 String docname = "";
                 DocumentsModel documentsModel = docsList.get(i);
                 filename = documentsModel.getName();
@@ -433,14 +440,19 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                     }
                 }
                 matter.put(matter_id);
-                jsonObject.put("name", docname);
-                jsonObject.put("description", docname);
+                jsonObject.put("name", docsList.get(i).getName());
+                jsonObject.put("description", docsList.get(i).getDescription());
                 jsonObject.put("filename", docname);
                 jsonObject.put("category", "client");
                 jsonObject.put("clients", clients);
                 jsonObject.put("matters", matter);
-                jsonObject.put("downloadDisabled", false);
-                jsonObject.put("tags", tags);
+                jsonObject.put("downloadDisabled", DOWNLOAD_TAG);
+                if(docsList.get(i).getTags()==null){
+                    jsonObject.put("tags","");
+                }else{
+                    jsonObject.put("tags", docsList.get(i).getTags());
+                }
+
                 if (doc_type.equalsIgnoreCase("apng") || doc_type.equalsIgnoreCase("avif") || doc_type.equalsIgnoreCase("gif") || doc_type.equalsIgnoreCase("jpeg") || doc_type.equalsIgnoreCase("png") || doc_type.equalsIgnoreCase("svg") || doc_type.equalsIgnoreCase("webp") || doc_type.equalsIgnoreCase("jpg")) {
                     jsonObject.put("content_type", "image/" + doc_type);
                 } else {
@@ -887,7 +899,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     }
 
     @Override
-    public void EditDocuments(DocumentsModel documentsModel, int position) {
+    public void EditDocuments(DocumentsModel documentsModel, int position, ArrayList<DocumentsModel> itemsArrayList) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view_edit_documents = inflater.inflate(R.layout.edit_meta_data, null);
@@ -897,6 +909,8 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         TextInputEditText tv_description =view_edit_documents.findViewById(R.id.edit_description);
         tv_doc_name.setText(documentsModel.getName());
         tv_description.setText(documentsModel.getDescription());
+        AppCompatButton btn_save_tag = view_edit_documents.findViewById(R.id.btn_save_tag);
+
         final AlertDialog dialog = dialogBuilder.create();
         iv_cancel_edit_doc.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -908,6 +922,22 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+            }
+        });
+        btn_save_tag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for (int i=0;i<itemsArrayList.size();i++){
+                    if (documentsModel.getName().matches(itemsArrayList.get(i).getName())){
+                        DocumentsModel documentsModel1 = itemsArrayList.get(i);
+                        documentsModel1.setName(tv_doc_name.getText().toString());
+                        documentsModel1.setDescription(tv_description.getText().toString());
+                        itemsArrayList.set(i,documentsModel1);
+                        dialog.dismiss();
+                        String tag = "edit_meta";
+                       loadRecyclerview(tag,"");
+                    }
+                }
             }
         });
 

@@ -8,6 +8,8 @@ import java.io.File;
 public class DocumentsModel {
     String name;
     String id;
+    String group_id;
+    String group_name;
     private boolean isSelected;
     boolean isChecked;
     boolean isenabled;
@@ -16,6 +18,58 @@ public class DocumentsModel {
     String tag_name;
     JSONObject tags;
     String description;
+    JSONArray groups;
+    private boolean isGroupSelected;
+    boolean isGroupChecked;
+    boolean isGroupenabled;
+
+    public boolean isGroupSelected() {
+        return isGroupSelected;
+    }
+
+    public void setGroupSelected(boolean groupSelected) {
+        isGroupSelected = groupSelected;
+    }
+
+    public boolean isGroupChecked() {
+        return isGroupChecked;
+    }
+
+    public void setGroupChecked(boolean groupChecked) {
+        isGroupChecked = groupChecked;
+    }
+
+    public boolean isGroupenabled() {
+        return isGroupenabled;
+    }
+
+    public void setGroupenabled(boolean groupenabled) {
+        isGroupenabled = groupenabled;
+    }
+
+    public String getGroup_id() {
+        return group_id;
+    }
+
+    public void setGroup_id(String group_id) {
+        this.group_id = group_id;
+    }
+
+    public String getGroup_name() {
+        return group_name;
+    }
+
+    public void setGroup_name(String group_name) {
+        this.group_name = group_name;
+    }
+
+    public JSONArray getGroups() {
+        return groups;
+    }
+
+    public void setGroups(JSONArray groups) {
+        this.groups = groups;
+    }
 
     public String getDescription() {
         return description;

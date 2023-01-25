@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -34,11 +35,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.ClientRelationships.Adapter.SharedDocumentsAdapter;
 import com.digicoffer.lauditor.Documents.DocumentsListAdpater.DocumentsListAdapter;
+import com.digicoffer.lauditor.Documents.DocumentsListAdpater.GroupsListAdapter;
 import com.digicoffer.lauditor.Documents.models.ClientsModel;
 import com.digicoffer.lauditor.Documents.models.DocumentsModel;
+import com.digicoffer.lauditor.Documents.models.GroupsModel;
 import com.digicoffer.lauditor.Documents.models.MattersModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
@@ -61,16 +66,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 
 public class Documents extends Fragment implements BottomSheetUploadFile.OnPhotoSelectedListner, AsyncTaskCompleteListener, DocumentsListAdapter.EventListener {
     Button btn_browse;
     BottomSheetUploadFile bottommSheetUploadDocument;
     private Bitmap mSelectedBitmap;
-     LinearLayout ll_added_tags;
-     TextInputEditText tv_tag_type,tv_tag_name;
+    LinearLayout ll_added_tags, ll_matter, ll_category, ll_groups, ll_client_name;
+    TextInputEditText tv_tag_type, tv_tag_name;
     private ImageView imageView;
+    boolean[] selectedLanguage;
     DocumentsListAdapter adapter;
+    ArrayList<Integer> langList = new ArrayList<>();
+    ArrayList<DocumentsModel> groupsList = new ArrayList<>();
     ArrayList<DocumentsModel> tags_list = new ArrayList<>();
     private File mSelectedUri;
     String subtag = "";
@@ -80,10 +91,11 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     String CATEGORY_TAG = "";
     CheckBox chk_select_all;
     String filename;
+    ArrayList<DocumentsModel> selected_groups_list = new ArrayList<>();
     RecyclerView rv_documents;
     ArrayList<DocumentsModel> docsList = new ArrayList<>();
     AlertDialog progress_dialog;
-    TextView tv_add_tag, tv_client, tv_firm, tv_enable_download, tv_disable_download, tv_edit_meta;
+    TextView tv_add_tag, tv_client, tv_firm, tv_enable_download, tv_disable_download, tv_edit_meta, tv_name;
     Button btn_upload, btn_add_tags;
     //    AutoCompleteTextView ;
     File file;
@@ -92,7 +104,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     String matter_id = "";
     String client_id = "";
     LinearLayout ll_hide_document_details;
-    TextView tv_tag_document_name;
+    TextView tv_tag_document_name,tv_select_groups;
     ArrayList<ClientsModel> clientsList = new ArrayList<>();
     Spinner sp_matter, sp_client;
     ArrayList<MattersModel> matterlist = new ArrayList<>();
@@ -113,6 +125,18 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         btn_upload = v.findViewById(R.id.btn_upload);
         tv_client = v.findViewById(R.id.tv_client);
         tv_firm = v.findViewById(R.id.tv_firm);
+        tv_name = v.findViewById(R.id.tv_name);
+        ll_matter = v.findViewById(R.id.ll_matter);
+        ll_category = v.findViewById(R.id.ll_category);
+        ll_groups = v.findViewById(R.id.ll_groups);
+        tv_select_groups = v.findViewById(R.id.tv_select_groups);
+        tv_select_groups.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callGroupsWebservice();
+            }
+        });
+        ll_client_name = v.findViewById(R.id.ll_client_name);
         chk_select_all = v.findViewById(R.id.chk_select_all);
         chk_select_all.getBackground().setAlpha(100);
         chk_select_all.setEnabled(false);
@@ -138,12 +162,14 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             @Override
             public void onClick(View view) {
                 hidefirmBackground();
+                callClientWebservice();
             }
         });
         tv_firm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 hideClientBackground();
+
             }
         });
         rv_documents = v.findViewById(R.id.rv_documents);
@@ -189,10 +215,10 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 for (int i = 0; i < adapter.getList_item().size(); i++) {
                     DocumentsModel documentsModel = adapter.getList_item().get(i);
                     if (documentsModel.isChecked()) {
-                       ;
-                       if (documentsModel.getTags()==null){
-                           selected_documents_list.add(documentsModel);
-                       }
+                        ;
+                        if (documentsModel.getTags() == null) {
+                            selected_documents_list.add(documentsModel);
+                        }
 
                     }
                 }
@@ -205,8 +231,21 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 callUploadDocumentWebservice();
             }
         });
+
         return v;
 
+    }
+
+    private void callGroupsWebservice() {
+        try {
+            progress_dialog = AndroidUtils.get_progress(getActivity());
+            JSONObject jsonObject = new JSONObject();
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/groups", "Groups", jsonObject.toString());
+        } catch (Exception e) {
+            if (progress_dialog != null && progress_dialog.isShowing()) {
+                AndroidUtils.dismiss_dialog(progress_dialog);
+            }
+        }
     }
 
     private void open_add_tags_popup() {
@@ -216,16 +255,16 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             LayoutInflater inflater = getActivity().getLayoutInflater();
             View view = inflater.inflate(R.layout.add_tag, null);
             tv_tag_type = (TextInputEditText) view.findViewById(R.id.tv_tag_type);
-             tv_tag_name = view.findViewById(R.id.tv_tag_name);
+            tv_tag_name = view.findViewById(R.id.tv_tag_name);
             final Button btn_add = view.findViewById(R.id.btn_add_tags);
             final AppCompatButton btn_cancel = view.findViewById(R.id.btn_cancel_tag);
             final AppCompatButton btn_save_tag = view.findViewById(R.id.btn_save_tag);
             final ImageView iv_cancel = view.findViewById(R.id.close_tags);
-             ll_added_tags = view.findViewById(R.id.ll_added_tags);
+            ll_added_tags = view.findViewById(R.id.ll_added_tags);
             final AlertDialog dialog = dialogBuilder.create();
             iv_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view)   {
+                public void onClick(View view) {
                     dialog.dismiss();
                 }
             });
@@ -240,45 +279,45 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 @Override
                 public void onClick(View view) {
 
-                   add_tags_listing();
+                    add_tags_listing();
                 }
             });
             btn_save_tag.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (tags_list.size()!=0){
+                    if (tags_list.size() != 0) {
 
                         subtag = "view_tags";
                     }
-                   String tag = "add_tag";
+                    String tag = "add_tag";
 //                        for(int i=0;i<docsList.size();i++){
-                            for (int j=0;j<selected_documents_list.size();j++){
+                    for (int j = 0; j < selected_documents_list.size(); j++) {
 //                                if (docsList.get(i).getName().matches(selected_documents_list.get(j).getName())){
-                                DocumentsModel documentsModel = selected_documents_list.get(j);
-                                JSONObject tags = new JSONObject();
-                                    for (int t=0;t<tags_list.size();t++){
+                        DocumentsModel documentsModel = selected_documents_list.get(j);
+                        JSONObject tags = new JSONObject();
+                        for (int t = 0; t < tags_list.size(); t++) {
 
 
-                                        try {
-                                            tags.put(tags_list.get(t).getTag_type(),tags_list.get(t).getTag_name());
+                            try {
+                                tags.put(tags_list.get(t).getTag_type(), tags_list.get(t).getTag_name());
 
 //                                            selected_documents_list.add(documentsModel);
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                documentsModel.setTags(tags);
-
-                                }
-                            for (int i=0;i<docsList.size();i++){
-                                for (int j=0;j<selected_documents_list.size();j++){
-                                    if (docsList.get(i).getName().matches(selected_documents_list.get(j).getName())){
-                                        DocumentsModel documentsModel = selected_documents_list.get(j);
-                                        documentsModel.setTags(selected_documents_list.get(j).getTags());
-                                        docsList.set(i,documentsModel);
-                                    }
-                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
+                        }
+                        documentsModel.setTags(tags);
+
+                    }
+                    for (int i = 0; i < docsList.size(); i++) {
+                        for (int j = 0; j < selected_documents_list.size(); j++) {
+                            if (docsList.get(i).getName().matches(selected_documents_list.get(j).getName())) {
+                                DocumentsModel documentsModel = selected_documents_list.get(j);
+                                documentsModel.setTags(selected_documents_list.get(j).getTags());
+                                docsList.set(i, documentsModel);
+                            }
+                        }
+                    }
 //                    AndroidUtils.showAlert(selected_documents_list.toString(),getContext());
 //                            }
 //                        }
@@ -287,16 +326,15 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 //                    for (int i=0;i<adapter.getList_item().size();i++){
 ////                        DocumentsModel documentsModel =
 //                    }
-                    loadRecyclerview(tag,subtag);
-                            dialog.dismiss();
+                    loadRecyclerview(tag, subtag);
+                    dialog.dismiss();
 
                 }
             });
-
+            dialog.setCancelable(false);
             dialog.setView(view);
             dialog.show();
-        }
-        else {
+        } else {
             AndroidUtils.showToast("Please select atleast one document to add tags", getContext());
         }
     }
@@ -309,7 +347,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         tags_list.add(documentsModel);
         for (int i = 0; i < tags_list.size(); i++) {
             View view_added_tags = LayoutInflater.from(getContext()).inflate(R.layout.displays_documents_list, null);
-           tv_tag_document_name = view_added_tags.findViewById(R.id.tv_document_name);
+            tv_tag_document_name = view_added_tags.findViewById(R.id.tv_document_name);
             ImageView iv_edit_tag = view_added_tags.findViewById(R.id.iv_edit_meta);
             ImageView iv_remove_tag = view_added_tags.findViewById(R.id.iv_cancel);
             iv_remove_tag.setTag(i);
@@ -324,7 +362,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                         DocumentsModel documentsModel1 = tags_list.get(position);
                         documentsModel1.setTag_name("");
                         documentsModel1.setTag_type("");
-                        tags_list.set(position,documentsModel1);
+                        tags_list.set(position, documentsModel1);
                         tags_list.remove(position);
 //                        add_tags_listing();
 //                                    ll_added_tags.removeAllViews();
@@ -340,12 +378,12 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                         position = (Integer) view.getTag();
                         view = ll_added_tags.getChildAt(position);
                         DocumentsModel documentsModel1 = tags_list.get(position);
-                        edit_tags(documentsModel1.getTag_type(),documentsModel1.getTag_name(),position,view,tv_tag_document_name);
+                        edit_tags(documentsModel1.getTag_type(), documentsModel1.getTag_name(), position, view, tv_tag_document_name);
                     }
                 }
             });
             iv_edit_tag.setVisibility(View.VISIBLE);
-            tv_tag_document_name.setText(tags_list.get(i).getTag_type()+" - "+tags_list.get(i).getTag_name());
+            tv_tag_document_name.setText(tags_list.get(i).getTag_type() + " - " + tags_list.get(i).getTag_name());
             ll_added_tags.addView(view_added_tags);
         }
     }
@@ -371,7 +409,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         btn_save_edited_tag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                save_edited_tags(tv_edit_tag_type.getText().toString(),tv_edit_tag_nam.getText().toString(),position,view_tag ,dialog,tv_tag_document_name);
+                save_edited_tags(tv_edit_tag_type.getText().toString(), tv_edit_tag_nam.getText().toString(), position, view_tag, dialog, tv_tag_document_name);
             }
         });
         iv_close_edit_tags.setOnClickListener(new View.OnClickListener() {
@@ -380,6 +418,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 dialog.dismiss();
             }
         });
+        dialog.setCancelable(false);
         dialog.setView(view_edit_tags);
         dialog.show();
     }
@@ -395,25 +434,33 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             dialog.dismiss();
         } catch (Exception e) {
             e.printStackTrace();
-            AndroidUtils.showAlert(e.getMessage(),getContext());
+            AndroidUtils.showAlert(e.getMessage(), getContext());
         }
     }
 
     private void hidefirmBackground() {
+        ll_category.setVisibility(View.GONE);
+        ll_matter.setVisibility(View.VISIBLE);
+        ll_groups.setVisibility(View.GONE);
+        ll_client_name.setVisibility(View.VISIBLE);
         tv_firm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
         tv_client.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
     }
 
     private void hideClientBackground() {
+        ll_matter.setVisibility(View.GONE);
+        ll_category.setVisibility(View.VISIBLE);
+        ll_groups.setVisibility(View.VISIBLE);
+        ll_client_name.setVisibility(View.GONE);
         tv_client.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_firm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
     }
 
     private void callUploadDocumentWebservice() {
         try {
-            if (docsList.size()==0){
-                AndroidUtils.showToast("Please select atleast one document",getContext());
-            }else {
+            if (docsList.size() == 0) {
+                AndroidUtils.showToast("Please select atleast one document", getContext());
+            } else {
                 progress_dialog = AndroidUtils.get_progress(getActivity());
                 for (int i = 0; i < docsList.size(); i++) {
 
@@ -586,15 +633,15 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 //            hideDisableDownloadBackground();
         }
         String tag = "view_tags";
-        loadRecyclerview(tag,subtag);
+        loadRecyclerview(tag, subtag);
 
 //            ll_documents.addView(view);
 //        }
     }
 
-    private void loadRecyclerview(String tag,String subtag) {
+    private void loadRecyclerview(String tag, String subtag) {
         rv_documents.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        adapter = new DocumentsListAdapter(docsList, tag,subtag,this);
+        adapter = new DocumentsListAdapter(docsList, tag, subtag, this);
         rv_documents.setAdapter(adapter);
         rv_documents.setHasFixedSize(true);
         chk_select_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -620,7 +667,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         tv_edit_meta.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
         tv_add_tag.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         String tag = "add_tag";
-        loadRecyclerview(tag,subtag);
+        loadRecyclerview(tag, subtag);
     }
 
     private void EditMeta() {
@@ -629,7 +676,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         btn_add_tags.setVisibility(View.GONE);
         tv_add_tag.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_edit_meta.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
-        loadRecyclerview(tag,subtag);
+        loadRecyclerview(tag, subtag);
     }
 
     private void hideEnableDownloadBackground() {
@@ -760,10 +807,108 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 } else if (httpResult.getRequestType().equals("Upload Document")) {
                     String msg = result.getString("msg");
                     AndroidUtils.showToast(msg, getContext());
+                } else if (httpResult.getRequestType().equals("Groups")) {
+                    JSONArray data = result.getJSONArray("data");
+                    loadGroupsData(data);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void loadGroupsData(JSONArray data) {
+        try {
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject jsonObject = data.getJSONObject(i);
+                DocumentsModel documentsModel = new DocumentsModel();
+                documentsModel.setGroup_id(jsonObject.getString("id"));
+                documentsModel.setGroup_name(jsonObject.getString("name"));
+                groupsList.add(documentsModel);
+            }
+            selectedLanguage = new boolean[groupsList.size()];
+//            GroupsAlert();
+            GroupsPopup();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            AndroidUtils.showAlert(e.getMessage(),getContext());
+        }
+    }
+
+    private void GroupsPopup() {
+        try {
+
+            for (int i=0;i<groupsList.size();i++){
+                for (int j=0;j<selected_groups_list.size();j++){
+                    if (groupsList.get(i).getGroup_id().matches(selected_groups_list.get(j).getGroup_id())){
+                        DocumentsModel documentsModel = groupsList.get(i);
+                        documentsModel.setChecked(true);
+//                        selected_groups_list.set(j,documentsModel);
+
+                    }
+                }
+            }
+            selected_groups_list.clear();
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View view = inflater.inflate(R.layout.groups_list_adapter, null);
+            RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
+            ImageView iv_cancel = view.findViewById(R.id.close_groups);
+            AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
+            AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+            rv_groups.setLayoutManager(layoutManager);
+            rv_groups.setHasFixedSize(true);
+            GroupsListAdapter documentsAdapter = new GroupsListAdapter(groupsList);
+            rv_groups.setAdapter(documentsAdapter);
+            AlertDialog dialog = dialogBuilder.create();
+            iv_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            btn_save_group.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+//                    ArrayList<String>
+                    for(int i=0;i<documentsAdapter.getList_item().size();i++){
+                        DocumentsModel documentsModel = documentsAdapter.getList_item().get(i);
+                       if (documentsModel.isGroupChecked()){
+                           selected_groups_list.add(documentsModel);
+
+//                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
+
+
+                       }
+                    }
+
+                    String[] value = new String[selected_groups_list.size()];
+                    for (int i = 0; i < selected_groups_list.size(); i++) {
+//                                value += "," + family_members.get(i);
+//                               value.add(family_members.get(i));
+                        value[i] = selected_groups_list.get(i).getGroup_name();
+
+                    }
+
+                    String str = String.join(",",value);
+                    tv_select_groups.setText(str);
+                    dialog.dismiss();
+                }
+
+            });
+            dialog.setCancelable(false);
+            dialog.setView(view);
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            AndroidUtils.showAlert(e.getMessage(),getContext());
         }
     }
 
@@ -863,14 +1008,14 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view_edit_tags = inflater.inflate(R.layout.edit_existing_tags, null);
         LinearLayout ll_existing_tags = view_edit_tags.findViewById(R.id.ll_view_tags);
-        ImageView iv_close_existing_tags =view_edit_tags.findViewById(R.id.close_exisiting_tags);
+        ImageView iv_close_existing_tags = view_edit_tags.findViewById(R.id.close_exisiting_tags);
 
         JSONArray jsonArray = new JSONArray();
         jsonArray.put(documentsModel.getTags());
         Iterator<String> iter = documentsModel.getTags().keys();
-        while (iter.hasNext()){
-            String key  = iter.next();
-            try{
+        while (iter.hasNext()) {
+            String key = iter.next();
+            try {
 //                String value = String.valueOf(documentsModel.getTags().get(key));
                 View view_added_tags = LayoutInflater.from(getContext()).inflate(R.layout.displays_documents_list, null);
                 TextView tv_tag_name = view_added_tags.findViewById(R.id.tv_document_name);
@@ -883,11 +1028,10 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                     }
                 });
 
-                tv_tag_name.setText(key+" - "+ documentsModel.getTags().get(key));
+                tv_tag_name.setText(key + " - " + documentsModel.getTags().get(key));
                 ll_existing_tags.addView(view_added_tags);
 //                Object value = documentsModel.getTags().get(key);
-            }
-            catch (JSONException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
 
@@ -899,19 +1043,20 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 dialog.dismiss();
             }
         });
+        dialog.setCancelable(false);
         dialog.setView(view_edit_tags);
         dialog.show();
     }
 
     @Override
-    public void EditDocuments(DocumentsModel documentsModel,  ArrayList<DocumentsModel> itemsArrayList) {
+    public void EditDocuments(DocumentsModel documentsModel, ArrayList<DocumentsModel> itemsArrayList) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view_edit_documents = inflater.inflate(R.layout.edit_meta_data, null);
         ImageView iv_cancel_edit_doc = view_edit_documents.findViewById(R.id.close_edit_docs);
         AppCompatButton btn_close_edit_docs = view_edit_documents.findViewById(R.id.btn_cancel_edit_docs);
         TextInputEditText tv_doc_name = view_edit_documents.findViewById(R.id.edit_doc_name);
-        TextInputEditText tv_description =view_edit_documents.findViewById(R.id.edit_description);
+        TextInputEditText tv_description = view_edit_documents.findViewById(R.id.edit_description);
         tv_doc_name.setText(documentsModel.getName());
         tv_description.setText(documentsModel.getDescription());
         AppCompatButton btn_save_tag = view_edit_documents.findViewById(R.id.btn_save_tag);
@@ -931,22 +1076,22 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         btn_save_tag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for (int i=0;i<itemsArrayList.size();i++){
+                for (int i = 0; i < itemsArrayList.size(); i++) {
 
-                    if (documentsModel.getName().matches(itemsArrayList.get(i).getName())){
+                    if (documentsModel.getName().matches(itemsArrayList.get(i).getName())) {
                         DocumentsModel documentsModel1 = itemsArrayList.get(i);
                         documentsModel1.setName(tv_doc_name.getText().toString());
                         documentsModel1.setDescription(tv_description.getText().toString());
-                        itemsArrayList.set(i,documentsModel1);
+                        itemsArrayList.set(i, documentsModel1);
                         dialog.dismiss();
                         String tag = "edit_meta";
-                       loadRecyclerview(tag,"");
+                        loadRecyclerview(tag, "");
 
                     }
                 }
             }
         });
-
+        dialog.setCancelable(false);
         dialog.setView(view_edit_documents);
         dialog.show();
 
@@ -954,13 +1099,13 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
     @Override
     public void RemoveDocument(DocumentsModel documentsModel, ArrayList<DocumentsModel> itemsArrayList, String tag) {
-        for (int i=0;i<itemsArrayList.size();i++){
-            if (documentsModel.getName().matches(itemsArrayList.get(i).getName())){
+        for (int i = 0; i < itemsArrayList.size(); i++) {
+            if (documentsModel.getName().matches(itemsArrayList.get(i).getName())) {
                 DocumentsModel documentsModel1 = itemsArrayList.get(i);
                 itemsArrayList.remove(i);
 //                dialog.dismiss();
 //                String tag = "edit_meta";
-                loadRecyclerview(tag,"");
+                loadRecyclerview(tag, "");
             }
         }
     }

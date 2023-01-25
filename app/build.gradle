@@ -8,11 +8,10 @@ android {
     defaultConfig {
         buildToolsVersion = "33.0.0"
         applicationId "com.digicoffer.lauditor"
-        minSdk 21
+        minSdk 30
         targetSdk 33
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

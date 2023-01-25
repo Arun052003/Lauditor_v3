@@ -480,6 +480,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         groupsList.clear();
         clientsList.clear();
         matterlist.clear();
+        tv_select_groups.setText("Select Groups");
     }
 
     private void callUploadDocumentWebservice() {
@@ -893,6 +894,8 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 } else if (httpResult.getRequestType().equals("Upload Document")) {
                     String msg = result.getString("msg");
                     AndroidUtils.showToast(msg, getContext());
+                    rv_documents.removeAllViews();
+                    clearListData();
                 } else if (httpResult.getRequestType().equals("Groups")) {
                     JSONArray data = result.getJSONArray("data");
                     loadGroupsData(data);

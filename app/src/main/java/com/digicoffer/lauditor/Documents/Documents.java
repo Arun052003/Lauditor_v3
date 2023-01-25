@@ -104,7 +104,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     String matter_id = "";
     String client_id = "";
     LinearLayout ll_hide_document_details;
-    TextView tv_tag_document_name,tv_select_groups;
+    TextView tv_tag_document_name, tv_select_groups;
     ArrayList<ClientsModel> clientsList = new ArrayList<>();
     Spinner sp_matter, sp_client;
     ArrayList<MattersModel> matterlist = new ArrayList<>();
@@ -114,125 +114,132 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.upload_document, container, false);
-        btn_browse = v.findViewById(R.id.btn_browse);
-        tv_selected_file = v.findViewById(R.id.tv_selected_file);
-        tl_selected_file = v.findViewById(R.id.tl_selected_file);
-        sp_client = v.findViewById(R.id.at_search_client);
-        sp_matter = v.findViewById(R.id.sp_matter);
-        tv_add_tag = v.findViewById(R.id.tv_add_tag);
-        tv_edit_meta = v.findViewById(R.id.tv_edit_meta);
-        btn_upload = v.findViewById(R.id.btn_upload);
-        tv_client = v.findViewById(R.id.tv_client);
-        tv_firm = v.findViewById(R.id.tv_firm);
-        tv_name = v.findViewById(R.id.tv_name);
-        ll_matter = v.findViewById(R.id.ll_matter);
-        ll_category = v.findViewById(R.id.ll_category);
-        ll_groups = v.findViewById(R.id.ll_groups);
-        tv_select_groups = v.findViewById(R.id.tv_select_groups);
-        tv_select_groups.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                callGroupsWebservice();
-            }
-        });
-        ll_client_name = v.findViewById(R.id.ll_client_name);
-        chk_select_all = v.findViewById(R.id.chk_select_all);
-        chk_select_all.getBackground().setAlpha(100);
-        chk_select_all.setEnabled(false);
-        btn_add_tags = v.findViewById(R.id.btn_add_tag);
-        tv_enable_download = v.findViewById(R.id.tv_enable_download);
-        tv_disable_download = v.findViewById(R.id.tv_disable_download);
-        ll_hide_document_details = v.findViewById(R.id.ll_hide_doc_details);
-        ll_hide_document_details.setVisibility(View.GONE);
-        hidefirmBackground();
-        tv_enable_download.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hideEnableDownloadBackground();
-            }
-        });
-        tv_disable_download.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hideDisableDownloadBackground();
-            }
-        });
-        tv_client.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hidefirmBackground();
-                callClientWebservice();
-            }
-        });
-        tv_firm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hideClientBackground();
-
-            }
-        });
-        rv_documents = v.findViewById(R.id.rv_documents);
-        tv_add_tag.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AddTag();
-            }
-        });
-        tv_edit_meta.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                EditMeta();
-            }
-        });
-        callClientWebservice();
-        btn_browse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkPermissionREAD_EXTERNAL_STORAGE(getContext());
-            }
-        });
-        tl_selected_file.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
-                    tl_selected_file.setHint("");
-                else
-                    tl_selected_file.setHint("Select Document");
-            }
-        });
-        tv_selected_file.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
-                    tv_selected_file.setHint("");
-                else
-                    tv_selected_file.setHint("Select Document");
-            }
-        });
-        btn_add_tags.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selected_documents_list.clear();
-                for (int i = 0; i < adapter.getList_item().size(); i++) {
-                    DocumentsModel documentsModel = adapter.getList_item().get(i);
-                    if (documentsModel.isChecked()) {
-                        ;
-                        if (documentsModel.getTags() == null) {
-                            selected_documents_list.add(documentsModel);
-                        }
-
-                    }
+            View v = inflater.inflate(R.layout.upload_document, container, false);
+        try {
+            btn_browse = v.findViewById(R.id.btn_browse);
+            tv_selected_file = v.findViewById(R.id.tv_selected_file);
+            tl_selected_file = v.findViewById(R.id.tl_selected_file);
+            sp_client = v.findViewById(R.id.at_search_client);
+            sp_matter = v.findViewById(R.id.sp_matter);
+            tv_add_tag = v.findViewById(R.id.tv_add_tag);
+            tv_edit_meta = v.findViewById(R.id.tv_edit_meta);
+            btn_upload = v.findViewById(R.id.btn_upload);
+            tv_client = v.findViewById(R.id.tv_client);
+            tv_firm = v.findViewById(R.id.tv_firm);
+            tv_name = v.findViewById(R.id.tv_name);
+            ll_matter = v.findViewById(R.id.ll_matter);
+            ll_category = v.findViewById(R.id.ll_category);
+            ll_groups = v.findViewById(R.id.ll_groups);
+            tv_select_groups = v.findViewById(R.id.tv_select_groups);
+            tv_select_groups.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    callGroupsWebservice();
                 }
-                open_add_tags_popup();
-            }
-        });
-        btn_upload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                callUploadDocumentWebservice();
-            }
-        });
+            });
+            ll_client_name = v.findViewById(R.id.ll_client_name);
+            chk_select_all = v.findViewById(R.id.chk_select_all);
+            chk_select_all.getBackground().setAlpha(100);
+            chk_select_all.setEnabled(false);
+            btn_add_tags = v.findViewById(R.id.btn_add_tag);
+            tv_enable_download = v.findViewById(R.id.tv_enable_download);
+            tv_disable_download = v.findViewById(R.id.tv_disable_download);
+            ll_hide_document_details = v.findViewById(R.id.ll_hide_doc_details);
+            ll_hide_document_details.setVisibility(View.GONE);
+            rv_documents = v.findViewById(R.id.rv_documents);
+            hidefirmBackground();
+            tv_enable_download.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    hideEnableDownloadBackground();
+                }
+            });
+            tv_disable_download.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    hideDisableDownloadBackground();
+                }
+            });
+            tv_client.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    rv_documents.removeAllViews();
+                    hidefirmBackground();
+                    callClientWebservice();
 
-        return v;
+                }
+            });
+            tv_firm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    rv_documents.removeAllViews();
+                    hideClientBackground();
+
+                }
+            });
+
+            tv_add_tag.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AddTag();
+                }
+            });
+            tv_edit_meta.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    EditMeta();
+                }
+            });
+            callClientWebservice();
+            btn_browse.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    checkPermissionREAD_EXTERNAL_STORAGE(getContext());
+                }
+            });
+            tl_selected_file.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus)
+                        tl_selected_file.setHint("");
+                    else
+                        tl_selected_file.setHint("Select Document");
+                }
+            });
+            tv_selected_file.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus)
+                        tv_selected_file.setHint("");
+                    else
+                        tv_selected_file.setHint("Select Document");
+                }
+            });
+            btn_add_tags.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    selected_documents_list.clear();
+                    for (int i = 0; i < adapter.getList_item().size(); i++) {
+                        DocumentsModel documentsModel = adapter.getList_item().get(i);
+                        if (documentsModel.isChecked()) {
+                            ;
+                            if (documentsModel.getTags() == null) {
+                                selected_documents_list.add(documentsModel);
+                            }
+
+                        }
+                    }
+                    open_add_tags_popup();
+                }
+            });
+            btn_upload.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    callUploadDocumentWebservice();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            return v;
 
     }
 
@@ -443,6 +450,8 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         ll_matter.setVisibility(View.VISIBLE);
         ll_groups.setVisibility(View.GONE);
         ll_client_name.setVisibility(View.VISIBLE);
+
+        clearListData();
         tv_firm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
         tv_client.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
     }
@@ -452,8 +461,22 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         ll_category.setVisibility(View.VISIBLE);
         ll_groups.setVisibility(View.VISIBLE);
         ll_client_name.setVisibility(View.GONE);
+        clearListData();
         tv_client.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_firm.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+    }
+
+    private void clearListData() {
+        ll_hide_document_details.setVisibility(View.GONE);
+        tv_selected_file.setText("");
+        selected_groups_list.clear();
+        selected_documents_list.clear();
+        langList.clear();
+        tags_list.clear();
+        docsList.clear();
+        groupsList.clear();
+        clientsList.clear();
+        matterlist.clear();
     }
 
     private void callUploadDocumentWebservice() {
@@ -831,16 +854,16 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             GroupsPopup();
         } catch (JSONException e) {
             e.printStackTrace();
-            AndroidUtils.showAlert(e.getMessage(),getContext());
+            AndroidUtils.showAlert(e.getMessage(), getContext());
         }
     }
 
     private void GroupsPopup() {
         try {
 
-            for (int i=0;i<groupsList.size();i++){
-                for (int j=0;j<selected_groups_list.size();j++){
-                    if (groupsList.get(i).getGroup_id().matches(selected_groups_list.get(j).getGroup_id())){
+            for (int i = 0; i < groupsList.size(); i++) {
+                for (int j = 0; j < selected_groups_list.size(); j++) {
+                    if (groupsList.get(i).getGroup_id().matches(selected_groups_list.get(j).getGroup_id())) {
                         DocumentsModel documentsModel = groupsList.get(i);
                         documentsModel.setChecked(true);
 //                        selected_groups_list.set(j,documentsModel);
@@ -878,15 +901,15 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 @Override
                 public void onClick(View view) {
 //                    ArrayList<String>
-                    for(int i=0;i<documentsAdapter.getList_item().size();i++){
+                    for (int i = 0; i < documentsAdapter.getList_item().size(); i++) {
                         DocumentsModel documentsModel = documentsAdapter.getList_item().get(i);
-                       if (documentsModel.isGroupChecked()){
-                           selected_groups_list.add(documentsModel);
+                        if (documentsModel.isGroupChecked()) {
+                            selected_groups_list.add(documentsModel);
 
 //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
 
 
-                       }
+                        }
                     }
 
                     String[] value = new String[selected_groups_list.size()];
@@ -897,7 +920,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
                     }
 
-                    String str = String.join(",",value);
+                    String str = String.join(",", value);
                     tv_select_groups.setText(str);
                     dialog.dismiss();
                 }
@@ -908,7 +931,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             dialog.show();
         } catch (Exception e) {
             e.printStackTrace();
-            AndroidUtils.showAlert(e.getMessage(),getContext());
+            AndroidUtils.showAlert(e.getMessage(), getContext());
         }
     }
 

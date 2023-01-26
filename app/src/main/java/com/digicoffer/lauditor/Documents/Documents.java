@@ -51,6 +51,7 @@ import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.digicoffer.lauditor.Webservice.WebServiceHelper;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -75,12 +76,13 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     Button btn_browse;
     BottomSheetUploadFile bottommSheetUploadDocument;
     private Bitmap mSelectedBitmap;
-    LinearLayout ll_added_tags, ll_matter, ll_category, ll_groups, ll_client_name;
+    LinearLayout ll_added_tags, ll_matter, ll_category, ll_groups, ll_client_name,ll_view_docs,ll_upload_docs;
     TextInputEditText tv_tag_type, tv_tag_name;
     private ImageView imageView;
     boolean[] selectedLanguage;
     String UPLOAD_TAG = "Client";
     DocumentsListAdapter adapter;
+    ShapeableImageView siv_upload_document,siv_view_document;
     ArrayList<Integer> langList = new ArrayList<>();
     ArrayList<DocumentsModel> groupsList = new ArrayList<>();
     ArrayList<DocumentsModel> tags_list = new ArrayList<>();
@@ -131,13 +133,10 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             ll_matter = v.findViewById(R.id.ll_matter);
             ll_category = v.findViewById(R.id.ll_category);
             ll_groups = v.findViewById(R.id.ll_groups);
-            tv_select_groups = v.findViewById(R.id.tv_select_groups);
-            tv_select_groups.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    callGroupsWebservice();
-                }
-            });
+            siv_upload_document = v.findViewById(R.id.upload_icon);
+            siv_view_document = v.findViewById(R.id.view_icon);
+            ll_upload_docs = v.findViewById(R.id.ll_upload_docs);
+            ll_view_docs = v.findViewById(R.id.ll_view_docs);
             ll_client_name = v.findViewById(R.id.ll_client_name);
             chk_select_all = v.findViewById(R.id.chk_select_all);
             chk_select_all.getBackground().setAlpha(100);
@@ -148,6 +147,26 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             ll_hide_document_details = v.findViewById(R.id.ll_hide_doc_details);
             ll_hide_document_details.setVisibility(View.GONE);
             rv_documents = v.findViewById(R.id.rv_documents);
+            siv_upload_document.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    upload_documents();
+                }
+            });
+            siv_view_document.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    view_document();
+                }
+            });
+            tv_select_groups = v.findViewById(R.id.tv_select_groups);
+            tv_select_groups.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    callGroupsWebservice();
+                }
+            });
+
             hidefirmBackground();
             tv_enable_download.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -191,7 +210,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                     EditMeta();
                 }
             });
-            callClientWebservice();
+
             btn_browse.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -237,11 +256,29 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                     callUploadDocumentWebservice();
                 }
             });
+            callClientWebservice();
         } catch (Exception e) {
             e.printStackTrace();
         }
             return v;
 
+    }
+
+    private void view_document() {
+        siv_view_document.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.eye_icon_white));
+        siv_upload_document.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.upload_icon_black));
+        ll_view_docs.setVisibility(View.VISIBLE);
+        ll_upload_docs.setVisibility(View.GONE);
+        rv_documents.removeAllViews();
+        clearListData();
+    }
+
+    private void upload_documents() {
+        siv_upload_document.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.upload_icon));
+        siv_view_document.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.eye_icon_black));
+        ll_upload_docs.setVisibility(View.VISIBLE);
+        ll_view_docs.setVisibility(View.GONE);
+        callClientWebservice();
     }
 
     private void callGroupsWebservice() {

@@ -45,6 +45,7 @@ import com.digicoffer.lauditor.Documents.models.ClientsModel;
 import com.digicoffer.lauditor.Documents.models.DocumentsModel;
 import com.digicoffer.lauditor.Documents.models.GroupsModel;
 import com.digicoffer.lauditor.Documents.models.MattersModel;
+import com.digicoffer.lauditor.Documents.models.ViewDocumentsModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
@@ -80,8 +81,10 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     TextInputEditText tv_tag_type, tv_tag_name;
     private ImageView imageView;
     boolean[] selectedLanguage;
+    String DOCUMENT_TYPE_TAG = "client";
     String UPLOAD_TAG = "Client";
     DocumentsListAdapter adapter;
+    ArrayList<ViewDocumentsModel> view_docs_list = new ArrayList<>();
     ShapeableImageView siv_upload_document,siv_view_document;
     ArrayList<Integer> langList = new ArrayList<>();
     ArrayList<DocumentsModel> groupsList = new ArrayList<>();
@@ -98,7 +101,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     RecyclerView rv_documents;
     ArrayList<DocumentsModel> docsList = new ArrayList<>();
     AlertDialog progress_dialog;
-    TextView tv_add_tag, tv_client, tv_firm, tv_enable_download, tv_disable_download, tv_edit_meta, tv_name;
+    TextView tv_add_tag, tv_client, tv_firm, tv_enable_download, tv_disable_download, tv_edit_meta, tv_name,tv_client_view,tv_firm_view;
     Button btn_upload, btn_add_tags;
     //    AutoCompleteTextView ;
     File file;
@@ -129,10 +132,12 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             btn_upload = v.findViewById(R.id.btn_upload);
             tv_client = v.findViewById(R.id.tv_client);
             tv_firm = v.findViewById(R.id.tv_firm);
+            tv_client_view = v.findViewById(R.id.tv_client_view);
             tv_name = v.findViewById(R.id.tv_name);
             ll_matter = v.findViewById(R.id.ll_matter);
             ll_category = v.findViewById(R.id.ll_category);
             ll_groups = v.findViewById(R.id.ll_groups);
+            tv_firm_view = v.findViewById(R.id.tv_firm_view);
             siv_upload_document = v.findViewById(R.id.upload_icon);
             siv_view_document = v.findViewById(R.id.view_icon);
             ll_upload_docs = v.findViewById(R.id.ll_upload_docs);
@@ -244,10 +249,21 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                             if (documentsModel.getTags() == null) {
                                 selected_documents_list.add(documentsModel);
                             }
-
                         }
                     }
                     open_add_tags_popup();
+                }
+            });
+            tv_client_view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    hideviewFirmBackground();
+                }
+            });
+            tv_firm_view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    hideviewClientBackground();
                 }
             });
             btn_upload.setOnClickListener(new View.OnClickListener() {
@@ -270,7 +286,34 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         ll_view_docs.setVisibility(View.VISIBLE);
         ll_upload_docs.setVisibility(View.GONE);
         rv_documents.removeAllViews();
+        hideviewFirmBackground();
+
+        callViewDocumentWebservice();
         clearListData();
+    }
+
+    private void callViewDocumentWebservice() {
+        try {
+            progress_dialog = AndroidUtils.get_progress(getActivity());
+            JSONObject jsonObject = new JSONObject();
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/documents/"+DOCUMENT_TYPE_TAG, "VIEW_DOCUMENT", jsonObject.toString());
+        } catch (Exception e) {
+            if (progress_dialog != null && progress_dialog.isShowing()) {
+                AndroidUtils.dismiss_dialog(progress_dialog);
+            }
+        }
+    }
+
+    private void hideviewFirmBackground() {
+
+        tv_firm_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+        tv_client_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+
+    }
+    private void hideviewClientBackground(){
+        tv_firm_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+        tv_client_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+
     }
 
     private void upload_documents() {
@@ -936,10 +979,33 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 } else if (httpResult.getRequestType().equals("Groups")) {
                     JSONArray data = result.getJSONArray("data");
                     loadGroupsData(data);
+                }else if(httpResult.getRequestType().equals("VIEW_DOCUMENT")){
+                    JSONArray docs = result.getJSONArray("docs");
+                    laodViewDocuments(docs);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void laodViewDocuments(JSONArray docs) throws JSONException {
+
+        for(int i=0;i<docs.length();i++){
+            ViewDocumentsModel viewDocumentsModel = new ViewDocumentsModel();
+            JSONObject jsonObject = docs.getJSONObject(i);
+            viewDocumentsModel.setCreated(jsonObject.getString("created"));
+            viewDocumentsModel.setContent_type(jsonObject.getString("content_type"));
+            viewDocumentsModel.setDescription(jsonObject.getString("description"));
+            viewDocumentsModel.setExpiration_date(jsonObject.getString("expiration_date"));
+            viewDocumentsModel.setFilename(jsonObject.getString("filename"));
+            viewDocumentsModel.setId(jsonObject.getString("id"));
+            viewDocumentsModel.setIs_disabled(jsonObject.getBoolean("is_disabled"));
+            viewDocumentsModel.setIs_encrypted(jsonObject.getBoolean("is_encrypted"));
+            viewDocumentsModel.setIs_password(jsonObject.getBoolean("is_password"));
+            viewDocumentsModel.setName(jsonObject.getString("name"));
+            viewDocumentsModel.setOrigin(jsonObject.getString("origin"));
+            view_docs_list.add(viewDocumentsModel);
         }
     }
 

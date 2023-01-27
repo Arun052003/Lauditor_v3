@@ -114,6 +114,7 @@ public class HttpExecuteTask extends AsyncTask<String, Integer, HttpResultDo> {
 
             int status_code = httpURLConnection.getResponseCode();
             Log.i("status_code:",String.valueOf(status_code));
+//            AndroidUtils.showAlert(String.valueOf(status_code), activity.getApplicationContext());
             httpResult.setStatus_code(status_code);
             Log.d("SCode:",String.valueOf(status_code));
             if (status_code == 200) {

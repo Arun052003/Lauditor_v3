@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -38,12 +37,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.digicoffer.lauditor.ClientRelationships.Adapter.SharedDocumentsAdapter;
 import com.digicoffer.lauditor.Documents.DocumentsListAdpater.DocumentsListAdapter;
 import com.digicoffer.lauditor.Documents.DocumentsListAdpater.GroupsListAdapter;
+import com.digicoffer.lauditor.Documents.DocumentsListAdpater.View_documents_adapter;
 import com.digicoffer.lauditor.Documents.models.ClientsModel;
 import com.digicoffer.lauditor.Documents.models.DocumentsModel;
-import com.digicoffer.lauditor.Documents.models.GroupsModel;
 import com.digicoffer.lauditor.Documents.models.MattersModel;
 import com.digicoffer.lauditor.Documents.models.ViewDocumentsModel;
 import com.digicoffer.lauditor.R;
@@ -68,12 +66,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
 
-public class Documents extends Fragment implements BottomSheetUploadFile.OnPhotoSelectedListner, AsyncTaskCompleteListener, DocumentsListAdapter.EventListener {
+public class Documents extends Fragment implements BottomSheetUploadFile.OnPhotoSelectedListner, AsyncTaskCompleteListener, DocumentsListAdapter.EventListener,View_documents_adapter.Eventlistner {
     Button btn_browse;
     BottomSheetUploadFile bottommSheetUploadDocument;
     private Bitmap mSelectedBitmap;
@@ -98,7 +93,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     CheckBox chk_select_all;
     String filename;
     ArrayList<DocumentsModel> selected_groups_list = new ArrayList<>();
-    RecyclerView rv_documents;
+    RecyclerView rv_documents,rv_display_view_docs;
     ArrayList<DocumentsModel> docsList = new ArrayList<>();
     AlertDialog progress_dialog;
     TextView tv_add_tag, tv_client, tv_firm, tv_enable_download, tv_disable_download, tv_edit_meta, tv_name,tv_client_view,tv_firm_view;
@@ -136,6 +131,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             tv_name = v.findViewById(R.id.tv_name);
             ll_matter = v.findViewById(R.id.ll_matter);
             ll_category = v.findViewById(R.id.ll_category);
+            rv_display_view_docs = v.findViewById(R.id.rv_display_view_docs);
             ll_groups = v.findViewById(R.id.ll_groups);
             tv_firm_view = v.findViewById(R.id.tv_firm_view);
             siv_upload_document = v.findViewById(R.id.upload_icon);
@@ -287,7 +283,6 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         ll_upload_docs.setVisibility(View.GONE);
         rv_documents.removeAllViews();
         hideviewFirmBackground();
-
         callViewDocumentWebservice();
         clearListData();
     }
@@ -296,7 +291,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         try {
             progress_dialog = AndroidUtils.get_progress(getActivity());
             JSONObject jsonObject = new JSONObject();
-            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/documents/"+DOCUMENT_TYPE_TAG, "VIEW_DOCUMENT", jsonObject.toString());
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/documents/client", "VIEW_DOCUMENT", jsonObject.toString());
         } catch (Exception e) {
             if (progress_dialog != null && progress_dialog.isShowing()) {
                 AndroidUtils.dismiss_dialog(progress_dialog);
@@ -982,7 +977,23 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 }else if(httpResult.getRequestType().equals("VIEW_DOCUMENT")){
                     JSONArray docs = result.getJSONArray("docs");
                     laodViewDocuments(docs);
+                }else if(httpResult.getRequestType().equals("Update Documents")){
+                    String msg = result.getString("msg");
+                    AndroidUtils.showToast(msg,getContext());
+                    view_docs_list.clear();
+                    rv_display_view_docs.removeAllViews();
+                    callViewDocumentWebservice();
+
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                AndroidUtils.showAlert(e.getMessage(),getContext());
+            }
+        }
+        else{
+            try {
+                JSONObject result = new JSONObject(httpResult.getResponseContent());
+                AndroidUtils.showAlert(result.getString("msg"), getContext());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -990,22 +1001,40 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     }
 
     private void laodViewDocuments(JSONArray docs) throws JSONException {
+        try {
+            for (int i = 0; i < docs.length(); i++) {
+                ViewDocumentsModel viewDocumentsModel = new ViewDocumentsModel();
+                JSONObject jsonObject = docs.getJSONObject(i);
+                viewDocumentsModel.setCreated(jsonObject.getString("created"));
+                viewDocumentsModel.setContent_type(jsonObject.getString("content_type"));
+                viewDocumentsModel.setDescription(jsonObject.getString("description"));
+                viewDocumentsModel.setExpiration_date(jsonObject.getString("expiration_date"));
+                viewDocumentsModel.setFilename(jsonObject.getString("filename"));
+                viewDocumentsModel.setId(jsonObject.getString("id"));
+                viewDocumentsModel.setIs_disabled(jsonObject.getBoolean("is_disabled"));
+                viewDocumentsModel.setIs_encrypted(jsonObject.getBoolean("is_encrypted"));
+                viewDocumentsModel.setIs_password(jsonObject.getBoolean("is_password"));
+                viewDocumentsModel.setName(jsonObject.getString("name"));
+                viewDocumentsModel.setOrigin(jsonObject.getString("origin"));
+                viewDocumentsModel.setUploaded_by(jsonObject.getString("uploaded_by"));
+                view_docs_list.add(viewDocumentsModel);
+            }
+            loadViewDocumentsRecyclerview();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            AndroidUtils.showAlert(e.getMessage(),getContext());
+        }
+    }
 
-        for(int i=0;i<docs.length();i++){
-            ViewDocumentsModel viewDocumentsModel = new ViewDocumentsModel();
-            JSONObject jsonObject = docs.getJSONObject(i);
-            viewDocumentsModel.setCreated(jsonObject.getString("created"));
-            viewDocumentsModel.setContent_type(jsonObject.getString("content_type"));
-            viewDocumentsModel.setDescription(jsonObject.getString("description"));
-            viewDocumentsModel.setExpiration_date(jsonObject.getString("expiration_date"));
-            viewDocumentsModel.setFilename(jsonObject.getString("filename"));
-            viewDocumentsModel.setId(jsonObject.getString("id"));
-            viewDocumentsModel.setIs_disabled(jsonObject.getBoolean("is_disabled"));
-            viewDocumentsModel.setIs_encrypted(jsonObject.getBoolean("is_encrypted"));
-            viewDocumentsModel.setIs_password(jsonObject.getBoolean("is_password"));
-            viewDocumentsModel.setName(jsonObject.getString("name"));
-            viewDocumentsModel.setOrigin(jsonObject.getString("origin"));
-            view_docs_list.add(viewDocumentsModel);
+    private void loadViewDocumentsRecyclerview() {
+        try {
+            rv_display_view_docs.setLayoutManager(new GridLayoutManager(getContext(), 1));
+            View_documents_adapter adapter = new View_documents_adapter(view_docs_list, this, getContext());
+            rv_display_view_docs.setAdapter(adapter);
+            rv_display_view_docs.setHasFixedSize(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            AndroidUtils.showAlert(e.getMessage(),getContext());
         }
     }
 
@@ -1201,7 +1230,6 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         View view_edit_tags = inflater.inflate(R.layout.edit_existing_tags, null);
         LinearLayout ll_existing_tags = view_edit_tags.findViewById(R.id.ll_view_tags);
         ImageView iv_close_existing_tags = view_edit_tags.findViewById(R.id.close_exisiting_tags);
-
         JSONArray jsonArray = new JSONArray();
         jsonArray.put(documentsModel.getTags());
         Iterator<String> iter = documentsModel.getTags().keys();
@@ -1300,6 +1328,65 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 loadRecyclerview(tag, "");
             }
         }
+    }
+
+    @Override
+    public void edit_document(ViewDocumentsModel viewDocumentsModel) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view_edit_documents = inflater.inflate(R.layout.edit_meta_data, null);
+        ImageView iv_cancel_edit_doc = view_edit_documents.findViewById(R.id.close_edit_docs);
+        AppCompatButton btn_close_edit_docs = view_edit_documents.findViewById(R.id.btn_cancel_edit_docs);
+        TextInputEditText tv_doc_name = view_edit_documents.findViewById(R.id.edit_doc_name);
+        TextInputEditText tv_description = view_edit_documents.findViewById(R.id.edit_description);
+        TextInputEditText tv_exp_date = view_edit_documents.findViewById(R.id.tv_expiration_date);
+        tv_doc_name.setText(viewDocumentsModel.getName());
+        tv_description.setText(viewDocumentsModel.getDescription());
+        tv_exp_date.setText(viewDocumentsModel.getExpiration_date());
+        AppCompatButton btn_save_tag = view_edit_documents.findViewById(R.id.btn_save_tag);
+        final AlertDialog dialog = dialogBuilder.create();
+        iv_cancel_edit_doc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        btn_close_edit_docs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        btn_save_tag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                callUpdateDocumentWebservice(tv_doc_name.getText().toString(),tv_description.getText().toString(),tv_exp_date,viewDocumentsModel.getId());
+            }
+        });
+        dialog.setCancelable(false);
+        dialog.setView(view_edit_documents);
+        dialog.show();
+    }
+
+    private void callUpdateDocumentWebservice(String name, String description, TextInputEditText expiration_date, String id) {
+        try {
+            progress_dialog = AndroidUtils.get_progress(getActivity());
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name",name);
+            jsonObject.put("description",description);
+            jsonObject.put("expiration_date",expiration_date);
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PATCH, "v3/document/"+id+"/update", "Update Documents", jsonObject.toString());
+        } catch (Exception e) {
+            if (progress_dialog != null && progress_dialog.isShowing()) {
+                AndroidUtils.dismiss_dialog(progress_dialog);
+            }
+        }
+    }
+
+    @Override
+    public void delete_document(ViewDocumentsModel viewDocumentsModel) {
+
     }
 }
 

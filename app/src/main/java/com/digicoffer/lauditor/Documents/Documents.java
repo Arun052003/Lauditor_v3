@@ -256,12 +256,16 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 @Override
                 public void onClick(View v) {
                     hideviewFirmBackground();
+                    DOCUMENT_TYPE_TAG = "client";
+                    callViewDocumentWebservice();
                 }
             });
             tv_firm_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     hideviewClientBackground();
+                    DOCUMENT_TYPE_TAG = "firm";
+                    callViewDocumentWebservice();
                 }
             });
             btn_upload.setOnClickListener(new View.OnClickListener() {
@@ -285,6 +289,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         ll_upload_docs.setVisibility(View.GONE);
         rv_documents.removeAllViews();
         hideviewFirmBackground();
+
         callViewDocumentWebservice();
         clearListData();
     }
@@ -293,7 +298,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         try {
             progress_dialog = AndroidUtils.get_progress(getActivity());
             JSONObject jsonObject = new JSONObject();
-            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/documents/client", "VIEW_DOCUMENT", jsonObject.toString());
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/documents/"+DOCUMENT_TYPE_TAG, "VIEW_DOCUMENT", jsonObject.toString());
         } catch (Exception e) {
             if (progress_dialog != null && progress_dialog.isShowing()) {
                 AndroidUtils.dismiss_dialog(progress_dialog);
@@ -1010,6 +1015,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
     private void laodViewDocuments(JSONArray docs) throws JSONException {
         try {
+            view_docs_list.clear();
             for (int i = 0; i < docs.length(); i++) {
                 ViewDocumentsModel viewDocumentsModel = new ViewDocumentsModel();
                 JSONObject jsonObject = docs.getJSONObject(i);

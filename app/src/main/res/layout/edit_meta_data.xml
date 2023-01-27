@@ -187,33 +187,23 @@
         </LinearLayout>
 
 
-        <com.google.android.material.textfield.TextInputLayout
-
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_weight="1"
-            android:background="@drawable/rectangle_grey_background"
-
-            app:boxBackgroundMode="none"
 
 
-            >
-
-            <com.google.android.material.textfield.TextInputEditText
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/tv_expiration_date"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="60dp"
                 android:layout_gravity="center"
                 android:drawableRight="@drawable/calendar_activity"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:hint="@string/expiration_date"
-                android:textColor="@color/Blue_text_color"
-                android:textColorHint="@color/grey_text_color"
-                android:gravity="top"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
+                android:gravity="left"
                 android:textSize="@dimen/Fifteen_dp" />
 
 
-        </com.google.android.material.textfield.TextInputLayout>
+
     </LinearLayout>
 
     <LinearLayout

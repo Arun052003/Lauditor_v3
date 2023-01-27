@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -61,14 +63,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.pgpainless.key.selection.key.util.And;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 
 public class Documents extends Fragment implements BottomSheetUploadFile.OnPhotoSelectedListner, AsyncTaskCompleteListener, DocumentsListAdapter.EventListener,View_documents_adapter.Eventlistner {
     Button btn_browse;
@@ -1300,8 +1307,39 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         AppCompatButton btn_close_edit_docs = view_edit_documents.findViewById(R.id.btn_cancel_edit_docs);
         TextInputEditText tv_doc_name = view_edit_documents.findViewById(R.id.edit_doc_name);
         TextInputEditText tv_description = view_edit_documents.findViewById(R.id.edit_description);
+        AppCompatButton tv_exp_date = view_edit_documents.findViewById(R.id.tv_expiration_date);
         tv_doc_name.setText(documentsModel.getName());
         tv_description.setText(documentsModel.getDescription());
+        Calendar myCalendar = Calendar.getInstance();
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, month);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+
+            private void updateLabel() {
+                String myFormat = "dd-MM-yyyy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                tv_exp_date.setText(sdf.format(myCalendar.getTime()));
+            }
+        };
+        tv_exp_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+                datePickerDialog.show();
+            }
+        });
+            Date c = Calendar.getInstance().getTime();
+            System.out.println("Current time => " + c);
+            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            String formattedDate = df.format(c);
+            tv_exp_date.setText(formattedDate);
+
         AppCompatButton btn_save_tag = view_edit_documents.findViewById(R.id.btn_save_tag);
         final AlertDialog dialog = dialogBuilder.create();
         iv_cancel_edit_doc.setOnClickListener(new View.OnClickListener() {
@@ -1362,10 +1400,48 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         AppCompatButton btn_close_edit_docs = view_edit_documents.findViewById(R.id.btn_cancel_edit_docs);
         TextInputEditText tv_doc_name = view_edit_documents.findViewById(R.id.edit_doc_name);
         TextInputEditText tv_description = view_edit_documents.findViewById(R.id.edit_description);
-        TextInputEditText tv_exp_date = view_edit_documents.findViewById(R.id.tv_expiration_date);
+        AppCompatButton tv_exp_date = view_edit_documents.findViewById(R.id.tv_expiration_date);
+//        TextInputEditText tv_expiration_date = view_edit_documents.findViewById(R.id.tv_expiration_date);
+        Calendar myCalendar = Calendar.getInstance();
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, month);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+
+            private void updateLabel() {
+                String myFormat = "dd-MM-yyyy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                tv_exp_date.setText(sdf.format(myCalendar.getTime()));
+            }
+        };
+        tv_exp_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+                datePickerDialog.show();
+            }
+        });if (viewDocumentsModel.getExpiration_date().equalsIgnoreCase("NA")||viewDocumentsModel.getExpiration_date().equalsIgnoreCase("")||viewDocumentsModel.getExpiration_date().equalsIgnoreCase(null)){
+            Date c = Calendar.getInstance().getTime();
+            System.out.println("Current time => " + c);
+
+            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            String formattedDate = df.format(c);
+            tv_exp_date.setText(formattedDate);
+        }else
+        {
+            String exp_date = viewDocumentsModel.getExpiration_date();
+            Date date_new = AndroidUtils.stringToDateTimeDefault(exp_date, "MMM dd YYYY");
+            String created = AndroidUtils.getDateToString(date_new, "dd-MM-yyyy");
+            tv_exp_date.setText(created);
+        }
         tv_doc_name.setText(viewDocumentsModel.getName());
         tv_description.setText(viewDocumentsModel.getDescription());
-        tv_exp_date.setText(viewDocumentsModel.getExpiration_date());
+
         AppCompatButton btn_save_tag = view_edit_documents.findViewById(R.id.btn_save_tag);
         final AlertDialog dialog = dialogBuilder.create();
         iv_cancel_edit_doc.setOnClickListener(new View.OnClickListener() {
@@ -1384,7 +1460,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
-                callUpdateDocumentWebservice(tv_doc_name.getText().toString(),tv_description.getText().toString(),tv_exp_date,viewDocumentsModel.getId());
+                callUpdateDocumentWebservice(tv_doc_name.getText().toString(),tv_description.getText().toString(),tv_exp_date.getText().toString(),viewDocumentsModel.getId());
             }
         });
         dialog.setCancelable(false);
@@ -1392,7 +1468,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         dialog.show();
     }
 
-    private void callUpdateDocumentWebservice(String name, String description, TextInputEditText expiration_date, String id) {
+    private void callUpdateDocumentWebservice(String name, String description, String expiration_date, String id) {
         try {
             progress_dialog = AndroidUtils.get_progress(getActivity());
             JSONObject jsonObject = new JSONObject();

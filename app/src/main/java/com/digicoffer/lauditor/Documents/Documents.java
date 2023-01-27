@@ -256,6 +256,8 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 @Override
                 public void onClick(View v) {
                     hideviewFirmBackground();
+                    rv_display_view_docs.removeAllViews();
+                    view_docs_list.clear();
                     DOCUMENT_TYPE_TAG = "client";
                     callViewDocumentWebservice();
                 }
@@ -264,6 +266,8 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 @Override
                 public void onClick(View v) {
                     hideviewClientBackground();
+                    view_docs_list.clear();
+                    rv_display_view_docs.removeAllViews();
                     DOCUMENT_TYPE_TAG = "firm";
                     callViewDocumentWebservice();
                 }
@@ -1043,6 +1047,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     private void loadViewDocumentsRecyclerview() {
         try {
             if (view_docs_list.size()==0){
+                rv_display_view_docs.removeAllViews();
                 AndroidUtils.showToast("No documents to display",getContext());
             }else {
                 rv_display_view_docs.setLayoutManager(new GridLayoutManager(getContext(), 1));
@@ -1394,7 +1399,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             jsonObject.put("name",name);
             jsonObject.put("description",description);
             jsonObject.put("expiration_date",expiration_date);
-            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PATCH, "v3/document/"+id+"/update", "Update Documents", jsonObject.toString());
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PUT, "v3/document/"+id, "Update Documents", jsonObject.toString());
         } catch (Exception e) {
             if (progress_dialog != null && progress_dialog.isShowing()) {
                 AndroidUtils.dismiss_dialog(progress_dialog);

@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.digicoffer.lauditor.Documents.DocumentsListAdpater.DocumentsListAdapter;
 import com.digicoffer.lauditor.Documents.DocumentsListAdpater.GroupsListAdapter;
 import com.digicoffer.lauditor.Documents.DocumentsListAdpater.View_documents_adapter;
@@ -52,7 +53,11 @@ import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.digicoffer.lauditor.Webservice.WebServiceHelper;
 import com.digicoffer.lauditor.common.AndroidUtils;
+import com.digicoffer.lauditor.common.Constants;
 import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
+import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnErrorListener;
+import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -72,9 +77,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 public class Documents extends Fragment implements BottomSheetUploadFile.OnPhotoSelectedListner, AsyncTaskCompleteListener, DocumentsListAdapter.EventListener,View_documents_adapter.Eventlistner {
@@ -86,6 +93,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     private ImageView imageView;
     boolean[] selectedLanguage;
     String DOCUMENT_TYPE_TAG = "client";
+    String CONTENT_TYPE = "";
     String UPLOAD_TAG = "Client";
     DocumentsListAdapter adapter;
     ArrayList<ViewDocumentsModel> view_docs_list = new ArrayList<>();
@@ -121,6 +129,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     ArrayList<ClientsModel> updatedClients = new ArrayList<>();
     TextInputEditText tv_selected_file;
     TextInputLayout tl_selected_file;
+    PDFView pdfView;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
@@ -1008,6 +1017,13 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                     view_docs_list.clear();
                     rv_display_view_docs.removeAllViews();
                     callViewDocumentWebservice();
+                }else if(httpResult.getRequestType().equals("Display Documents")){
+                    JSONObject jsonObject = result.getJSONObject("data");
+                    String url = jsonObject.getString("url");
+                    loadDisplayDocuments(url);
+
+
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -1021,6 +1037,75 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void loadDisplayDocuments(String url) {
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.view_documents, null);
+        ImageView iv_image = view.findViewById(R.id.doc_image);
+        pdfView = view.findViewById(R.id.pdfview);
+        ImageView iv_close_edit_docs = view.findViewById(R.id.close_edit_docs);
+        List<String> list = new ArrayList<String>(Arrays.asList(CONTENT_TYPE.split("/")));
+        if (list.get(1).equalsIgnoreCase("pdf")){
+            loadWeb(pdfView,iv_image);
+        }
+        else{
+            pdfView.setVisibility(View.GONE);
+            iv_image.setVisibility(View.VISIBLE);
+            Glide.with(getContext())
+                    .load(url)
+                    .placeholder(R.drawable.progress_animation)
+                    .centerCrop()
+                    .into(iv_image);
+        }
+        final AlertDialog dialog = dialogBuilder.create();
+        iv_close_edit_docs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.setCancelable(false);
+        dialog.setView(view);
+        dialog.show();
+    }
+
+    private void loadWeb(PDFView  pdf_view, ImageView image_view) {
+        image_view.setVisibility(View.GONE);
+        pdf_view.setVisibility(View.VISIBLE);
+
+        try {
+            String path = "";//result.getString("path");
+            path= Constants.pdfFilePath;
+            pdf_view.fromFile(new File(path))
+                    .defaultPage(0)
+                    .enableSwipe(true)
+                    .onLoad(new OnLoadCompleteListener() {
+                        @Override
+                        public void loadComplete(int nbPages) {
+                            pdf_view.setVisibility(View.VISIBLE);
+                            image_view.setVisibility(View.GONE);
+                        }
+                    })
+                    .onError(new OnErrorListener() {
+                        @SuppressLint("ResourceAsColor")
+                        @Override
+                        public void onError(Throwable t) {
+                            pdf_view.setVisibility(View.GONE);
+                            image_view.setVisibility(View.VISIBLE);
+                            Glide.with(getContext())
+                                    .load(R.drawable.pdf_icon_documents)
+                                    .placeholder(R.drawable.progress_animation)
+                                    .centerCrop()
+                                    .into(image_view);
+                        }
+                    })
+                    .load();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -1513,6 +1598,26 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
             dialog.show();
         } catch (Exception e) {
             AndroidUtils.showToast(e.getMessage(), getContext());
+        }
+    }
+
+    @Override
+    public void Display_Document(ViewDocumentsModel viewDocumentsModel) {
+        CONTENT_TYPE = viewDocumentsModel.getContent_type();
+        callDisplayDocumentWebservice(viewDocumentsModel.getId());
+
+
+    }
+
+    private void callDisplayDocumentWebservice(String id) {
+        try {
+            progress_dialog = AndroidUtils.get_progress(getActivity());
+            JSONObject jsonObject = new JSONObject();
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/document/"+id+"/view", "Display Documents", jsonObject.toString());
+        } catch (Exception e) {
+            if (progress_dialog != null && progress_dialog.isShowing()) {
+                AndroidUtils.dismiss_dialog(progress_dialog);
+            }
         }
     }
 

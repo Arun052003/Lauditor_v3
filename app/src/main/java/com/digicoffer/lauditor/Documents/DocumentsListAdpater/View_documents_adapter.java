@@ -11,8 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.digicoffer.lauditor.Documents.models.ViewDocumentsModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
@@ -35,6 +33,8 @@ public class View_documents_adapter extends RecyclerView.Adapter<View_documents_
         void edit_document(ViewDocumentsModel viewDocumentsModel);
 
         void delete_document(ViewDocumentsModel viewDocumentsModel);
+
+        void Display_Document(ViewDocumentsModel viewDocumentsModel);
     }
 
     @NonNull
@@ -67,6 +67,12 @@ public class View_documents_adapter extends RecyclerView.Adapter<View_documents_
                 @Override
                 public void onClick(View v) {
                     eventlistner.delete_document(viewDocumentsModel);
+                }
+            });
+            holder.iv_view_document.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    eventlistner.Display_Document(viewDocumentsModel);
                 }
             });
 //        if (viewDocumentsModel.getContent_type().equals("image/jpeg")) {
@@ -103,7 +109,7 @@ public class View_documents_adapter extends RecyclerView.Adapter<View_documents_
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         com.google.android.material.imageview.ShapeableImageView siv_profile_icon;
-        ImageView iv_doc_image, iv_edit_document, uv_delete_document;
+        ImageView iv_doc_image, iv_edit_document, uv_delete_document,iv_view_document;
         TextView tv_document_display_name, tv_client_name_one, tv_image_name,tv_Expiration_date, tv_client_name, tv_doc_description,tv_created_date;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -119,7 +125,7 @@ public class View_documents_adapter extends RecyclerView.Adapter<View_documents_
             tv_doc_description = itemView.findViewById(R.id.tv_doc_description);
             tv_created_date = itemView.findViewById(R.id.tv_created_date);
             tv_Expiration_date = itemView.findViewById(R.id.tv_Expiration_date);
-            
+            iv_view_document = itemView.findViewById(R.id.iv_edit_view);
         }
     }
 }

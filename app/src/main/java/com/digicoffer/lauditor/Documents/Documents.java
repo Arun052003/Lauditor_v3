@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -59,6 +60,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pgpainless.key.selection.key.util.And;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -984,6 +986,12 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                     rv_display_view_docs.removeAllViews();
                     callViewDocumentWebservice();
 
+                }else if(httpResult.getRequestType().equals("Delete Documents")){
+                    String msg = result.getString("msg");
+                    AndroidUtils.showToast(msg,getContext());
+                    view_docs_list.clear();
+                    rv_display_view_docs.removeAllViews();
+                    callViewDocumentWebservice();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -1028,10 +1036,14 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
     private void loadViewDocumentsRecyclerview() {
         try {
-            rv_display_view_docs.setLayoutManager(new GridLayoutManager(getContext(), 1));
-            View_documents_adapter adapter = new View_documents_adapter(view_docs_list, this, getContext());
-            rv_display_view_docs.setAdapter(adapter);
-            rv_display_view_docs.setHasFixedSize(true);
+            if (view_docs_list.size()==0){
+                AndroidUtils.showToast("No documents to display",getContext());
+            }else {
+                rv_display_view_docs.setLayoutManager(new GridLayoutManager(getContext(), 1));
+                View_documents_adapter adapter = new View_documents_adapter(view_docs_list, this, getContext());
+                rv_display_view_docs.setAdapter(adapter);
+                rv_display_view_docs.setHasFixedSize(true);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             AndroidUtils.showAlert(e.getMessage(),getContext());
@@ -1386,7 +1398,50 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
     @Override
     public void delete_document(ViewDocumentsModel viewDocumentsModel) {
+        try {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View view = inflater.inflate(R.layout.delete_relationship, null);
+            TextInputEditText tv_confirmation = view.findViewById(R.id.et_confirmation);
+            tv_confirmation.setText("Are you sure you want to delete " +viewDocumentsModel.getName() + "?");
+            AppCompatButton bt_yes = view.findViewById(R.id.btn_yes);
+            AppCompatButton btn_no = view.findViewById(R.id.btn_No);
+            final AlertDialog dialog = dialogBuilder.create();
+//            ad_dialog_delete = dialog;
+            btn_no.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            bt_yes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                    callDeleteDocumentWebservice(viewDocumentsModel.getId());
+                }
+            });
 
+            dialog.setView(view);
+            dialog.show();
+        } catch (Exception e) {
+            AndroidUtils.showToast(e.getMessage(), getContext());
+        }
+    }
+
+    private void callDeleteDocumentWebservice(String id) {
+        try {
+            progress_dialog = AndroidUtils.get_progress(getActivity());
+            JSONObject jsonObject = new JSONObject();
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.put(id);
+            jsonObject.put("docids",jsonArray);
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/document/delete", "Delete Documents", jsonObject.toString());
+        } catch (Exception e) {
+            if (progress_dialog != null && progress_dialog.isShowing()) {
+                AndroidUtils.dismiss_dialog(progress_dialog);
+            }
+        }
     }
 }
 

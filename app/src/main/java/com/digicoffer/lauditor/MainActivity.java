@@ -31,6 +31,7 @@ import com.digicoffer.lauditor.ClientRelationships.ClientRelationship;
 import com.digicoffer.lauditor.Dashboard.Dashboard;
 import com.digicoffer.lauditor.Documents.Documents;
 import com.digicoffer.lauditor.Groups.Groups;
+import com.digicoffer.lauditor.Matter.Matter;
 import com.digicoffer.lauditor.Members.Members;
 import com.digicoffer.lauditor.common.Constants;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -101,6 +102,17 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Fragment fragment = new Groups();
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.id_framelayout, fragment);
+                    ft.addToBackStack("current_fragment").commit();
+//                    ft.commit();
+                    closeMenu();
+                }
+            });
+            fab_matter.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Fragment fragment = new Matter();
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.id_framelayout, fragment);
                     ft.addToBackStack("current_fragment").commit();

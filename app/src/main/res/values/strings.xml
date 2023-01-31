@@ -59,4 +59,5 @@
     <string name="select_document_type">Select Document Type</string>
     <string name="created">Created:</string>
     <string name="expiration">Expiration:</string>
+    <string name="documents">Documents</string>
 </resources>

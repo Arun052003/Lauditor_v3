@@ -79,4 +79,8 @@
     <string name="pending">Pending</string>
     <string name="add_opponent_advocate">Add Opponent Advocate</string>
     <string name="add">Add</string>
+    <string name="add_groups">Add Groups</string>
+    <string name="add_clients">Add Clients</string>
+    <string name="assigned_team_members">Assigned Team Members</string>
+    <string name="assign_team_members">Assign Team Members</string>
 </resources>

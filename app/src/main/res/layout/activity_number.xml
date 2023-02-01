@@ -59,11 +59,9 @@
         android:orientation="horizontal"
         android:padding="5dp"
         android:paddingTop="@dimen/twenty_dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-
         app:layout_constraintTop_toBottomOf="@id/ll_matter_type"
         app:layout_constraintVertical_bias="0.03">
 
@@ -95,7 +93,7 @@
         </TextView>
     </androidx.appcompat.widget.LinearLayoutCompat>
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/upload_view"
+        android:id="@+id/create_matter_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -117,7 +115,7 @@
             android:gravity="center">
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/upload_icon"
+                android:id="@+id/siv_matter_icon"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
@@ -134,11 +132,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/upload_icon"
-
+                android:layout_below="@+id/siv_matter_icon"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:gravity="left"
-
                 android:text="Matter Information">
 
             </TextView>
@@ -154,7 +150,7 @@
             android:gravity="center">
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/view_icon"
+                android:id="@+id/siv_groups"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
@@ -171,7 +167,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/view_icon"
+                android:layout_below="@+id/siv_groups"
                 android:layout_marginLeft="15dp"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:gravity="center"
@@ -189,7 +185,7 @@
             android:gravity="center">
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/view_icon"
+                android:id="@+id/siv_documents"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
@@ -206,8 +202,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/view_icon"
-
+                android:layout_below="@+id/siv_documents"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:gravity="left"
                 android:text="@string/documents">
@@ -215,5 +210,18 @@
             </TextView>
 
         </RelativeLayout>
+
     </androidx.appcompat.widget.LinearLayoutCompat>
+    <FrameLayout
+        android:id="@+id/child_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/create_matter_view"
+        app:layout_constraintVertical_bias="0.016" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

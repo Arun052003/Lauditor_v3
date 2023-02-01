@@ -16,7 +16,7 @@ public class ChildFrgament extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.child_one, container, false);
+        View view = inflater.inflate(R.layout.matter_information, container, false);
         return  view;
     }
 }

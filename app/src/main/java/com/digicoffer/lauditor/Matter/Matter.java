@@ -25,7 +25,7 @@ public class Matter extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_number, container, false);
+        View view = inflater.inflate(R.layout.create_matter, container, false);
 //        siv_upload = view.findViewById(R.id.upload_icon);
 //        siv_view = view.findViewById(R.id.view_icon);
 //        siv_upload.setOnClickListener(new View.OnClickListener() {
@@ -49,23 +49,23 @@ public class Matter extends Fragment {
 //                childFragmentManager.beginTransaction().add(R.id.child_container, childFragment).commit();
 //            }
 //        });
-        try {
-            scrollView = view.findViewById(R.id.scroll_view);
-
-            List<String> items = new ArrayList<>();
-            items.add("Item 1");
-            items.add("Item 2");
-            items.add("Item 3");
-
-            NumberAdapter adapter = new NumberAdapter(getContext(), items);
-            for (int i = 0; i < adapter.getCount(); i++) {
-                View item = adapter.getView(i, null, scrollView);
-                scrollView.addView(item);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            AndroidUtils.showAlert(e.getMessage(),getContext());
-        }
+//        try {
+//            scrollView = view.findViewById(R.id.scroll_view);
+//
+//            List<String> items = new ArrayList<>();
+//            items.add("Item 1");
+//            items.add("Item 2");
+//            items.add("Item 3");
+//
+//            NumberAdapter adapter = new NumberAdapter(getContext(), items);
+//            for (int i = 0; i < adapter.getCount(); i++) {
+//                View item = adapter.getView(i, null, scrollView);
+//                scrollView.addView(item);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            AndroidUtils.showAlert(e.getMessage(),getContext());
+//        }
         return view;
     }
 

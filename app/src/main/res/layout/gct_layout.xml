@@ -10,13 +10,14 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_client_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+
             android:layout_marginBottom="20dp"
             android:elevation="50dp"
             android:padding="5dp"
@@ -29,7 +30,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp">
+                android:layout_margin="10dp">
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/matter_title"
@@ -39,6 +40,7 @@
                     android:fontFamily="sans-serif-condensed-medium"
                     android:gravity="start|center_vertical"
                     android:padding="5dp"
+                    android:textSize="@dimen/twenty_dp"
                     android:enabled="false"
                     android:text="Matter Title"
                     android:textAllCaps="false"
@@ -128,6 +130,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:visibility="gone"
                     android:layout_below="@id/ll_add_groups"
                     android:orientation="vertical">
 
@@ -236,6 +239,7 @@
                     android:id="@+id/selected_clients"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     android:layout_weight="1"
                     android:layout_below="@id/ll_add_clients"
                     android:orientation="vertical">
@@ -346,6 +350,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:visibility="gone"
                     android:layout_below="@id/ll_assign_team_members"
                     android:orientation="vertical">
 

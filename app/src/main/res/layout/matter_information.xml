@@ -84,8 +84,8 @@
                             android:layout_gravity="center"
                             android:enabled="true"
                             android:fontFamily="sans-serif-condensed-medium"
-                            android:padding="15dp"
-                            android:text="@string/matter_title"
+                            android:padding="5dp"
+                            android:hint="@string/matter_title"
                             android:textColor="@color/Blue_text_color"
                             android:textSize="15dp" />
 
@@ -146,8 +146,8 @@
                             android:layout_gravity="center"
                             android:enabled="true"
                             android:fontFamily="sans-serif-condensed-medium"
-                            android:padding="15dp"
-                            android:text="@string/matter_num"
+                            android:padding="5dp"
+                            android:hint="@string/matter_num"
                             android:textColor="@color/Blue_text_color"
                             android:textSize="15dp" />
 
@@ -208,8 +208,8 @@
                             android:layout_gravity="center"
                             android:enabled="true"
                             android:fontFamily="sans-serif-condensed-medium"
-                            android:padding="15dp"
-                            android:text="@string/case_type"
+                            android:padding="5dp"
+                            android:hint="@string/case_type"
                             android:textColor="@color/Blue_text_color"
                             android:textSize="15dp" />
 
@@ -336,7 +336,7 @@
                             android:gravity="top"
                             android:hint="@string/date_of_filing"
                             android:maxLines="4"
-                            android:padding="15dp"
+                            android:padding="5dp"
                             android:textColor="@color/Blue_text_color"
                             android:textSize="15dp" />
 
@@ -400,7 +400,7 @@
                             android:gravity="top"
                             android:hint="@string/court"
                             android:maxLines="4"
-                            android:padding="15dp"
+                            android:padding="5dp"
                             android:textColor="@color/Blue_text_color"
                             android:textSize="15dp" />
 
@@ -464,7 +464,7 @@
                             android:gravity="top"
                             android:hint="@string/judge"
                             android:maxLines="4"
-                            android:padding="15dp"
+                            android:padding="5dp"
                             android:textColor="@color/Blue_text_color"
                             android:textSize="15dp" />
 
@@ -525,7 +525,7 @@
                             android:layout_weight="1"
                             android:background="@drawable/button_left_green_round_background"
                             android:fontFamily="sans-serif-condensed-medium"
-                            android:padding="20dp"
+                            android:padding="10dp"
                             android:text="@string/high"
                             android:textColor="@color/black"
                             android:textSize="@dimen/Fifteen_dp">
@@ -539,7 +539,7 @@
                             android:layout_weight="1"
                             android:background="@drawable/radiobutton_centre_background"
                             android:fontFamily="sans-serif-condensed-medium"
-                            android:padding="20dp"
+                            android:padding="10dp"
                             android:text="@string/medium"
                             android:textColor="@color/black"
                             android:textSize="@dimen/Fifteen_dp">
@@ -553,7 +553,7 @@
                             android:layout_weight="1"
                             android:background="@drawable/button_right_round_background"
                             android:fontFamily="sans-serif-condensed-medium"
-                            android:padding="20dp"
+                            android:padding="10dp"
                             android:text="@string/low"
                             android:textColor="@color/black"
                             android:textSize="@dimen/Fifteen_dp">
@@ -615,7 +615,7 @@
                             android:layout_weight="1"
                             android:background="@drawable/button_left_green_round_background"
                             android:fontFamily="sans-serif-condensed-medium"
-                            android:padding="20dp"
+                            android:padding="10dp"
 
                             android:text="@string/active"
                             android:textColor="@color/black"
@@ -631,7 +631,7 @@
                             android:layout_weight="1"
                             android:background="@drawable/button_right_round_background"
                             android:fontFamily="sans-serif-condensed-medium"
-                            android:padding="20dp"
+                            android:padding="10dp"
                             android:text="@string/pending"
                             android:textColor="@color/black"
                             android:textSize="@dimen/Fifteen_dp">

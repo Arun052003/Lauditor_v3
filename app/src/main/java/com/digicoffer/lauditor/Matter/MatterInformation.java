@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.digicoffer.lauditor.R;
 
-public class ChildFrgament extends Fragment {
+public class MatterInformation extends Fragment {
 
     @Nullable
     @Override

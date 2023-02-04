@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.digicoffer.lauditor.R;
 
-public class ChildFrgamentTwo extends Fragment {
+public class GCT extends Fragment {
 
 
     @Nullable

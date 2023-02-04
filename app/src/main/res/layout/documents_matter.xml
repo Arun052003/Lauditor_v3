@@ -33,12 +33,13 @@
         android:id="@+id/matter_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@drawable/rectangular_white_background"
         android:fontFamily="sans-serif-condensed-medium"
         android:gravity="start|center_vertical"
         android:padding="5dp"
         android:enabled="false"
-        android:text="Matter Title"
+        android:textSize="@dimen/twenty_dp"
+        android:text="@string/matter_title"
         android:textAllCaps="false"
         android:textColor="@color/Blue_text_color">
 
@@ -76,7 +77,7 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/button_left_background"
                 android:fontFamily="sans-serif-condensed-medium"
-                android:padding="20dp"
+                android:padding="10dp"
                 android:text="@string/document_library"
                 android:textColor="@color/black"
                 android:textSize="@dimen/Fifteen_dp">
@@ -89,7 +90,7 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/button_right_background"
                 android:fontFamily="sans-serif-condensed-medium"
-                android:padding="20dp"
+                android:padding="10dp"
                 android:text="@string/device_drive"
                 android:textColor="@color/black"
                 android:textSize="@dimen/Fifteen_dp">
@@ -229,7 +230,7 @@
             <Button
                 android:id="@+id/btn_browse"
                 android:layout_width="200dp"
-                android:layout_height="70dp"
+                android:layout_height="60dp"
                 android:layout_margin="5dp"
                 android:layout_weight="0.7"
                 android:text="Browse">

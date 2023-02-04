@@ -26,7 +26,7 @@
             android:id="@+id/tv_legal_matter"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="@drawable/button_left_background"
+            android:background="@drawable/button_left_green_background"
             android:fontFamily="sans-serif-condensed-medium"
             android:padding="10dp"
             android:text="Legal Matter"
@@ -70,7 +70,7 @@
             android:id="@+id/tv_create_matter"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="@drawable/button_left_background"
+            android:background="@drawable/button_left_green_background"
             android:fontFamily="sans-serif-condensed-medium"
             android:padding="10dp"
             android:text="Create"
@@ -98,9 +98,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingStart="50dp"
+
         android:paddingTop="@dimen/twenty_dp"
-        android:paddingEnd="50dp"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.593"
         app:layout_constraintStart_toStartOf="parent"
@@ -117,9 +117,10 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/siv_matter_icon"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_weight="1"
+                android:layout_marginLeft="25dp"
                 android:background="@color/green_count_color"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:src="@mipmap/single_document_icon_white"
@@ -131,11 +132,14 @@
             </com.google.android.material.imageview.ShapeableImageView>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
                 android:layout_below="@+id/siv_matter_icon"
                 android:fontFamily="sans-serif-condensed-medium"
-                android:gravity="left"
+                android:gravity="center"
+
+                android:textColor="@color/white"
+                android:lineSpacingMultiplier="1.2"
                 android:text="Matter Information">
 
             </TextView>
@@ -152,9 +156,10 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/siv_groups"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_weight="1"
+                android:layout_marginLeft="45dp"
                 android:background="@color/green_count_color"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:src="@mipmap/groups_material_icon"
@@ -166,13 +171,14 @@
             </com.google.android.material.imageview.ShapeableImageView>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
                 android:layout_below="@+id/siv_groups"
-                android:layout_marginLeft="15dp"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:gravity="center"
-                android:text="View">
+                android:textColor="@color/white"
+                android:lineSpacingExtra="1dp"
+                android:text="Groups,Clients and Team Members">
 
             </TextView>
 
@@ -187,9 +193,10 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/siv_documents"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_weight="1"
+                android:layout_marginLeft="25dp"
                 android:background="@color/green_count_color"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:src="@mipmap/documents_copy"
@@ -201,11 +208,12 @@
             </com.google.android.material.imageview.ShapeableImageView>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
                 android:layout_below="@+id/siv_documents"
                 android:fontFamily="sans-serif-condensed-medium"
-                android:gravity="left"
+                android:gravity="center"
+                android:textColor="@color/white"
                 android:text="@string/documents">
 
             </TextView>

@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
     android:background="@color/Blue_text_color"
     tools:context=".MainActivity">
 
@@ -117,7 +116,7 @@
 
                     <Button
                         android:id="@+id/btn_add_groups"
-                        android:layout_width="100dp"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:text="@string/add"
                         android:textAllCaps="false"
@@ -227,7 +226,7 @@
 
                     <Button
                         android:id="@+id/btn_add_clients"
-                        android:layout_width="100dp"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:text="@string/add"
                         android:textAllCaps="false"
@@ -337,7 +336,7 @@
 
                     <Button
                         android:id="@+id/btn_assigned_team_members"
-                        android:layout_width="100dp"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:text="@string/add"
                         android:textAllCaps="false"

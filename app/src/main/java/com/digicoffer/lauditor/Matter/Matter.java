@@ -39,6 +39,24 @@ public class Matter extends Fragment {
 //        siv_upload = view.findViewById(R.id.upload_icon);
 //        siv_view = view.findViewById(R.id.view_icon);
         loadMatterInformation();
+        tv_legal_matter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadLegalMatter();
+            }
+        });
+        tv_general_matter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadGeneralMatter();
+            }
+        });
+        tv_create.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadCreateUI();
+            }
+        });
         siv_matter_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,6 +95,17 @@ public class Matter extends Fragment {
 //            AndroidUtils.showAlert(e.getMessage(),getContext());
 //        }
         return view;
+    }
+
+    private void loadLegalMatter() {
+        tv_legal_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+        tv_general_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+
+    }
+    private void loadGeneralMatter(){
+        tv_legal_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+        tv_general_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+
     }
 
     private void loadDocuments() {

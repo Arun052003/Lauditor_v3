@@ -39,6 +39,7 @@
                     android:fontFamily="sans-serif-condensed-medium"
                     android:gravity="start|center_vertical"
                     android:padding="5dp"
+                    android:enabled="false"
                     android:text="Matter Title"
                     android:textAllCaps="false"
                     android:textColor="@color/Blue_text_color">

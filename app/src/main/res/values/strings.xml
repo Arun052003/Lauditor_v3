@@ -83,4 +83,8 @@
     <string name="add_clients">Add Clients</string>
     <string name="assigned_team_members">Assigned Team Members</string>
     <string name="assign_team_members">Assign Team Members</string>
+    <string name="general_matter">General Matter</string>
+    <string name="document_library">Document Library</string>
+    <string name="device_drive">Device/Drive</string>
+    <string name="add_documents">Add Documents</string>
 </resources>

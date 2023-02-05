@@ -33,6 +33,7 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
     TextView tv_high_priority, tv_medium_priority, tv_low_priority, tv_status_active, tv_status_pending;
     Button btn_add_advocate;
     ArrayList<AdvocateModel> advocates_list = new ArrayList<>();
+    ArrayList<MatterModel> matterArraylist ;
     AppCompatButton btn_cancel_save, btn_create;
     LinearLayout ll_add_advocate;
     TextView tv_opponent_name;
@@ -70,7 +71,7 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
         btn_create.setOnClickListener(this);
         ll_add_advocate = view.findViewById(R.id.ll_add_advocate);
         matter = (Matter) getParentFragment();
-        ArrayList<MatterModel> matterArraylist = matter.getMatter_arraylist();
+      matterArraylist  = matter.getMatter_arraylist();
 
         return view;
 
@@ -145,6 +146,7 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
                     e.printStackTrace();
                 }
                 matterModel.setOpponent_advocate(jsonArray);
+                matterArraylist.add(matterModel);
                 matter.loadGCT();
             }
     }

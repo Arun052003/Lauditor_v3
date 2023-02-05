@@ -87,4 +87,5 @@
     <string name="document_library">Document Library</string>
     <string name="device_drive">Device/Drive</string>
     <string name="add_documents">Add Documents</string>
+    <string name="phone_number">Phone Number</string>
 </resources>

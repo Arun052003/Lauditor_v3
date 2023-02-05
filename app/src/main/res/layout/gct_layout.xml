@@ -16,7 +16,7 @@
             android:id="@+id/cv_client_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+            android:layout_margin="5dp"
             android:layout_marginBottom="20dp"
             android:elevation="50dp"
             android:padding="5dp"
@@ -104,14 +104,18 @@
                         app:boxBackgroundMode="none">
 
                         >
-
-                        <Spinner
+                        <TextView
                             android:id="@+id/at_add_groups"
                             android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_weight="1"
-                            android:spinnerMode="dropdown" />
-
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:enabled="true"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:padding="15dp"
+                            android:drawableRight="@drawable/spinner_drop_down"
+                            android:text="Select Groups"
+                            android:textColor="@color/Blue_text_color"
+                            android:textSize="15dp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <Button
@@ -215,13 +219,18 @@
 
                         >
 
-                        <Spinner
+                        <TextView
                             android:id="@+id/at_add_clients"
                             android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_weight="1"
-                            android:spinnerMode="dropdown" />
-
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:enabled="true"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:padding="15dp"
+                            android:drawableRight="@drawable/spinner_drop_down"
+                            android:text="Select Clients"
+                            android:textColor="@color/Blue_text_color"
+                            android:textSize="15dp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <Button
@@ -325,13 +334,19 @@
 
                         >
 
-                        <Spinner
+
+                        <TextView
                             android:id="@+id/at_assigned_team_members"
                             android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_weight="1"
-                            android:spinnerMode="dropdown" />
-
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:enabled="true"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:padding="15dp"
+                            android:drawableRight="@drawable/spinner_drop_down"
+                            android:text="Assign Team Members"
+                            android:textColor="@color/Blue_text_color"
+                            android:textSize="15dp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <Button

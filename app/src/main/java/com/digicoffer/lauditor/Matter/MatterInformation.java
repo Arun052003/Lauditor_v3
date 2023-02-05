@@ -108,7 +108,6 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         String formattedDate = df.format(c);
         tv_dof.setText(formattedDate);
-
         matterArraylist  = matter.getMatter_arraylist();
 
       if (matterArraylist.size()!=0) {

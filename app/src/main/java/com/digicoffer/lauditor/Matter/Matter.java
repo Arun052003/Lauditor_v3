@@ -57,6 +57,12 @@ public class Matter extends Fragment {
                 loadCreateUI();
             }
         });
+        tv_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadViewUI();
+            }
+        });
         siv_matter_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,6 +103,17 @@ public class Matter extends Fragment {
         return view;
     }
 
+    private void loadViewUI() {
+        tv_create.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+        tv_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+
+    }
+
+    private void loadCreateUI() {
+        tv_create.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+        tv_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+    }
+
     private void loadLegalMatter() {
         tv_legal_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_general_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
@@ -105,7 +122,6 @@ public class Matter extends Fragment {
     private void loadGeneralMatter(){
         tv_legal_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_general_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
-
     }
 
     private void loadDocuments() {

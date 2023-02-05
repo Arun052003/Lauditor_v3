@@ -4,6 +4,7 @@ import org.json.JSONArray;
 
 public class MatterModel {
     String matter_title;
+
     String case_number;
     String case_type;
     String description;

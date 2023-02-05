@@ -1,12 +1,14 @@
 package com.digicoffer.lauditor.Matter;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,8 +27,13 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pgpainless.key.selection.key.util.And;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class MatterInformation extends Fragment implements View.OnClickListener {
     TextInputEditText tv_matter_title, tv_matter_num, tv_case_type, tv_matter_description, tv_dof, tv_court, tv_judge;
@@ -36,6 +43,7 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
     ArrayList<MatterModel> matterArraylist ;
     AppCompatButton btn_cancel_save, btn_create;
     LinearLayout ll_add_advocate;
+    JSONArray existing_opponents;
     TextView tv_opponent_name;
     String CASE_PRIORITY = "High";
     String STATUS = "Active";
@@ -71,7 +79,88 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
         btn_create.setOnClickListener(this);
         ll_add_advocate = view.findViewById(R.id.ll_add_advocate);
         matter = (Matter) getParentFragment();
-      matterArraylist  = matter.getMatter_arraylist();
+        Calendar myCalendar = Calendar.getInstance();
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, month);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+
+            private void updateLabel() {
+                String myFormat = "dd-MM-yyyy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                tv_dof.setText(sdf.format(myCalendar.getTime()));
+            }
+        };
+        tv_dof.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+                datePickerDialog.show();
+            }
+        });
+        Date c = Calendar.getInstance().getTime();
+        System.out.println("Current time => " + c);
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String formattedDate = df.format(c);
+        tv_dof.setText(formattedDate);
+
+        matterArraylist  = matter.getMatter_arraylist();
+
+      if (matterArraylist.size()!=0) {
+          for (int i = 0; i < matterArraylist.size(); i++) {
+              MatterModel matterModel = matterArraylist.get(i);
+              tv_matter_title.setText(matterModel.getMatter_title());
+              tv_matter_num.setText(matterModel.getCase_number());
+              tv_case_type.setText(matterModel.getCase_type());
+              tv_matter_description.setText(matterModel.getDescription());
+              tv_dof.setText(matterModel.getDate_of_filing());
+              tv_court.setText(matterModel.getCourt());
+              tv_judge.setText(matterModel.getJudge());
+              CASE_PRIORITY = matterModel.getCase_priority();
+              STATUS = matterModel.getStatus();
+              existing_opponents = matterArraylist.get(i).getOpponent_advocate();
+//            for (int j=0;)
+          }
+          if (CASE_PRIORITY == "High") {
+              loadHighPriorityUI();
+          } else if (CASE_PRIORITY == "Medium") {
+              loadMediumPriorityUI();
+          } else {
+              loadLowPriorityUI();
+          }
+
+          if (STATUS == "Active") {
+              loadActiveUI();
+          } else {
+              loadPendingUI();
+          }
+
+          try {
+              for (int i = 0; i < existing_opponents.length(); i++) {
+                  try {
+                      JSONObject jsonObject = existing_opponents.getJSONObject(i);
+                      AdvocateModel advocateModel = new AdvocateModel();
+                      advocateModel.setAdvocate_name(jsonObject.getString("name"));
+                      advocateModel.setNumber(jsonObject.getString("phone"));
+                      advocateModel.setEmail(jsonObject.getString("email"));
+                      advocates_list.add(advocateModel);
+                  } catch (JSONException e) {
+                      e.printStackTrace();
+                  }
+
+              }
+              loadOpponentsList();
+          } catch (Exception e) {
+              e.printStackTrace();
+              AndroidUtils.showAlert(e.getMessage(),getContext());
+          }
+      }
+
 
         return view;
 

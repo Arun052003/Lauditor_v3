@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.digicoffer.lauditor.Matter.Models.MatterModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
 
@@ -23,8 +24,11 @@ public class Matter extends Fragment {
 
     com.google.android.material.imageview.ShapeableImageView siv_matter_icon,siv_groups,siv_documents;
     private HorizontalScrollView scrollView;
-    TextView tv_legal_matter,tv_general_matter;
-    TextView tv_create,tv_view;
+    private  TextView tv_legal_matter,tv_general_matter;
+    private  TextView tv_create,tv_view;
+    public ArrayList<MatterModel> matter_arraylist;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -83,6 +87,7 @@ public class Matter extends Fragment {
                 loadDocuments();
             }
         });
+        matter_arraylist = new ArrayList<>();
 //        try {
 //            scrollView = view.findViewById(R.id.scroll_view);
 //
@@ -102,7 +107,9 @@ public class Matter extends Fragment {
 //        }
         return view;
     }
-
+    public ArrayList<MatterModel> getMatter_arraylist(){
+        return matter_arraylist;
+    }
     private void loadViewUI() {
         tv_create.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
@@ -135,7 +142,7 @@ public class Matter extends Fragment {
 
     }
 
-    private void loadGCT() {
+    public void loadGCT() {
         siv_matter_icon.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.single_document_icon));
         siv_groups.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.groups_material_icon_white));
         siv_documents.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.documents_copy));

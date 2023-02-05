@@ -17,27 +17,35 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
 import com.digicoffer.lauditor.Matter.Models.AdvocateModel;
+import com.digicoffer.lauditor.Matter.Models.MatterModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class MatterInformation extends Fragment implements View.OnClickListener {
-    TextInputEditText tv_search_client, tv_matter_num, tv_case_type, tv_matter_description, tv_dof, tv_court, tv_judge;
+    TextInputEditText tv_matter_title, tv_matter_num, tv_case_type, tv_matter_description, tv_dof, tv_court, tv_judge;
     TextView tv_high_priority, tv_medium_priority, tv_low_priority, tv_status_active, tv_status_pending;
     Button btn_add_advocate;
     ArrayList<AdvocateModel> advocates_list = new ArrayList<>();
     AppCompatButton btn_cancel_save, btn_create;
     LinearLayout ll_add_advocate;
     TextView tv_opponent_name;
+    String CASE_PRIORITY = "High";
+    String STATUS = "Active";
     View v;
+    Matter matter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.matter_information, container, false);
-        tv_search_client = view.findViewById(R.id.tv_search_client);
+        tv_matter_title = view.findViewById(R.id.tv_matter_title);
         tv_matter_num = view.findViewById(R.id.tv_matter_num);
         tv_case_type = view.findViewById(R.id.tv_case_type);
         tv_matter_description = view.findViewById(R.id.tv_matter_description);
@@ -57,9 +65,12 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
         btn_add_advocate = view.findViewById(R.id.btn_add_advocate);
         btn_add_advocate.setOnClickListener(this);
         btn_cancel_save = view.findViewById(R.id.btn_cancel_save);
+        btn_cancel_save.setOnClickListener(this);
         btn_create = view.findViewById(R.id.btn_create);
+        btn_create.setOnClickListener(this);
         ll_add_advocate = view.findViewById(R.id.ll_add_advocate);
-
+        matter = (Matter) getParentFragment();
+        ArrayList<MatterModel> matterArraylist = matter.getMatter_arraylist();
 
         return view;
 
@@ -87,8 +98,58 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
 
                 loadAdvocateUI();
                 break;
+            case R.id.btn_create:
+                saveMatterInformation();
+                break;
         }
     }
+
+    private void saveMatterInformation() {
+            if (tv_matter_title.getText().toString().equals("")){
+                tv_matter_title.setError("Title Required");
+                tv_matter_title.requestFocus();
+            }else if(tv_matter_num.getText().toString().equals("")){
+                tv_matter_num.setError("Case Number Required");
+                tv_matter_num.requestFocus();
+            }else if(tv_matter_description.getText().toString().equals("")){
+                tv_matter_description.setError("Description is Required");
+                tv_matter_description.requestFocus();
+            }else if(tv_dof.getText().toString().equals("")){
+                tv_dof.setError("Date of Filing is Required");
+                tv_dof.requestFocus();
+            }else
+            {
+                MatterModel matterModel = new MatterModel();
+                matterModel.setMatter_title(tv_matter_title.getText().toString());
+                matterModel.setCase_number(tv_matter_num.getText().toString());
+                matterModel.setCase_type(tv_case_type.getText().toString());
+                matterModel.setDescription(tv_matter_description.getText().toString());
+                matterModel.setDate_of_filing(tv_dof.getText().toString());
+                matterModel.setCourt(tv_court.getText().toString());
+                matterModel.setJudge(tv_judge.getText().toString());
+                matterModel.setCase_priority(CASE_PRIORITY);
+                matterModel.setStatus(STATUS);
+                JSONArray jsonArray = new JSONArray();
+                try {
+                    for (int i = 0; i < advocates_list.size(); i++) {
+                        AdvocateModel advocateModel = advocates_list.get(i);
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("name", advocateModel.getAdvocate_name());
+                        jsonObject.put("email", advocateModel.getEmail());
+                        jsonObject.put("phone", advocateModel.getNumber());
+                        jsonArray.put(jsonObject);
+
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                matterModel.setOpponent_advocate(jsonArray);
+                matter.loadGCT();
+            }
+    }
+
+
 
     private void loadAdvocateUI() {
         try {
@@ -272,18 +333,21 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
     }
 
     private void loadActiveUI() {
+        STATUS = "Active";
         tv_status_active.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_round_background));
         tv_status_pending.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_round_background));
 
     }
 
     private void loadPendingUI() {
+        STATUS = "Pending";
         tv_status_active.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_round_background));
         tv_status_pending.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_round_background));
 
     }
 
     private void loadLowPriorityUI() {
+        CASE_PRIORITY = "Low";
         tv_high_priority.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_round_background));
         tv_medium_priority.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.radiobutton_centre_background));
         tv_low_priority.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_round_background));
@@ -291,12 +355,14 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
     }
 
     private void loadMediumPriorityUI() {
+        CASE_PRIORITY = "Medium";
         tv_high_priority.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_round_background));
         tv_medium_priority.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.radiobutton_centre_green_background));
         tv_low_priority.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_round_background));
     }
 
     private void loadHighPriorityUI() {
+        CASE_PRIORITY = "High";
         tv_high_priority.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_round_background));
         tv_medium_priority.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.radiobutton_centre_background));
         tv_low_priority.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_round_background));

@@ -585,6 +585,17 @@ try{
     private void loadSelectedGroups() {
         selected_groups.setVisibility(View.VISIBLE);
         ll_selected_groups.removeAllViews();
+        if (selected_groups_list.size()==0){
+            clientsList.clear();
+            selected_clients_list.clear();
+            ll_selected_clients.removeAllViews();
+            tmList.clear();
+            selected_tm_list.clear();
+            ll_assigned_team_members.removeAllViews();
+            at_add_groups.setText("Select Groups");
+            at_add_clients.setText("Select Clients");
+            at_assigned_team_members.setText("Assign Team Members");
+        }
         for(int i=0;i<selected_groups_list.size();i++){
             View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);
             TextView tv_opponent_name = view_opponents.findViewById(R.id.tv_opponent_name);

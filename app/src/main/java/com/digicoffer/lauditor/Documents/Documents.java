@@ -468,6 +468,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                     if (view.getTag() instanceof Integer) {
                         position = (Integer) view.getTag();
                         view = ll_added_tags.getChildAt(position);
+
                         ll_added_tags.removeView(view);
                         DocumentsModel documentsModel1 = tags_list.get(position);
                         documentsModel1.setTag_name("");

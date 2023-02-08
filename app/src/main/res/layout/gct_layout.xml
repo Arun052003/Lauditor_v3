@@ -380,7 +380,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-condensed-medium"
-                            android:text="@string/assigned_team_members"
+                            android:text="@string/assign_team_member"
                             android:textColor="@color/Blue_text_color"
                             android:textSize="@dimen/Fifteen_dp">
 

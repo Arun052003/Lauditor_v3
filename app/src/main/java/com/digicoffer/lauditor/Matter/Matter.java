@@ -131,7 +131,7 @@ public class Matter extends Fragment {
         tv_general_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
     }
 
-    private void loadDocuments() {
+    public void loadDocuments() {
         siv_matter_icon.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.single_document_icon));
         siv_groups.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.groups_material_icon));
         siv_documents.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.documents_copy_white));

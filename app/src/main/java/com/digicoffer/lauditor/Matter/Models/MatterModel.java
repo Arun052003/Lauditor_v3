@@ -14,6 +14,60 @@ public class MatterModel {
     String case_priority;
     String status;
     JSONArray opponent_advocate;
+    JSONArray clients;
+    JSONArray group_acls;
+    JSONArray members;
+    JSONArray groups_list;
+    JSONArray clients_list;
+    JSONArray members_list;
+
+    public JSONArray getGroups_list() {
+        return groups_list;
+    }
+
+    public void setGroups_list(JSONArray groups_list) {
+        this.groups_list = groups_list;
+    }
+
+    public JSONArray getClients_list() {
+        return clients_list;
+    }
+
+    public void setClients_list(JSONArray clients_list) {
+        this.clients_list = clients_list;
+    }
+
+    public JSONArray getMembers_list() {
+        return members_list;
+    }
+
+    public void setMembers_list(JSONArray members_list) {
+        this.members_list = members_list;
+    }
+
+    public JSONArray getMembers() {
+        return members;
+    }
+
+    public void setMembers(JSONArray members) {
+        this.members = members;
+    }
+
+    public JSONArray getGroup_acls() {
+        return group_acls;
+    }
+
+    public void setGroup_acls(JSONArray group_acls) {
+        this.group_acls = group_acls;
+    }
+
+    public JSONArray getClients() {
+        return clients;
+    }
+
+    public void setClients(JSONArray clients) {
+        this.clients = clients;
+    }
 
     public String getMatter_title() {
         return matter_title;

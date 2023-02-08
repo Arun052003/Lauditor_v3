@@ -51,17 +51,17 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
     boolean [] selectedClients;
     boolean [] selectedTM;
     String ADAPTER_TAG = "Groups";
-
     Button btn_add_groups, btn_add_clients, btn_assigned_team_members;
     LinearLayout ll_selected_groups, ll_selected_clients, ll_assigned_team_members,selected_groups,selected_clients,selected_tm;
     AlertDialog progress_dialog;
     ArrayList<GroupsModel> selected_groups_list = new ArrayList<>();
+    ArrayList<GroupsModel> updated_groups_list = new ArrayList<>();
     ArrayList<ClientsModel> selected_clients_list = new ArrayList<>();
     ArrayList<TeamModel> selected_tm_list = new ArrayList<>();
     ArrayList<GroupsModel> groupsList = new ArrayList<>();
     ArrayList<ClientsModel> clientsList = new ArrayList<>();
     ArrayList<TeamModel> tmList = new ArrayList<>();
-
+    Matter matter;
 
 
     @Nullable
@@ -376,6 +376,7 @@ try{
                         ClientsModel clientsModel = documentsAdapter.getClientsList_item().get(i);
                         if (clientsModel.isChecked()) {
                             selected_clients_list.add(clientsModel);
+
                             //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
                         }
                     }
@@ -555,9 +556,17 @@ try{
                         GroupsModel groupsModel = documentsAdapter.getList_item().get(i);
                         if (groupsModel.isChecked()) {
                             selected_groups_list.add(groupsModel);
+
                             //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
                         }
                     }
+
+                    detectListChanges();
+
+
+
+
+
 
                     String[] value = new String[selected_groups_list.size()];
                     for (int i = 0; i < selected_groups_list.size(); i++) {
@@ -582,6 +591,34 @@ try{
         }
     }
 
+    private void detectListChanges() {
+        updated_groups_list.addAll(selected_groups_list);
+        int originalSize = updated_groups_list.size();
+        updated_groups_list.removeAll(selected_groups_list);
+        int newSize = updated_groups_list.size();
+        if (newSize > originalSize||newSize<originalSize) {
+            clientsList.clear();
+            tmList.clear();
+            selected_clients_list.clear();
+            selected_tm_list.clear();
+            ll_selected_clients.removeAllViews();
+            selected_clients.setVisibility(View.GONE);
+            ll_assigned_team_members.removeAllViews();
+            selected_tm.setVisibility(View.GONE);
+            // items have been added to the list
+        } else if (newSize == originalSize) {
+            // items have been removed from the list
+        } else if(newSize==0||originalSize==0){
+            selected_groups.setVisibility(View.GONE);
+            ll_selected_groups.removeAllViews();
+        }else {
+            // the list has not changed in size
+        }
+        at_add_clients.setText("");
+        at_assigned_team_members.setText("");
+    }
+
+
     private void loadSelectedGroups() {
         selected_groups.setVisibility(View.VISIBLE);
         ll_selected_groups.removeAllViews();
@@ -595,6 +632,10 @@ try{
             at_add_groups.setText("Select Groups");
             at_add_clients.setText("Select Clients");
             at_assigned_team_members.setText("Assign Team Members");
+            selected_groups.setVisibility(View.GONE);
+            selected_clients.setVisibility(View.GONE);
+            selected_tm.setVisibility(View.GONE);
+
         }
         for(int i=0;i<selected_groups_list.size();i++){
             View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);
@@ -621,7 +662,7 @@ try{
                             for (int i = 0; i < selected_groups_list.size(); i++) {
                                value[i] = selected_groups_list.get(i).getGroup_name();
                             }
-
+                                detectListChanges();
                             String str = String.join(",", value);
                             at_add_groups.setText(str);
                         }

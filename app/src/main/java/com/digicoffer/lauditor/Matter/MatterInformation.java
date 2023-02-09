@@ -27,7 +27,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.pgpainless.key.selection.key.util.And;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
     TextView tv_high_priority, tv_medium_priority, tv_low_priority, tv_status_active, tv_status_pending;
     Button btn_add_advocate;
     ArrayList<AdvocateModel> advocates_list = new ArrayList<>();
-    ArrayList<MatterModel> matterArraylist ;
+    ArrayList<MatterModel> matterArraylist;
     AppCompatButton btn_cancel_save, btn_create;
     LinearLayout ll_add_advocate;
     JSONArray existing_opponents;
@@ -108,57 +107,95 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         String formattedDate = df.format(c);
         tv_dof.setText(formattedDate);
-        matterArraylist  = matter.getMatter_arraylist();
+        matterArraylist = matter.getMatter_arraylist();
 
-      if (matterArraylist.size()!=0) {
-          for (int i = 0; i < matterArraylist.size(); i++) {
-              MatterModel matterModel = matterArraylist.get(i);
-              tv_matter_title.setText(matterModel.getMatter_title());
-              tv_matter_num.setText(matterModel.getCase_number());
-              tv_case_type.setText(matterModel.getCase_type());
-              tv_matter_description.setText(matterModel.getDescription());
-              tv_dof.setText(matterModel.getDate_of_filing());
-              tv_court.setText(matterModel.getCourt());
-              tv_judge.setText(matterModel.getJudge());
-              CASE_PRIORITY = matterModel.getCase_priority();
-              STATUS = matterModel.getStatus();
-              existing_opponents = matterArraylist.get(i).getOpponent_advocate();
+        if (matterArraylist.size() != 0) {
+            for (int i = 0; i < matterArraylist.size(); i++) {
+                MatterModel matterModel = matterArraylist.get(i);
+                if (matterModel.getMatter_title() != null) {
+                    tv_matter_title.setText(matterModel.getMatter_title());
+                } else {
+                    tv_matter_title.setText("");
+                }
+                if (matterModel.getCase_number() != null) {
+                    tv_matter_num.setText(matterModel.getCase_number());
+                } else {
+                    tv_matter_num.setText("");
+                }
+                if (matterModel.getCase_type() != null) {
+                    tv_case_type.setText(matterModel.getCase_type());
+                } else {
+                    tv_case_type.setText("");
+                }
+                if (matterModel.getDescription() != null) {
+                    tv_matter_description.setText(matterModel.getDescription());
+                } else {
+                    tv_matter_description.setText("");
+                }
+                if (matterModel.getDate_of_filing() != null) {
+                    tv_dof.setText(matterModel.getDate_of_filing());
+                } else {
+                    tv_dof.setText("");
+                }
+                if (matterModel.getCourt() != null) {
+                    tv_court.setText(matterModel.getCourt());
+                } else {
+                    tv_court.setText("");
+                }
+                if (matterModel.getJudge() != null) {
+                    tv_judge.setText(matterModel.getJudge());
+                } else {
+                    tv_judge.setText("");
+                }
+                if (matterModel.getCase_priority() != null) {
+
+                    CASE_PRIORITY = matterModel.getCase_priority();
+                }
+                if (matterModel.getStatus() != null) {
+                    STATUS = matterModel.getStatus();
+                }
+                if (matterArraylist.get(i).getOpponent_advocate() != null) {
+                    existing_opponents = matterArraylist.get(i).getOpponent_advocate();
+                    try {
+                        for (int j = 0; j < existing_opponents.length(); j++) {
+                            try {
+                                JSONObject jsonObject = existing_opponents.getJSONObject(j);
+                                AdvocateModel advocateModel = new AdvocateModel();
+                                advocateModel.setAdvocate_name(jsonObject.getString("name"));
+                                advocateModel.setNumber(jsonObject.getString("phone"));
+                                advocateModel.setEmail(jsonObject.getString("email"));
+                                advocates_list.add(advocateModel);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                        loadOpponentsList();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        AndroidUtils.showAlert(e.getMessage(), getContext());
+                    }
+                }
+
+
 //            for (int j=0;)
-          }
-          if (CASE_PRIORITY == "High") {
-              loadHighPriorityUI();
-          } else if (CASE_PRIORITY == "Medium") {
-              loadMediumPriorityUI();
-          } else {
-              loadLowPriorityUI();
-          }
+            }
+            if (CASE_PRIORITY == "High") {
+                loadHighPriorityUI();
+            } else if (CASE_PRIORITY == "Medium") {
+                loadMediumPriorityUI();
+            } else {
+                loadLowPriorityUI();
+            }
 
-          if (STATUS == "Active") {
-              loadActiveUI();
-          } else {
-              loadPendingUI();
-          }
+            if (STATUS == "Active") {
+                loadActiveUI();
+            } else {
+                loadPendingUI();
+            }
 
-          try {
-              for (int i = 0; i < existing_opponents.length(); i++) {
-                  try {
-                      JSONObject jsonObject = existing_opponents.getJSONObject(i);
-                      AdvocateModel advocateModel = new AdvocateModel();
-                      advocateModel.setAdvocate_name(jsonObject.getString("name"));
-                      advocateModel.setNumber(jsonObject.getString("phone"));
-                      advocateModel.setEmail(jsonObject.getString("email"));
-                      advocates_list.add(advocateModel);
-                  } catch (JSONException e) {
-                      e.printStackTrace();
-                  }
 
-              }
-              loadOpponentsList();
-          } catch (Exception e) {
-              e.printStackTrace();
-              AndroidUtils.showAlert(e.getMessage(),getContext());
-          }
-      }
+        }
 
 
         return view;
@@ -194,51 +231,49 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
     }
 
     private void saveMatterInformation() {
-            if (tv_matter_title.getText().toString().equals("")){
-                tv_matter_title.setError("Title Required");
-                tv_matter_title.requestFocus();
-            }else if(tv_matter_num.getText().toString().equals("")){
-                tv_matter_num.setError("Case Number Required");
-                tv_matter_num.requestFocus();
-            }else if(tv_matter_description.getText().toString().equals("")){
-                tv_matter_description.setError("Description is Required");
-                tv_matter_description.requestFocus();
-            }else if(tv_dof.getText().toString().equals("")){
-                tv_dof.setError("Date of Filing is Required");
-                tv_dof.requestFocus();
-            }else
-            {
-                MatterModel matterModel = new MatterModel();
-                matterModel.setMatter_title(tv_matter_title.getText().toString());
-                matterModel.setCase_number(tv_matter_num.getText().toString());
-                matterModel.setCase_type(tv_case_type.getText().toString());
-                matterModel.setDescription(tv_matter_description.getText().toString());
-                matterModel.setDate_of_filing(tv_dof.getText().toString());
-                matterModel.setCourt(tv_court.getText().toString());
-                matterModel.setJudge(tv_judge.getText().toString());
-                matterModel.setCase_priority(CASE_PRIORITY);
-                matterModel.setStatus(STATUS);
-                JSONArray jsonArray = new JSONArray();
-                try {
-                    for (int i = 0; i < advocates_list.size(); i++) {
-                        AdvocateModel advocateModel = advocates_list.get(i);
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("name", advocateModel.getAdvocate_name());
-                        jsonObject.put("email", advocateModel.getEmail());
-                        jsonObject.put("phone", advocateModel.getNumber());
-                        jsonArray.put(jsonObject);
+        if (tv_matter_title.getText().toString().equals("")) {
+            tv_matter_title.setError("Title Required");
+            tv_matter_title.requestFocus();
+        } else if (tv_matter_num.getText().toString().equals("")) {
+            tv_matter_num.setError("Case Number Required");
+            tv_matter_num.requestFocus();
+        } else if (tv_matter_description.getText().toString().equals("")) {
+            tv_matter_description.setError("Description is Required");
+            tv_matter_description.requestFocus();
+        } else if (tv_dof.getText().toString().equals("")) {
+            tv_dof.setError("Date of Filing is Required");
+            tv_dof.requestFocus();
+        } else {
+            MatterModel matterModel = new MatterModel();
+            matterModel.setMatter_title(tv_matter_title.getText().toString());
+            matterModel.setCase_number(tv_matter_num.getText().toString());
+            matterModel.setCase_type(tv_case_type.getText().toString());
+            matterModel.setDescription(tv_matter_description.getText().toString());
+            matterModel.setDate_of_filing(tv_dof.getText().toString());
+            matterModel.setCourt(tv_court.getText().toString());
+            matterModel.setJudge(tv_judge.getText().toString());
+            matterModel.setCase_priority(CASE_PRIORITY);
+            matterModel.setStatus(STATUS);
+            JSONArray jsonArray = new JSONArray();
+            try {
+                for (int i = 0; i < advocates_list.size(); i++) {
+                    AdvocateModel advocateModel = advocates_list.get(i);
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("name", advocateModel.getAdvocate_name());
+                    jsonObject.put("email", advocateModel.getEmail());
+                    jsonObject.put("phone", advocateModel.getNumber());
+                    jsonArray.put(jsonObject);
 
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
-                matterModel.setOpponent_advocate(jsonArray);
-                matterArraylist.add(matterModel);
-                matter.loadGCT();
-            }
-    }
 
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            matterModel.setOpponent_advocate(jsonArray);
+            matterArraylist.add(matterModel);
+            matter.loadGCT();
+        }
+    }
 
 
     private void loadAdvocateUI() {
@@ -363,7 +398,7 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
         }
     }
 
-    private void EditAdvocateUI(String advocate_name, String email, String number,  int position, TextView tv_opponent_name, View view_advocate) {
+    private void EditAdvocateUI(String advocate_name, String email, String number, int position, TextView tv_opponent_name, View view_advocate) {
         try {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             LayoutInflater inflater = getActivity().getLayoutInflater();

@@ -72,10 +72,10 @@
             >
 
             <TextView
-                android:id="@+id/tv_legal_matter"
+                android:id="@+id/tv_document_library"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="@drawable/button_left_background"
+                android:background="@drawable/button_left_green_background"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:padding="10dp"
                 android:text="@string/document_library"
@@ -85,7 +85,7 @@
             </TextView>
 
             <TextView
-                android:id="@+id/tv_general_matter"
+                android:id="@+id/tv_device_drive"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/button_right_background"
@@ -143,17 +143,23 @@
 
                 >
 
-                <Spinner
-                    android:id="@+id/at_add_groups"
+                <TextView
+                    android:id="@+id/at_add_documents"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:spinnerMode="dropdown" />
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:enabled="true"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:padding="15dp"
+                    android:drawableRight="@drawable/spinner_drop_down"
+                    android:text="Select Groups"
+                    android:textColor="@color/Blue_text_color"
+                    android:textSize="15dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
-                android:id="@+id/btn_add_groups"
+                android:id="@+id/btn_add_documents"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:text="@string/add"
@@ -161,11 +167,21 @@
                 android:layout_gravity="right">
 
             </Button>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_selected_documents"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@id/ll_select_doc">
+
         </LinearLayout>
         <LinearLayout
             android:id="@+id/ll_select_doc"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
             android:layout_below="@id/ll_add_documents"
             android:layout_weight="1"
             android:orientation="vertical">
@@ -238,51 +254,51 @@
             </Button>
 
         </LinearLayout>
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/ll_save_buttons"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/ll_select_doc"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
 
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:orientation="horizontal"
-                android:visibility="visible">
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btn_cancel_save"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/cancel_button_background"
-                    android:elevation="20dp"
-                    android:text="@string/cancel"
-                    android:textAllCaps="false">
-
-                </androidx.appcompat.widget.AppCompatButton>
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btn_create"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/save_button_background"
-                    android:elevation="@dimen/Fifteen_dp"
-                    android:gravity="center"
-                    android:text="@string/save"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white">
-
-                </androidx.appcompat.widget.AppCompatButton>
-            </androidx.appcompat.widget.LinearLayoutCompat>
         </LinearLayout>
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/ll_save_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/ll_select_doc"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_cancel_save"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/cancel_button_background"
+                android:elevation="20dp"
+                android:text="@string/cancel"
+                android:textAllCaps="false">
+
+            </androidx.appcompat.widget.AppCompatButton>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_create"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/save_button_background"
+                android:elevation="@dimen/Fifteen_dp"
+                android:gravity="center"
+                android:text="@string/save"
+                android:textAllCaps="false"
+                android:textColor="@color/white">
+
+            </androidx.appcompat.widget.AppCompatButton>
+        </androidx.appcompat.widget.LinearLayoutCompat>
     </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

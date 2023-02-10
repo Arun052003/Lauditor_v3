@@ -135,11 +135,12 @@ public class Matter extends Fragment {
         siv_matter_icon.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.single_document_icon));
         siv_groups.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.groups_material_icon));
         siv_documents.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.documents_copy_white));
-
-        Fragment childFragment = new MatterDocuments();
-        FragmentManager childFragmentManager = getChildFragmentManager();
-        childFragmentManager.beginTransaction().add(R.id.child_container, childFragment).commit();
-
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        MatterDocuments matterInformation = new MatterDocuments();
+        ft.replace(R.id.child_container,matterInformation);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     public void loadGCT() {

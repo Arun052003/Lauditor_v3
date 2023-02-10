@@ -21,10 +21,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Documents.DocumentsListAdpater.GroupsListAdapter;
-import com.digicoffer.lauditor.Documents.models.DocumentsModel;
 import com.digicoffer.lauditor.Matter.Adapters.GroupsAdapter;
 import com.digicoffer.lauditor.Matter.Models.AdvocateModel;
 import com.digicoffer.lauditor.Matter.Models.ClientsModel;
+import com.digicoffer.lauditor.Matter.Models.DocumentsModel;
 import com.digicoffer.lauditor.Matter.Models.GroupsModel;
 import com.digicoffer.lauditor.Matter.Models.MatterModel;
 import com.digicoffer.lauditor.Matter.Models.TeamModel;
@@ -69,6 +69,7 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
     ArrayList<ClientsModel> selected_clients_list = new ArrayList<>();
     ArrayList<TeamModel> selected_tm_list = new ArrayList<>();
     ArrayList<GroupsModel> groupsList = new ArrayList<>();
+    ArrayList<DocumentsModel> documentsList = new ArrayList<>();
     ArrayList<ClientsModel> clientsList = new ArrayList<>();
     ArrayList<TeamModel> tmList = new ArrayList<>();
     Matter matter;
@@ -490,7 +491,6 @@ try{
                 teamModel.setTm_name(jsonObject.getString("name"));
                 teamModel.setUser_id(jsonObject.getString("user_id"));
                 tmList.add(teamModel);
-
                 selectedTM = new boolean[tmList.size()];
 
             }

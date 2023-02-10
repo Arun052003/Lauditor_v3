@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Matter.Models.ClientsModel;
+import com.digicoffer.lauditor.Matter.Models.DocumentsModel;
 import com.digicoffer.lauditor.Matter.Models.GroupsModel;
 import com.digicoffer.lauditor.Matter.Models.TeamModel;
 import com.digicoffer.lauditor.R;
@@ -24,11 +25,12 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.Viewholder
     String TAG = "Groups";
 
 
-    public GroupsAdapter(ArrayList<GroupsModel> sharedList, ArrayList<ClientsModel> clientsList, ArrayList<TeamModel> teamList, String Tag) {
+    public GroupsAdapter(ArrayList<GroupsModel> sharedList, ArrayList<ClientsModel> clientsList, ArrayList<TeamModel> teamList,  String Tag) {
         this.sharedList = sharedList;
         this.list_item = sharedList;
         this.clientsList = clientsList;
         this.tmList = teamList;
+
         this.TAG = Tag;
     }
 
@@ -73,7 +75,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.Viewholder
                     }
                 }
             });
-        } else {
+        } else if (TAG == "TM") {
             TeamModel teamModel = tmList.get(position);
             holder.cb_documents.setChecked(tmList.get(position).isChecked());
             holder.cb_documents.setTag(position);
@@ -105,13 +107,14 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.Viewholder
         return tmList;
     }
 
+
     @Override
     public int getItemCount() {
         if (TAG == "Groups") {
             return sharedList.size();
         } else if (TAG == "Clients") {
             return clientsList.size();
-        } else {
+        } else  {
             return tmList.size();
         }
 

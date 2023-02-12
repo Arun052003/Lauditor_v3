@@ -54,6 +54,7 @@
             android:drawableRight="@drawable/calendar_activity"
             android:text="07-20-2023"
             android:padding="5dp"
+            android:enabled="false"
             android:textColor="@color/black">
 
         </TextView>
@@ -284,7 +285,7 @@
             </androidx.appcompat.widget.AppCompatButton>
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_create"
+                android:id="@+id/btn_submit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -294,7 +295,7 @@
                 android:background="@drawable/save_button_background"
                 android:elevation="@dimen/Fifteen_dp"
                 android:gravity="center"
-                android:text="@string/save"
+                android:text="Submit"
                 android:textAllCaps="false"
                 android:textColor="@color/white">
 

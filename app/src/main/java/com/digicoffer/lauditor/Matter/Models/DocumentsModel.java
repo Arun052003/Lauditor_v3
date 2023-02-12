@@ -1,5 +1,7 @@
 package com.digicoffer.lauditor.Matter.Models;
 
+import java.io.File;
+
 public class DocumentsModel {
     String description;
     String docid;
@@ -10,6 +12,17 @@ public class DocumentsModel {
     private boolean isSelected;
     boolean isChecked;
     boolean isenabled;
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    File file;
+
 
     public boolean isSelected() {
         return isSelected;

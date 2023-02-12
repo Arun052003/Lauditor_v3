@@ -243,7 +243,9 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
         } else if (tv_dof.getText().toString().equals("")) {
             tv_dof.setError("Date of Filing is Required");
             tv_dof.requestFocus();
-        } else {
+        } else if(advocates_list.size()==0){
+            AndroidUtils.showToast("Please add an advocate to continue.",getContext());
+        }else {
             MatterModel matterModel = new MatterModel();
             matterModel.setMatter_title(tv_matter_title.getText().toString());
             matterModel.setCase_number(tv_matter_num.getText().toString());

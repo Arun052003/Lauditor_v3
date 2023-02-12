@@ -110,6 +110,7 @@ public class Matter extends Fragment {
     public ArrayList<MatterModel> getMatter_arraylist(){
         return matter_arraylist;
     }
+//    public MatterModel matterModel
     private void loadViewUI() {
         tv_create.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));

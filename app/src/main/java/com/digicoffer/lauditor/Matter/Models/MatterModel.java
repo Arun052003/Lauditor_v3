@@ -20,6 +20,24 @@ public class MatterModel {
     JSONArray groups_list;
     JSONArray clients_list;
     JSONArray members_list;
+    JSONArray documents_list;
+    JSONArray documents;
+
+    public JSONArray getDocuments_list() {
+        return documents_list;
+    }
+
+    public void setDocuments_list(JSONArray documents_list) {
+        this.documents_list = documents_list;
+    }
+
+    public JSONArray getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(JSONArray documents) {
+        this.documents = documents;
+    }
 
     public JSONArray getGroups_list() {
         return groups_list;

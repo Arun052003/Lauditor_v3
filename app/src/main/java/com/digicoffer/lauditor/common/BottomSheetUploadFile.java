@@ -1,4 +1,4 @@
-package com.digicoffer.lauditor.Documents;
+package com.digicoffer.lauditor.common;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 

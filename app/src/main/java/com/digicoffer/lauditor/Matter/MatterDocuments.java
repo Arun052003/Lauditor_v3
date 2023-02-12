@@ -137,7 +137,12 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                 loadDeviceDriveUI();
                 break;
             case R.id.btn_add_documents:
-                callDocumentsWebService();
+                if(documentsList.size()==0) {
+                    callDocumentsWebService();
+                }else
+                {
+                    DocumentsPopUp();
+                }
                 break;
 
         }
@@ -166,6 +171,9 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
         tv_device_drive.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         ll_add_documents.setVisibility(View.GONE);
         ll_select_doc.setVisibility(View.VISIBLE);
+        ll_selected_documents.removeAllViews();
+        documentsList.clear();
+        at_add_documents.setText("Select Document");
     }
 
     private void loadDocumentLibraryUI() {
@@ -184,7 +192,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                 JSONObject result = new JSONObject(httpResult.getResponseContent());
                 if (httpResult.getRequestType().equals("Documents")) {
                     JSONArray data = result.getJSONArray("documents");
-                    AndroidUtils.showAlert(data.toString(),getContext());
+//                    AndroidUtils.showAlert(data.toString(),getContext());
                     loadDocumentsData(data);
                 }
             } catch (JSONException e) {

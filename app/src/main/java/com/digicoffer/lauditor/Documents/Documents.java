@@ -638,6 +638,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                     } else {
                         jsonObject.put("content_type", "application/" + doc_type);
                     }
+                    WebServiceHelper.callHttpUploadWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/document/upload", "Upload Document", new_file, jsonObject.toString());
 
 //            AndroidUtils.showAlert(jsonObject.toString(),getContext());
                  }

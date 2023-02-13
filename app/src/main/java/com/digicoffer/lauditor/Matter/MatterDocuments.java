@@ -77,7 +77,7 @@ import java.util.Locale;
 public class MatterDocuments extends Fragment implements AsyncTaskCompleteListener,View.OnClickListener ,BottomSheetUploadFile.OnPhotoSelectedListner{
 
     private TextView matter_date,tv_document_library,tv_device_drive,at_add_documents,tv_selected_file;
-    private LinearLayout ll_add_documents,ll_selected_documents,ll_select_doc;
+    private LinearLayout ll_add_documents,ll_selected_documents,ll_select_doc,ll_uploaded_documents;
     private Button btn_browse,btn_add_documents;
     private ImageView imageView;
     ArrayList<TeamModel> selected_tm_list = new ArrayList<>();
@@ -91,6 +91,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
     String ADAPTER_TAG = "Documents";
     ArrayList<DocumentsModel> documentsList = new ArrayList<>();
     ArrayList<DocumentsModel> selected_documents_list = new ArrayList<>();
+    ArrayList<DocumentsModel> upload_documents_list = new ArrayList<>();
     JSONArray exisiting_group_acls;
     JSONArray existing_documents;
     JSONArray existing_documents_list;
@@ -122,6 +123,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
         tv_selected_file = view.findViewById(R.id.tv_selected_file);
         ll_add_documents = view.findViewById(R.id.ll_add_documents);
         ll_selected_documents = view.findViewById(R.id.ll_selected_documents);
+        ll_uploaded_documents = view.findViewById(R.id.ll_uploaded_documents);
         ll_select_doc = view.findViewById(R.id.ll_select_doc);
         btn_browse = view.findViewById(R.id.btn_browse);
         btn_browse.setOnClickListener(this);
@@ -462,26 +464,28 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
     }
 
     private void loadDeviceDriveUI() {
-        selected_documents_list.clear();
-        documentsList.clear();
+//        selected_documents_list.clear();
+//        documentsList.clear();
         ll_selected_documents.removeAllViews();
-        at_add_documents.setText("");
-        tv_selected_file.setText("");
+        loadUploadedDocuments();
+//        at_add_documents.setText("");
+//        tv_selected_file.setText("");
         tv_document_library.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_device_drive.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         ll_add_documents.setVisibility(View.GONE);
         ll_select_doc.setVisibility(View.VISIBLE);
-        ll_selected_documents.removeAllViews();
-        documentsList.clear();
+//        ll_selected_documents.removeAllViews();
+//        documentsList.clear();
         at_add_documents.setText("Select Document");
     }
 
     private void loadDocumentLibraryUI() {
-        selected_documents_list.clear();
-        documentsList.clear();
-        ll_selected_documents.removeAllViews();
-        at_add_documents.setText("");
-        tv_selected_file.setText("");
+//        selected_documents_list.clear();
+//        documentsList.clear();
+        ll_uploaded_documents.removeAllViews();
+        loadSelectedDocuments();
+//        at_add_documents.setText("");
+//        tv_selected_file.setText("");
         tv_document_library.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_device_drive.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
         ll_add_documents.setVisibility(View.VISIBLE);
@@ -542,7 +546,8 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
         documentsModel.setDescription(docname);
         documentsModel.setFile(file);
         documentsModel.setIsenabled(true);
-        selected_documents_list.add(documentsModel);
+        upload_documents_list.add(documentsModel);
+
 //        if (docsList.size() == 1) {
 //            ll_hide_document_details.setVisibility(View.VISIBLE);
 //            hideDisableDownloadBackground();
@@ -551,7 +556,8 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
 ////            hideDisableDownloadBackground();
 //        }
         String tag = "view_tags";
-        loadSelectedDocuments();
+        loadUploadedDocuments();
+//        loadSelectedDocuments();
 //        loadRecyclerview(tag, subtag);
 
 //            ll_documents.addView(view);
@@ -757,7 +763,61 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
             AndroidUtils.showAlert(e.getMessage(), getContext());
         }
         }
+private void loadUploadedDocuments(){
+    String[] value = new String[upload_documents_list.size()];
+    for (int i = 0; i < upload_documents_list.size(); i++) {
+//                                value += "," + family_members.get(i);
+//                               value.add(family_members.get(i));
+        value[i] = upload_documents_list.get(i).getName();
 
+    }
+
+    String str = String.join(",", value);
+//    at_add_documents.setText(str);
+    tv_selected_file.setText(str);
+//        selected_tm.setVisibility(View.VISIBLE);
+    ll_uploaded_documents.removeAllViews();
+    ll_selected_documents.removeAllViews();
+    for(int i=0;i<upload_documents_list.size();i++){
+        View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);
+        TextView tv_opponent_name = view_opponents.findViewById(R.id.tv_opponent_name);
+        tv_opponent_name.setText(upload_documents_list.get(i).getName());
+        ImageView iv_edit_opponent = view_opponents.findViewById(R.id.iv_edit_opponent);
+        ImageView iv_remove_opponent = view_opponents.findViewById(R.id.iv_remove_opponent);
+        iv_remove_opponent.setTag(i);
+        iv_remove_opponent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    int position = 0;
+                    if (v.getTag() instanceof Integer) {
+                        position = (Integer) v.getTag();
+                        v = ll_uploaded_documents.getChildAt(position);
+                        ll_uploaded_documents.removeView(v);
+//                            ll_selected_groups.addView(view_opponents,position);
+                        DocumentsModel documentsModel = upload_documents_list.get(position);
+                        documentsModel.setChecked(false);
+                        upload_documents_list.remove(position);
+//                            selected_groups_list.set(position, groupsModel);
+                        String[] value = new String[upload_documents_list.size()];
+                        for (int i = 0; i < upload_documents_list.size(); i++) {
+                            value[i] = upload_documents_list.get(i).getName();
+                        }
+
+                        String str = String.join(",", value);
+//                        at_add_documents.setText(str);
+                        tv_selected_file.setText(str);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    AndroidUtils.showAlert(e.getMessage(), getContext());
+                }
+            }
+        });
+        iv_edit_opponent.setVisibility(View.GONE);
+        ll_uploaded_documents.addView(view_opponents);
+    }
+}
     private void loadSelectedDocuments() {
         String[] value = new String[selected_documents_list.size()];
         for (int i = 0; i < selected_documents_list.size(); i++) {
@@ -769,8 +829,9 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
 
         String str = String.join(",", value);
         at_add_documents.setText(str);
-        tv_selected_file.setText(str);
+//        tv_selected_file.setText(str);
 //        selected_tm.setVisibility(View.VISIBLE);
+        ll_uploaded_documents.removeAllViews();
         ll_selected_documents.removeAllViews();
         for(int i=0;i<selected_documents_list.size();i++){
             View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);

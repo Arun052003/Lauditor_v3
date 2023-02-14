@@ -34,10 +34,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.digicoffer.lauditor.Documents.Documents;
 import com.digicoffer.lauditor.Matter.Adapters.DocumentsAdapter;
-import com.digicoffer.lauditor.Matter.Adapters.GroupsAdapter;
 import com.digicoffer.lauditor.Matter.Models.ClientsModel;
 import com.digicoffer.lauditor.Matter.Models.DocumentsModel;
 import com.digicoffer.lauditor.Matter.Models.GroupsModel;
@@ -49,18 +46,13 @@ import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.digicoffer.lauditor.Webservice.WebServiceHelper;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common.BottomSheetUploadFile;
-import com.digicoffer.lauditor.common.Constants;
-import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.listener.OnErrorListener;
-import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
+import com.google.android.material.textfield.TextInputEditText;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.minidns.record.A;
-import org.pgpainless.key.selection.key.util.And;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -69,19 +61,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 
 public class MatterDocuments extends Fragment implements AsyncTaskCompleteListener,View.OnClickListener ,BottomSheetUploadFile.OnPhotoSelectedListner{
 
-    private TextView matter_date,tv_document_library,tv_device_drive,at_add_documents,tv_selected_file;
-    private LinearLayout ll_add_documents,ll_selected_documents,ll_select_doc,ll_uploaded_documents;
+    private TextView tv_tag_document_name,matter_date,tv_document_library,tv_device_drive,at_add_documents,tv_selected_file;
+    private LinearLayout ll_added_tags, ll_add_documents,ll_selected_documents,ll_select_doc,ll_uploaded_documents;
     private Button btn_browse,btn_add_documents;
+    TextInputEditText tv_tag_type, tv_tag_name;
     private ImageView imageView;
     ArrayList<TeamModel> selected_tm_list = new ArrayList<>();
     ArrayList<ClientsModel> selected_clients_list = new ArrayList<>();
+    ArrayList<DocumentsModel> tags_list = new ArrayList<>();
     BottomSheetUploadFile bottommSheetUploadDocument;
     AppCompatButton btn_cancel_save,btn_create;
     boolean [] selectedDocument;
@@ -779,10 +771,11 @@ private void loadUploadedDocuments(){
     ll_uploaded_documents.removeAllViews();
     ll_selected_documents.removeAllViews();
     for(int i=0;i<upload_documents_list.size();i++){
-        View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);
+        View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.document_tag, null);
         TextView tv_opponent_name = view_opponents.findViewById(R.id.tv_opponent_name);
         tv_opponent_name.setText(upload_documents_list.get(i).getName());
-        ImageView iv_edit_opponent = view_opponents.findViewById(R.id.iv_edit_opponent);
+        ImageView iv_edit_tag = view_opponents.findViewById(R.id.iv_edit_tag);
+        ImageView iv_edit_document = view_opponents.findViewById(R.id.iv_edit_document);
         ImageView iv_remove_opponent = view_opponents.findViewById(R.id.iv_remove_opponent);
         iv_remove_opponent.setTag(i);
         iv_remove_opponent.setOnClickListener(new View.OnClickListener() {
@@ -814,7 +807,26 @@ private void loadUploadedDocuments(){
                 }
             }
         });
-        iv_edit_opponent.setVisibility(View.GONE);
+        iv_edit_tag.setTag(i);
+        iv_edit_tag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                  }
+        });
+        iv_edit_document.setTag(i);
+        iv_edit_document.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = 0;
+                if (v.getTag() instanceof Integer);
+                position = (Integer) v.getTag();
+                v= ll_uploaded_documents.getChildAt(position);
+                DocumentsModel documentsModel1 = upload_documents_list.get(position);
+                EditDocuments(documentsModel1.getName(),documentsModel1.getDescription(),position,v);
+
+            }
+        });
+//        iv_edit_opponent.setVisibility(View.GONE);
         ll_uploaded_documents.addView(view_opponents);
     }
 }
@@ -872,6 +884,244 @@ private void loadUploadedDocuments(){
             iv_edit_opponent.setVisibility(View.GONE);
             ll_selected_documents.addView(view_opponents);
         }
+    }
+    private void open_add_tags_popup() {
+        tags_list.clear();
+        if (selected_documents_list.size() != 0) {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View view = inflater.inflate(R.layout.add_tag, null);
+            tv_tag_type = (TextInputEditText) view.findViewById(R.id.tv_tag_type);
+            tv_tag_name = view.findViewById(R.id.tv_tag_name);
+            final Button btn_add = view.findViewById(R.id.btn_add_tags);
+            final AppCompatButton btn_cancel = view.findViewById(R.id.btn_cancel_tag);
+            final AppCompatButton btn_save_tag = view.findViewById(R.id.btn_save_tag);
+            final ImageView iv_cancel = view.findViewById(R.id.close_tags);
+            ll_added_tags = view.findViewById(R.id.ll_added_tags);
+            final AlertDialog dialog = dialogBuilder.create();
+            iv_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            btn_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+//            tags_list.clear();
+            btn_add.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    add_tags_listing();
+                }
+            });
+            btn_save_tag.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (tags_list.size() != 0) {
+
+//                        subtag = "view_tags";
+                    }
+                    String tag = "add_tag";
+//                        for(int i=0;i<docsList.size();i++){
+                    for (int j = 0; j < selected_documents_list.size(); j++) {
+//                                if (docsList.get(i).getName().matches(selected_documents_list.get(j).getName())){
+                        DocumentsModel documentsModel = selected_documents_list.get(j);
+                        JSONObject tags = new JSONObject();
+                        for (int t = 0; t < tags_list.size(); t++) {
+
+
+                            try {
+                                tags.put(tags_list.get(t).getTag_type(), tags_list.get(t).getTag_name());
+
+//                                            selected_documents_list.add(documentsModel);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        documentsModel.setTags_list(tags);
+                    }
+                    for (int i = 0; i < documentsList.size(); i++) {
+                        for (int j = 0; j < selected_documents_list.size(); j++) {
+                            if (documentsList.get(i).getName().matches(selected_documents_list.get(j).getName())) {
+                                DocumentsModel documentsModel = selected_documents_list.get(j);
+                                documentsModel.setTags_list(selected_documents_list.get(j).getTags_list());
+                                documentsList.set(i, documentsModel);
+                            }
+                        }
+                    }
+//                    AndroidUtils.showAlert(selected_documents_list.toString(),getContext());
+//                            }
+//                        }
+//                    adapter.getList_item().clear();
+//                    chk_select_all.setChecked(false);
+//                    for (int i=0;i<adapter.getList_item().size();i++){
+////                        DocumentsModel documentsModel =
+//                    }
+//                    loadRecyclerview(tag, subtag);
+                    dialog.dismiss();
+
+                }
+            });
+            dialog.setCancelable(false);
+            dialog.setView(view);
+            dialog.show();
+        } else {
+            AndroidUtils.showToast("Please select atleast one document to add tags", getContext());
+        }
+    }
+
+    private void add_tags_listing() {
+        ll_added_tags.removeAllViews();
+        DocumentsModel documentsModel = new DocumentsModel();
+        documentsModel.setTag_type(tv_tag_type.getText().toString());
+        documentsModel.setTag_name(tv_tag_name.getText().toString());
+        tags_list.add(documentsModel);
+        for (int i = 0; i < tags_list.size(); i++) {
+            View view_added_tags = LayoutInflater.from(getContext()).inflate(R.layout.displays_documents_list, null);
+            tv_tag_document_name = view_added_tags.findViewById(R.id.tv_document_name);
+            ImageView iv_edit_tag = view_added_tags.findViewById(R.id.iv_edit_meta);
+            ImageView iv_remove_tag = view_added_tags.findViewById(R.id.iv_cancel);
+            iv_remove_tag.setTag(i);
+            iv_remove_tag.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = 0;
+                    if (view.getTag() instanceof Integer) {
+                        position = (Integer) view.getTag();
+                        view = ll_added_tags.getChildAt(position);
+
+                        ll_added_tags.removeView(view);
+                        DocumentsModel documentsModel1 = tags_list.get(position);
+                        documentsModel1.setTag_name("");
+                        documentsModel1.setTag_type("");
+                        tags_list.set(position, documentsModel1);
+                        tags_list.remove(position);
+//                        add_tags_listing();
+//                                    ll_added_tags.removeAllViews();
+                    }
+                }
+            });
+            iv_edit_tag.setTag(i);
+            iv_edit_tag.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = 0;
+                    if (view.getTag() instanceof Integer) {
+                        position = (Integer) view.getTag();
+                        view = ll_added_tags.getChildAt(position);
+                        DocumentsModel documentsModel1 = tags_list.get(position);
+                        edit_tags(documentsModel1.getTag_type(), documentsModel1.getTag_name(), position, view, tv_tag_document_name);
+                    }
+                }
+            });
+            iv_edit_tag.setVisibility(View.VISIBLE);
+            tv_tag_document_name.setText(tags_list.get(i).getTag_type() + " - " + tags_list.get(i).getTag_name());
+            ll_added_tags.addView(view_added_tags);
+        }
+    }
+    private void edit_tags(String tag_type, String tag_name, int position, View view_tag, TextView tv_tag_document_name) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view_edit_tags = inflater.inflate(R.layout.edit_tag, null);
+        TextInputEditText tv_edit_tag_type = view_edit_tags.findViewById(R.id.tv_edit_tag_type);
+        TextInputEditText tv_edit_tag_nam = view_edit_tags.findViewById(R.id.tv_edit_tag_name);
+        AppCompatButton btn_cancel = view_edit_tags.findViewById(R.id.btn_edit_cancel_tag);
+        AppCompatButton btn_save_edited_tag = view_edit_tags.findViewById(R.id.btn_edit_save_tag);
+        ImageView iv_close_edit_tags = view_edit_tags.findViewById(R.id.edit_close_tags);
+        tv_edit_tag_type.setText(tag_type);
+        tv_edit_tag_nam.setText(tag_name);
+        final AlertDialog dialog = dialogBuilder.create();
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        btn_save_edited_tag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                save_edited_tags(tv_edit_tag_type.getText().toString(), tv_edit_tag_nam.getText().toString(), position, view_tag, dialog, tv_tag_document_name);
+            }
+        });
+        iv_close_edit_tags.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        dialog.setCancelable(false);
+        dialog.setView(view_edit_tags);
+        dialog.show();
+    }
+
+    private void save_edited_tags(String tag_type, String tag_name, int position, View view, AlertDialog dialog, TextView tv_edit_tag_document_name) {
+        try {
+            DocumentsModel documentsModel = new DocumentsModel();
+            documentsModel.setTag_type(tag_type);
+            documentsModel.setTag_name(tag_name);
+            tags_list.set(position, documentsModel);
+            tv_edit_tag_document_name = view.findViewById(R.id.tv_document_name);
+            tv_edit_tag_document_name.setText(documentsModel.getTag_type() + " - " + documentsModel.getTag_name());
+            dialog.dismiss();
+        } catch (Exception e) {
+            e.printStackTrace();
+            AndroidUtils.showAlert(e.getMessage(), getContext());
+        }
+    }
+
+    private void EditDocuments(String name, String description, int position, View v) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view_edit_documents = inflater.inflate(R.layout.edit_meta_data, null);
+        ImageView iv_cancel_edit_doc = view_edit_documents.findViewById(R.id.close_edit_docs);
+        AppCompatButton btn_close_edit_docs = view_edit_documents.findViewById(R.id.btn_cancel_edit_docs);
+        TextInputEditText tv_doc_name = view_edit_documents.findViewById(R.id.edit_doc_name);
+        TextInputEditText tv_description = view_edit_documents.findViewById(R.id.edit_description);
+        AppCompatButton tv_exp_date = view_edit_documents.findViewById(R.id.tv_expiration_date);
+        tv_exp_date.setVisibility(View.GONE);
+        tv_doc_name.setText(name);
+        tv_description.setText(description);
+
+        AppCompatButton btn_save_tag = view_edit_documents.findViewById(R.id.btn_save_tag);
+        final AlertDialog dialog = dialogBuilder.create();
+        iv_cancel_edit_doc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        btn_close_edit_docs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        btn_save_tag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    DocumentsModel documentsModel = new DocumentsModel();
+                    documentsModel.setName(tv_doc_name.getText().toString());
+                    documentsModel.setDescription(tv_description.getText().toString());
+                    upload_documents_list.set(position, documentsModel);
+                   dialog.dismiss();
+                    loadUploadedDocuments();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    AndroidUtils.showAlert(e.getMessage(), getContext());
+                }
+            }
+        });
+        dialog.setCancelable(false);
+        dialog.setView(view_edit_documents);
+        dialog.show();
+
     }
 }
 

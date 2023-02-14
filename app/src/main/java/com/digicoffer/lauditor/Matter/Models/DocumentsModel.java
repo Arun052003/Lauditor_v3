@@ -1,5 +1,7 @@
 package com.digicoffer.lauditor.Matter.Models;
 
+import org.json.JSONObject;
+
 import java.io.File;
 
 public class DocumentsModel {
@@ -12,6 +14,33 @@ public class DocumentsModel {
     private boolean isSelected;
     boolean isChecked;
     boolean isenabled;
+    String tag_type;
+    String tag_name;
+    JSONObject tags_list;
+
+    public String getTag_type() {
+        return tag_type;
+    }
+
+    public void setTag_type(String tag_type) {
+        this.tag_type = tag_type;
+    }
+
+    public String getTag_name() {
+        return tag_name;
+    }
+
+    public void setTag_name(String tag_name) {
+        this.tag_name = tag_name;
+    }
+
+    public JSONObject getTags_list() {
+        return tags_list;
+    }
+
+    public void setTags_list(JSONObject tags_list) {
+        this.tags_list = tags_list;
+    }
 
     public File getFile() {
         return file;

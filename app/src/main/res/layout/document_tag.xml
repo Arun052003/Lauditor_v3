@@ -33,14 +33,22 @@
             android:text="Date"
             android:textSize="@dimen/Fifteen_dp"
             android:textColor="@color/cardview_dark_background"/>
-
         <ImageView
-            android:id="@+id/iv_edit_opponent"
+            android:id="@+id/iv_edit_document"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:visibility="visible"
             android:layout_margin="3dp"
             android:src="@drawable/edit_documents_icon">
+
+        </ImageView>
+        <ImageView
+            android:id="@+id/iv_edit_tag"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:visibility="visible"
+            android:layout_margin="3dp"
+            android:src="@drawable/document_tags">
 
         </ImageView>
 

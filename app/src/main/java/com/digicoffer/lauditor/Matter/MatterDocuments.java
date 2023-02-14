@@ -62,6 +62,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Locale;
 
 public class MatterDocuments extends Fragment implements AsyncTaskCompleteListener,View.OnClickListener ,BottomSheetUploadFile.OnPhotoSelectedListner{
@@ -811,6 +812,15 @@ private void loadUploadedDocuments(){
         iv_edit_tag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int position  = 0;
+                if (v.getTag() instanceof Integer){
+                    position = (Integer) v.getTag();
+                    v= ll_uploaded_documents.getChildAt(position);
+                    DocumentsModel documentsModel = upload_documents_list.get(position);
+
+                    open_add_tags_popup(documentsModel);
+//                    edit_tags();
+                }
                   }
         });
         iv_edit_document.setTag(i);
@@ -885,9 +895,22 @@ private void loadUploadedDocuments(){
             ll_selected_documents.addView(view_opponents);
         }
     }
-    private void open_add_tags_popup() {
-        tags_list.clear();
-        if (selected_documents_list.size() != 0) {
+    private void open_add_tags_popup(DocumentsModel documentsModel) throws JSONException {
+        if (documentsModel.getTags_list()!=null) {
+            int i=0;
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.put(documentsModel.getTags_list());
+            Iterator<String> iter = documentsModel.getTags_list().keys();
+            while (iter.hasNext()) {
+                String key = iter.next();
+                String value = documentsModel.getTags_list().getString(key);
+                DocumentsModel documentsModel1 = new DocumentsModel();
+                documentsModel1.setTag_type(key);
+                documentsModel1.setTag_name(value);
+                tags_list.add(documentsModel);
+            }
+
+        }
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
             LayoutInflater inflater = getActivity().getLayoutInflater();
             View view = inflater.inflate(R.layout.add_tag, null);
@@ -898,7 +921,9 @@ private void loadUploadedDocuments(){
             final AppCompatButton btn_save_tag = view.findViewById(R.id.btn_save_tag);
             final ImageView iv_cancel = view.findViewById(R.id.close_tags);
             ll_added_tags = view.findViewById(R.id.ll_added_tags);
+
             final AlertDialog dialog = dialogBuilder.create();
+        add_tags_listing();
             iv_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -915,8 +940,16 @@ private void loadUploadedDocuments(){
             btn_add.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                     if(tv_tag_type.getText().toString().equals("")){
+                        tv_tag_type.setError("Please enter tag type");
+                        tv_tag_type.requestFocus();
+                    }else if(tv_tag_name.getText().toString().equals("")){
+                        tv_tag_name.setError("Please enter tag name");
+                        tv_tag_name.requestFocus();
+                    }else{
+                        add_tags_listing();
+                    }
 
-                    add_tags_listing();
                 }
             });
             btn_save_tag.setOnClickListener(new View.OnClickListener() {
@@ -928,33 +961,35 @@ private void loadUploadedDocuments(){
                     }
                     String tag = "add_tag";
 //                        for(int i=0;i<docsList.size();i++){
-                    for (int j = 0; j < selected_documents_list.size(); j++) {
-//                                if (docsList.get(i).getName().matches(selected_documents_list.get(j).getName())){
-                        DocumentsModel documentsModel = selected_documents_list.get(j);
-                        JSONObject tags = new JSONObject();
-                        for (int t = 0; t < tags_list.size(); t++) {
+                    for (int j = 0; j < upload_documents_list.size(); j++) {
+                        if (documentsModel.getName().matches(upload_documents_list.get(j).getName())) {
+                            DocumentsModel documentsModel = upload_documents_list.get(j);
+
+                            JSONObject tags = new JSONObject();
+                            for (int t = 0; t < tags_list.size(); t++) {
 
 
-                            try {
-                                tags.put(tags_list.get(t).getTag_type(), tags_list.get(t).getTag_name());
+                                try {
+                                    tags.put(tags_list.get(t).getTag_type(), tags_list.get(t).getTag_name());
 
 //                                            selected_documents_list.add(documentsModel);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        }
 
-                        documentsModel.setTags_list(tags);
-                    }
-                    for (int i = 0; i < documentsList.size(); i++) {
-                        for (int j = 0; j < selected_documents_list.size(); j++) {
-                            if (documentsList.get(i).getName().matches(selected_documents_list.get(j).getName())) {
-                                DocumentsModel documentsModel = selected_documents_list.get(j);
-                                documentsModel.setTags_list(selected_documents_list.get(j).getTags_list());
-                                documentsList.set(i, documentsModel);
-                            }
+                            documentsModel.setTags_list(tags);
                         }
                     }
+//                    for (int i = 0; i < documentsList.size(); i++) {
+                        for (int j = 0; j < upload_documents_list.size(); j++) {
+//                            if () {
+                                DocumentsModel documentsModel = upload_documents_list.get(j);
+                                documentsModel.setTags_list(upload_documents_list.get(j).getTags_list());
+                                upload_documents_list.set(j, documentsModel);
+//                            }
+                        }
+//                    }
 //                    AndroidUtils.showAlert(selected_documents_list.toString(),getContext());
 //                            }
 //                        }
@@ -971,17 +1006,20 @@ private void loadUploadedDocuments(){
             dialog.setCancelable(false);
             dialog.setView(view);
             dialog.show();
-        } else {
-            AndroidUtils.showToast("Please select atleast one document to add tags", getContext());
-        }
+//        } else {
+//            AndroidUtils.showToast("Please select atleast one document to add tags", getContext());
+//        }
     }
 
     private void add_tags_listing() {
         ll_added_tags.removeAllViews();
-        DocumentsModel documentsModel = new DocumentsModel();
-        documentsModel.setTag_type(tv_tag_type.getText().toString());
-        documentsModel.setTag_name(tv_tag_name.getText().toString());
-        tags_list.add(documentsModel);
+        if(!(tv_tag_name.getText().toString().equals(""))&&(!(tv_tag_type.getText().toString().equals("")))){
+            DocumentsModel documentsModel = new DocumentsModel();
+            documentsModel.setTag_type(tv_tag_type.getText().toString());
+            documentsModel.setTag_name(tv_tag_name.getText().toString());
+            tags_list.add(documentsModel);
+        }
+
         for (int i = 0; i < tags_list.size(); i++) {
             View view_added_tags = LayoutInflater.from(getContext()).inflate(R.layout.displays_documents_list, null);
             tv_tag_document_name = view_added_tags.findViewById(R.id.tv_document_name);

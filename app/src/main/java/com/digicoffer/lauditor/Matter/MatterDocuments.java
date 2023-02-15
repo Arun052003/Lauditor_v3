@@ -817,8 +817,11 @@ private void loadUploadedDocuments(){
                     position = (Integer) v.getTag();
                     v= ll_uploaded_documents.getChildAt(position);
                     DocumentsModel documentsModel = upload_documents_list.get(position);
-
-                    open_add_tags_popup(documentsModel);
+                    try {
+                        open_add_tags_popup(documentsModel);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 //                    edit_tags();
                 }
                   }
@@ -896,20 +899,21 @@ private void loadUploadedDocuments(){
         }
     }
     private void open_add_tags_popup(DocumentsModel documentsModel) throws JSONException {
+        tags_list.clear();
         if (documentsModel.getTags_list()!=null) {
-            int i=0;
-            JSONArray jsonArray = new JSONArray();
-            jsonArray.put(documentsModel.getTags_list());
-            Iterator<String> iter = documentsModel.getTags_list().keys();
-            while (iter.hasNext()) {
-                String key = iter.next();
-                String value = documentsModel.getTags_list().getString(key);
-                DocumentsModel documentsModel1 = new DocumentsModel();
-                documentsModel1.setTag_type(key);
-                documentsModel1.setTag_name(value);
-                tags_list.add(documentsModel);
-            }
-
+//            int i=0;
+//            for (int i=0;i<tags_list.size();i++) {
+                JSONArray jsonArray = new JSONArray();
+                jsonArray.put(documentsModel.getTags_list());
+                Iterator<String> iter = documentsModel.getTags_list().keys();
+                while (iter.hasNext()) {
+                    String key = iter.next();
+                    String value = documentsModel.getTags_list().getString(key);
+                    documentsModel.setTag_type(key);
+                    documentsModel.setTag_name(value);
+                    tags_list.add(documentsModel);
+                }
+//            }
         }
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
             LayoutInflater inflater = getActivity().getLayoutInflater();

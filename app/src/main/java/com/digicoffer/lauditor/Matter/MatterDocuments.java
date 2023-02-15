@@ -909,9 +909,10 @@ private void loadUploadedDocuments(){
                 while (iter.hasNext()) {
                     String key = iter.next();
                     String value = documentsModel.getTags_list().getString(key);
-                    documentsModel.setTag_type(key);
-                    documentsModel.setTag_name(value);
-                    tags_list.add(documentsModel);
+                    DocumentsModel documentsModel1 = new DocumentsModel();
+                    documentsModel1.setTag_type(key);
+                    documentsModel1.setTag_name(value);
+                    tags_list.add(documentsModel1);
                 }
 //            }
         }
@@ -962,7 +963,7 @@ private void loadUploadedDocuments(){
                     if (tags_list.size() != 0) {
 
 //                        subtag = "view_tags";
-                    }
+
                     String tag = "add_tag";
 //                        for(int i=0;i<docsList.size();i++){
                     for (int j = 0; j < upload_documents_list.size(); j++) {
@@ -1005,6 +1006,7 @@ private void loadUploadedDocuments(){
 //                    loadRecyclerview(tag, subtag);
                     dialog.dismiss();
 
+                }
                 }
             });
             dialog.setCancelable(false);

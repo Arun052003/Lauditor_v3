@@ -53,10 +53,13 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
     String matter_title, case_number, case_type, description, dof, court, judge, case_priority, case_status;
     JSONArray existing_clients;
     JSONArray existing_members;
+    ArrayList<DocumentsModel> selected_documents_list = new ArrayList<>();
     ArrayList<AdvocateModel> advocates_list = new ArrayList<>();
     JSONArray existing_groups_list;
     JSONArray existing_clients_list;
     JSONArray existing_tm_list;
+    JSONArray existing_documents;
+    JSONArray existing_documents_list;
     String ADAPTER_TAG = "Groups";
     Button btn_add_groups, btn_add_clients, btn_assigned_team_members, btn_create;
     LinearLayout ll_selected_groups, ll_selected_clients, ll_assigned_team_members, selected_groups, selected_clients, selected_tm;
@@ -238,6 +241,38 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
                         e.printStackTrace();
                     }
                 }
+                if (matterModel.getDocuments() != null) {
+                    try {
+                        existing_documents = matterModel.getDocuments();
+                        for (int d = 0; d < existing_documents.length(); d++) {
+                            DocumentsModel documentsModel = new DocumentsModel();
+                            JSONObject jsonObject = existing_documents.getJSONObject(i);
+                            documentsModel.setDocid(jsonObject.getString("id"));
+                            documentsModel.setName(jsonObject.getString("name"));
+                            documentsModel.setUser_id(jsonObject.getString("user_id"));
+                            documentsModel.setDoctype(jsonObject.getString("doctype"));
+                            selected_documents_list.add(documentsModel);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (matterModel.getDocuments_list() != null) {
+                    try {
+                        existing_documents_list = matterModel.getDocuments_list();
+                        for (int ed = 0; ed < existing_documents_list.length(); ed++) {
+                            DocumentsModel documentsModel = new DocumentsModel();
+                            JSONObject jsonObject = existing_documents_list.getJSONObject(ed);
+                            documentsModel.setDocid(jsonObject.getString("id"));
+                            documentsModel.setName(jsonObject.getString("name"));
+                            documentsModel.setUser_id(jsonObject.getString("user_id"));
+                            documentsModel.setDoctype(jsonObject.getString("doctype"));
+                            documentsList.add(documentsModel);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
 
                     if (matterModel.getMatter_title()!=null){
                     matter_title = matterModel.getMatter_title();
@@ -343,6 +378,8 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
                 JSONArray new_groups_list = new JSONArray();
                 JSONArray new_clients_list = new JSONArray();
                 JSONArray new_tm_list = new JSONArray();
+                JSONArray documents = new JSONArray();
+                JSONArray new_documents_list = new JSONArray();
 //                JSONArray advocates_list = new JSONArray();
                 MatterModel matterModel = new MatterModel();
                 for (int i = 0; i < selected_groups_list.size(); i++) {
@@ -431,6 +468,24 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                for (int d = 0; d < selected_documents_list.size(); d++) {
+                    DocumentsModel documentsModel = selected_documents_list.get(d);
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("docid", documentsModel.getDocid());
+                    jsonObject.put("doctype", documentsModel.getDoctype());
+                    jsonObject.put("user_id", documentsModel.getUser_id());
+                    jsonObject.put("name", documentsModel.getName());
+                    documents.put(jsonObject);
+                }
+                for (int e = 0; e< documentsList.size(); e++) {
+                    DocumentsModel documentsModel = documentsList.get(e);
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("docid", documentsModel.getDocid());
+                    jsonObject.put("doctype", documentsModel.getDoctype());
+                    jsonObject.put("user_id", documentsModel.getUser_id());
+                    jsonObject.put("name", documentsModel.getName());
+                    new_documents_list.put(jsonObject);
+                }
                 matterModel.setMatter_title(matter_title);
                 matterModel.setCase_number(case_number);
                 matterModel.setCase_type(case_type);
@@ -447,6 +502,8 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
                 matterModel.setClients_list(new_clients_list);
                 matterModel.setMembers_list(new_tm_list);
                 matterModel.setOpponent_advocate(jsonArray);
+                matterModel.setDocuments(documents);
+                matterModel.setDocuments_list(new_documents_list);
                 matterArraylist.set(0, matterModel);
                 matter.loadDocuments();
             } catch (Exception e) {

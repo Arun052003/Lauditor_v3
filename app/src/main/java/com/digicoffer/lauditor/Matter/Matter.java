@@ -88,23 +88,7 @@ public class Matter extends Fragment {
             }
         });
         matter_arraylist = new ArrayList<>();
-//        try {
-//            scrollView = view.findViewById(R.id.scroll_view);
-//
-//            List<String> items = new ArrayList<>();
-//            items.add("Item 1");
-//            items.add("Item 2");
-//            items.add("Item 3");
-//
-//            NumberAdapter adapter = new NumberAdapter(getContext(), items);
-//            for (int i = 0; i < adapter.getCount(); i++) {
-//                View item = adapter.getView(i, null, scrollView);
-//                scrollView.addView(item);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            AndroidUtils.showAlert(e.getMessage(),getContext());
-//        }
+
         return view;
     }
     public ArrayList<MatterModel> getMatter_arraylist(){

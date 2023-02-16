@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,7 +19,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.digicoffer.lauditor.Documents.DocumentsListAdpater.GroupsListAdapter;
 import com.digicoffer.lauditor.Matter.Adapters.GroupsAdapter;
 import com.digicoffer.lauditor.Matter.Models.AdvocateModel;
 import com.digicoffer.lauditor.Matter.Models.ClientsModel;
@@ -28,7 +26,6 @@ import com.digicoffer.lauditor.Matter.Models.DocumentsModel;
 import com.digicoffer.lauditor.Matter.Models.GroupsModel;
 import com.digicoffer.lauditor.Matter.Models.MatterModel;
 import com.digicoffer.lauditor.Matter.Models.TeamModel;
-import com.digicoffer.lauditor.Members.Members;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
@@ -38,8 +35,6 @@ import com.digicoffer.lauditor.common.AndroidUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.minidns.record.A;
-import org.pgpainless.key.selection.key.util.And;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,20 +44,22 @@ import java.util.Locale;
 
 public class GCT extends Fragment implements View.OnClickListener, AsyncTaskCompleteListener {
 
-    TextView matter_date,at_add_groups, at_add_clients, at_assigned_team_members;
+    TextView matter_date, at_add_groups, at_add_clients, at_assigned_team_members;
     boolean[] selectedLanguage;
-    boolean [] selectedClients;
-    boolean [] selectedTM;
-    ArrayList<MatterModel> matterArraylist ;
+    boolean[] selectedClients;
+    boolean[] selectedTM;
+    ArrayList<MatterModel> matterArraylist;
     JSONArray exisiting_group_acls;
+    String matter_title, case_number, case_type, description, dof, court, judge, case_priority, case_status;
     JSONArray existing_clients;
     JSONArray existing_members;
+    ArrayList<AdvocateModel> advocates_list = new ArrayList<>();
     JSONArray existing_groups_list;
     JSONArray existing_clients_list;
     JSONArray existing_tm_list;
     String ADAPTER_TAG = "Groups";
-    Button btn_add_groups, btn_add_clients, btn_assigned_team_members,btn_create;
-    LinearLayout ll_selected_groups, ll_selected_clients, ll_assigned_team_members,selected_groups,selected_clients,selected_tm;
+    Button btn_add_groups, btn_add_clients, btn_assigned_team_members, btn_create;
+    LinearLayout ll_selected_groups, ll_selected_clients, ll_assigned_team_members, selected_groups, selected_clients, selected_tm;
     AlertDialog progress_dialog;
     ArrayList<GroupsModel> selected_groups_list = new ArrayList<>();
     ArrayList<GroupsModel> updated_groups_list = new ArrayList<>();
@@ -73,6 +70,7 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
     ArrayList<ClientsModel> clientsList = new ArrayList<>();
     ArrayList<TeamModel> tmList = new ArrayList<>();
     Matter matter;
+    private JSONArray existing_opponents;
 
 
     @Nullable
@@ -127,84 +125,167 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
         String formattedDate = df.format(c);
         matter_date.setText(formattedDate);
         matter = (Matter) getParentFragment();
-        matterArraylist  = matter.getMatter_arraylist();
-        if (matterArraylist.size()!=0){
-            for(int i=0;i<matterArraylist.size();i++){
+        matterArraylist = matter.getMatter_arraylist();
+        if (matterArraylist.size() != 0) {
+            for (int i = 0; i < matterArraylist.size(); i++) {
                 MatterModel matterModel = matterArraylist.get(i);
+                if (matterModel.getGroup_acls()!=null){
                 exisiting_group_acls = matterModel.getGroup_acls();
-                existing_clients = matterModel.getClients();
-                existing_members = matterModel.getMembers();
-                existing_groups_list = matterModel.getGroups_list();
-                existing_clients_list = matterModel.getClients_list();
-                existing_tm_list = matterModel.getMembers_list();
+                try {
+                    for (int g = 0; g < exisiting_group_acls.length(); g++) {
+                        GroupsModel groupsModel = new GroupsModel();
+                        JSONObject jsonObject = exisiting_group_acls.getJSONObject(g);
+                        groupsModel.setGroup_id(jsonObject.getString("id"));
+                        groupsModel.setGroup_name(jsonObject.getString("name"));
+                        groupsModel.setChecked(jsonObject.getBoolean("isChecked"));
+                        selected_groups_list.add(groupsModel);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                }
+                if(matterModel.getClients()!=null){
+                    existing_clients = matterModel.getClients();
+                    try{
+                        for (int p = 0; p < existing_clients.length(); p++) {
+                            ClientsModel clientsModel = new ClientsModel();
+                            JSONObject jsonObject = existing_clients.getJSONObject(p);
+                            clientsModel.setClient_id(jsonObject.getString("id"));
+                            clientsModel.setClient_name(jsonObject.getString("name"));
+                            clientsModel.setClient_type(jsonObject.getString("type"));
+                            selected_clients_list.add(clientsModel);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(matterModel.getMembers()!=null) {
+                    existing_members = matterModel.getMembers();
+                    try{
+                        for (int t = 0; t < existing_members.length(); t++) {
+                            TeamModel teamModel = new TeamModel();
+                            JSONObject jsonObject = existing_members.getJSONObject(t);
+                            teamModel.setTm_id(jsonObject.getString("id"));
+                            teamModel.setTm_name(jsonObject.getString("name"));
+                            teamModel.setUser_id(jsonObject.getString("user_id"));
+                            selected_tm_list.add(teamModel);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(matterModel.getGroups_list()!=null){
+                    existing_groups_list = matterModel.getGroups_list();
+                    try{
+                        for (int m = 0; m < existing_groups_list.length(); m++) {
+                            GroupsModel groupsModel = new GroupsModel();
+                            JSONObject jsonObject = existing_groups_list.getJSONObject(m);
+                            groupsModel.setGroup_id(jsonObject.getString("id"));
+                            groupsModel.setGroup_name(jsonObject.getString("name"));
+                            groupsList.add(groupsModel);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(matterModel.getClients_list()!=null){
+                    existing_clients_list = matterModel.getClients_list();
+                    try{
+                        for (int n = 0; n < existing_clients_list.length(); n++) {
+                            ClientsModel clientsModel = new ClientsModel();
+                            JSONObject jsonObject = existing_clients_list.getJSONObject(n);
+                            clientsModel.setClient_id(jsonObject.getString("id"));
+                            clientsModel.setClient_name(jsonObject.getString("name"));
+                            clientsModel.setClient_type(jsonObject.getString("type"));
+                            clientsList.add(clientsModel);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (matterModel.getMembers_list()!=null){
+                    existing_tm_list = matterModel.getMembers_list();
+                    try{
 
-            }
-            try{
-                for (int i=0;i<exisiting_group_acls.length();i++){
-                    GroupsModel groupsModel = new GroupsModel();
-                    JSONObject jsonObject = exisiting_group_acls.getJSONObject(i);
-                    groupsModel.setGroup_id(jsonObject.getString("id"));
-                    groupsModel.setGroup_name(jsonObject.getString("name"));
-                    groupsModel.setChecked(jsonObject.getBoolean("isChecked"));
-                    selected_groups_list.add(groupsModel);
+                        for (int d = 0; d < existing_tm_list.length(); d++) {
+                            TeamModel teamModel = new TeamModel();
+                            JSONObject jsonObject = existing_tm_list.getJSONObject(d);
+                            teamModel.setTm_id(jsonObject.getString("id"));
+                            teamModel.setTm_name(jsonObject.getString("name"));
+                            teamModel.setUser_id(jsonObject.getString("user_id"));
+                            tmList.add(teamModel);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-                for (int i=0;i<existing_groups_list.length();i++){
-                    GroupsModel groupsModel = new GroupsModel();
-                    JSONObject jsonObject = existing_groups_list.getJSONObject(i);
-                    groupsModel.setGroup_id(jsonObject.getString("id"));
-                    groupsModel.setGroup_name(jsonObject.getString("name"));
-                    groupsList.add(groupsModel);
-                }
-
-                for (int i=0;i<existing_clients.length();i++){
-                    ClientsModel clientsModel = new ClientsModel();
-                    JSONObject jsonObject = existing_clients.getJSONObject(i);
-                    clientsModel.setClient_id(jsonObject.getString("id"));
-                    clientsModel.setClient_name(jsonObject.getString("name"));
-                    clientsModel.setClient_type(jsonObject.getString("type"));
-                    selected_clients_list.add(clientsModel);
-                }
-                for (int i=0;i<existing_clients_list.length();i++){
-                    ClientsModel clientsModel = new ClientsModel();
-                    JSONObject jsonObject = existing_clients_list.getJSONObject(i);
-                    clientsModel.setClient_id(jsonObject.getString("id"));
-                    clientsModel.setClient_name(jsonObject.getString("name"));
-                    clientsModel.setClient_type(jsonObject.getString("type"));
-                    clientsList.add(clientsModel);
-                }
-                for (int i=0;i<existing_members.length();i++){
-                    TeamModel teamModel = new TeamModel();
-                    JSONObject jsonObject = existing_members.getJSONObject(i);
-                    teamModel.setTm_id(jsonObject.getString("id"));
-                    teamModel.setTm_name(jsonObject.getString("name"));
-                    teamModel.setUser_id(jsonObject.getString("user_id"));
-                    selected_tm_list.add(teamModel);
-                }
-                for (int i=0;i<existing_tm_list.length();i++){
-                    TeamModel teamModel = new TeamModel();
-                    JSONObject jsonObject = existing_tm_list.getJSONObject(i);
-                    teamModel.setTm_id(jsonObject.getString("id"));
-                    teamModel.setTm_name(jsonObject.getString("name"));
-                    teamModel.setUser_id(jsonObject.getString("user_id"));
-                    tmList.add(teamModel);
+                if (matterArraylist.get(i).getOpponent_advocate() != null) {
+                    existing_opponents = matterArraylist.get(i).getOpponent_advocate();
+                    try {
+                        for (int j = 0; j < existing_opponents.length(); j++) {
+                            try {
+                                JSONObject jsonObject = existing_opponents.getJSONObject(j);
+                                AdvocateModel advocateModel = new AdvocateModel();
+                                advocateModel.setAdvocate_name(jsonObject.getString("name"));
+                                advocateModel.setNumber(jsonObject.getString("phone"));
+                                advocateModel.setEmail(jsonObject.getString("email"));
+                                advocates_list.add(advocateModel);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
-                if(selected_groups_list.size()!=0){
+                    if (matterModel.getMatter_title()!=null){
+                    matter_title = matterModel.getMatter_title();
+                }
+                if(matterModel.getCase_number()!=null){
+                    case_number = matterModel.getCase_number();
+                }
+                if(matterModel.getCase_type()!=null){
+                    case_type = matterModel.getCase_type();
+                }
+               if(matterModel.getDescription()!=null){
+                   description = matterModel.getDescription();
+               }
+                if(matterModel.getDate_of_filing()!=null){
+                    dof =matterModel.getDate_of_filing();
+                }
+                if (matterModel.getCourt()!=null){
+                    court = matterModel.getCourt();
+                }
+                 if(matterModel.getJudge()!=null){
+                     judge = matterModel.getJudge();
+                 }
+                 if(matterModel.getCase_priority()!=null){
+                     case_priority = matterModel.getCase_priority();
+                 }
+                if(matterModel.getStatus()!=null){
+                    case_status = matterModel.getStatus();
+                }
+                try {
+
+                    if (selected_groups_list.size() != 0) {
 //                    callGroupsWebservice();
-                    loadSelectedGroups();
-                }
-                if(selected_clients_list.size()!=0){
+                        loadSelectedGroups();
+                    }
+                    if (selected_clients_list.size() != 0) {
 //                    callClientsWebservice();
-                    loadSelectedClients();
-                }
-                if (selected_tm_list.size()!=0){
+                        loadSelectedClients();
+                    }
+                    if (selected_tm_list.size() != 0) {
 //                    callTMWebservice();
-                    loadSelectedTM();
-                }
+                        loadSelectedTM();
+                    }
 
-            } catch (Exception e) {
-                e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+
         }
 //        callGroupsWebservice();
         return view;
@@ -220,26 +301,24 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_add_groups:
-                if (groupsList.size()==0) {
+                if (groupsList.size() == 0) {
                     callGroupsWebservice();
-                }else{
+                } else {
                     GroupsPopup();
                 }
                 break;
             case R.id.btn_add_clients:
-                if (clientsList.size()==0) {
+                if (clientsList.size() == 0) {
                     callClientsWebservice();
-                }else
-                {
+                } else {
                     ClientsPopUp();
                 }
 
                 break;
             case R.id.btn_assigned_team_members:
-                if (tmList.size()==0) {
+                if (tmList.size() == 0) {
                     callTMWebservice();
-                }else
-                {
+                } else {
                     TeamPopUp();
                 }
                 break;
@@ -250,40 +329,41 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
     }
 
     private void saveGCTinformation() {
-        if (selected_groups_list.size()==0){
-            AndroidUtils.showToast("Please select atealst one group",getContext());
-        }else if(selected_clients_list.size()==0 ){
-            AndroidUtils.showToast("Please select atleast one client",getContext());
-        }else if(selected_tm_list.size()==0){
-            AndroidUtils.showToast("Please Assign atleast one Team Member",getContext());
-        }else {
+        if (selected_groups_list.size() == 0) {
+            AndroidUtils.showToast("Please select atealst one group", getContext());
+        } else if (selected_clients_list.size() == 0) {
+            AndroidUtils.showToast("Please select atleast one client", getContext());
+        } else if (selected_tm_list.size() == 0) {
+            AndroidUtils.showToast("Please Assign atleast one Team Member", getContext());
+        } else {
             try {
                 JSONArray clients = new JSONArray();
                 JSONArray group_acls = new JSONArray();
                 JSONArray members = new JSONArray();
                 JSONArray new_groups_list = new JSONArray();
                 JSONArray new_clients_list = new JSONArray();
-                JSONArray new_tm_list =new JSONArray();
+                JSONArray new_tm_list = new JSONArray();
+//                JSONArray advocates_list = new JSONArray();
                 MatterModel matterModel = new MatterModel();
                 for (int i = 0; i < selected_groups_list.size(); i++) {
                     try {
                         GroupsModel groupsModel = selected_groups_list.get(i);
                         JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("id",groupsModel.getGroup_id());
-                        jsonObject.put("name",groupsModel.getGroup_name());
-                        jsonObject.put("isChecked",groupsModel.isChecked());
+                        jsonObject.put("id", groupsModel.getGroup_id());
+                        jsonObject.put("name", groupsModel.getGroup_name());
+                        jsonObject.put("isChecked", groupsModel.isChecked());
                         group_acls.put(jsonObject);
 
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                for (int i=0;i<groupsList.size();i++){
+                for (int i = 0; i < groupsList.size(); i++) {
                     try {
                         GroupsModel groupsModel = groupsList.get(i);
                         JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("id",groupsModel.getGroup_id());
-                        jsonObject.put("name",groupsModel.getGroup_name());
+                        jsonObject.put("id", groupsModel.getGroup_id());
+                        jsonObject.put("name", groupsModel.getGroup_name());
                         new_groups_list.put(jsonObject);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -294,57 +374,80 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
                     try {
                         ClientsModel clientsModel = selected_clients_list.get(i);
                         JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("id",clientsModel.getClient_id());
-                        jsonObject.put("type",clientsModel.getClient_type());
-                        jsonObject.put("name",clientsModel.getClient_name());
+                        jsonObject.put("id", clientsModel.getClient_id());
+                        jsonObject.put("type", clientsModel.getClient_type());
+                        jsonObject.put("name", clientsModel.getClient_name());
                         clients.put(jsonObject);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
                 }
-                for (int i=0;i<clientsList.size();i++){
+                for (int i = 0; i < clientsList.size(); i++) {
                     ClientsModel clientsModel = clientsList.get(i);
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("id",clientsModel.getClient_id());
-                    jsonObject.put("type",clientsModel.getClient_type());
-                    jsonObject.put("name",clientsModel.getClient_name());
+                    jsonObject.put("id", clientsModel.getClient_id());
+                    jsonObject.put("type", clientsModel.getClient_type());
+                    jsonObject.put("name", clientsModel.getClient_name());
                     new_clients_list.put(jsonObject);
                 }
-                for (int i=0;i<selected_tm_list.size();i++){
-                    try{
+                for (int i = 0; i < selected_tm_list.size(); i++) {
+                    try {
                         TeamModel teamModel = selected_tm_list.get(i);
                         JSONObject team_object = new JSONObject();
-                        team_object.put("id",teamModel.getTm_id());
-                        team_object.put("name",teamModel.getTm_name());
-                        team_object.put("user_id",teamModel.getUser_id());
+                        team_object.put("id", teamModel.getTm_id());
+                        team_object.put("name", teamModel.getTm_name());
+                        team_object.put("user_id", teamModel.getUser_id());
 //                        team_object.put("")
                         members.put(team_object);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                for (int i=0;i<tmList.size();i++){
-                    try{
+                for (int i = 0; i < tmList.size(); i++) {
+                    try {
                         TeamModel teamModel = tmList.get(i);
                         JSONObject team_object = new JSONObject();
-                        team_object.put("id",teamModel.getTm_id());
-                        team_object.put("name",teamModel.getTm_name());
-                        team_object.put("user_id",teamModel.getUser_id());
+                        team_object.put("id", teamModel.getTm_id());
+                        team_object.put("name", teamModel.getTm_name());
+                        team_object.put("user_id", teamModel.getUser_id());
 //                        team_object.put("")
                         new_tm_list.put(team_object);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
+                JSONArray jsonArray = new JSONArray();
+                try {
+                    for (int i = 0; i < advocates_list.size(); i++) {
+                        AdvocateModel advocateModel = advocates_list.get(i);
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("name", advocateModel.getAdvocate_name());
+                        jsonObject.put("email", advocateModel.getEmail());
+                        jsonObject.put("phone", advocateModel.getNumber());
+                        jsonArray.put(jsonObject);
+                    }
 
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                matterModel.setMatter_title(matter_title);
+                matterModel.setCase_number(case_number);
+                matterModel.setCase_type(case_type);
+                matterModel.setDescription(description);
+                matterModel.setDate_of_filing(dof);
+                matterModel.setCourt(court);
+                matterModel.setJudge(judge);
+                matterModel.setCase_priority(case_priority);
+                matterModel.setStatus(case_status);
                 matterModel.setClients(clients);
                 matterModel.setGroup_acls(group_acls);
                 matterModel.setMembers(members);
                 matterModel.setGroups_list(new_groups_list);
                 matterModel.setClients_list(new_clients_list);
                 matterModel.setMembers_list(new_tm_list);
-                matterArraylist.add(matterModel);
+                matterModel.setOpponent_advocate(jsonArray);
+                matterArraylist.set(0, matterModel);
                 matter.loadDocuments();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -378,7 +481,7 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
             rv_groups.setLayoutManager(layoutManager);
             rv_groups.setHasFixedSize(true);
             ADAPTER_TAG = "TM";
-            GroupsAdapter documentsAdapter = new GroupsAdapter(groupsList,clientsList,tmList,ADAPTER_TAG);
+            GroupsAdapter documentsAdapter = new GroupsAdapter(groupsList, clientsList, tmList, ADAPTER_TAG);
             rv_groups.setAdapter(documentsAdapter);
             AlertDialog dialog = dialogBuilder.create();
             iv_cancel.setOnClickListener(new View.OnClickListener() {
@@ -423,21 +526,21 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
     }
 
     private void callTMWebservice() {
-try{
-        progress_dialog = AndroidUtils.get_progress(getActivity());
-        JSONArray group_acls = new JSONArray();
-        JSONObject postdata = new JSONObject();
-        for (int i = 0; i < selected_groups_list.size(); i++) {
-            JSONObject jsonObject = new JSONObject();
-            GroupsModel groupsModel = selected_groups_list.get(i);
-            group_acls.put(groupsModel.getGroup_id());
+        try {
+            progress_dialog = AndroidUtils.get_progress(getActivity());
+            JSONArray group_acls = new JSONArray();
+            JSONObject postdata = new JSONObject();
+            for (int i = 0; i < selected_groups_list.size(); i++) {
+                JSONObject jsonObject = new JSONObject();
+                GroupsModel groupsModel = selected_groups_list.get(i);
+                group_acls.put(groupsModel.getGroup_id());
+            }
+            postdata.put("group_acls", group_acls);
+            postdata.put("attachment_type", "members");
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PUT, "matter/attachments", "Members", postdata.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        postdata.put("group_acls", group_acls);
-        postdata.put("attachment_type", "members");
-        WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PUT, "matter/attachments", "Members",postdata.toString());
-    } catch (JSONException e) {
-        e.printStackTrace();
-    }
     }
 
     private void callClientsWebservice() {
@@ -454,11 +557,12 @@ try{
             }
             postdata.put("group_acls", group_acls);
             postdata.put("attachment_type", "clients");
-            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PUT, "matter/attachments", "Clients",postdata.toString());
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PUT, "matter/attachments", "Clients", postdata.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
     @Override
     public void onAsyncTaskComplete(HttpResultDo httpResult) {
         if (progress_dialog != null && progress_dialog.isShowing())
@@ -469,10 +573,10 @@ try{
                 if (httpResult.getRequestType().equals("Groups")) {
                     JSONArray data = result.getJSONArray("data");
                     loadGroupsData(data);
-                }else if(httpResult.getRequestType().equals("Clients")){
+                } else if (httpResult.getRequestType().equals("Clients")) {
                     JSONArray clients = result.getJSONArray("clients");
                     loadClients(clients);
-                }else if(httpResult.getRequestType().equals("Members")){
+                } else if (httpResult.getRequestType().equals("Members")) {
                     JSONArray members = result.getJSONArray("members");
                     loadMembers(members);
                 }
@@ -484,7 +588,7 @@ try{
 
     private void loadMembers(JSONArray members) {
         try {
-            for (int i=0;i<members.length();i++){
+            for (int i = 0; i < members.length(); i++) {
                 JSONObject jsonObject = members.getJSONObject(i);
                 TeamModel teamModel = new TeamModel();
                 teamModel.setTm_id(jsonObject.getString("id"));
@@ -502,7 +606,7 @@ try{
 
     private void loadClients(JSONArray clients) {
         try {
-            for (int i=0;i<clients.length();i++){
+            for (int i = 0; i < clients.length(); i++) {
                 JSONObject jsonObject = clients.getJSONObject(i);
                 ClientsModel clientsModel = new ClientsModel();
                 clientsModel.setClient_id(jsonObject.getString("id"));
@@ -543,7 +647,7 @@ try{
             rv_groups.setLayoutManager(layoutManager);
             rv_groups.setHasFixedSize(true);
             ADAPTER_TAG = "Clients";
-            GroupsAdapter documentsAdapter = new GroupsAdapter(groupsList,clientsList,tmList,ADAPTER_TAG);
+            GroupsAdapter documentsAdapter = new GroupsAdapter(groupsList, clientsList, tmList, ADAPTER_TAG);
             rv_groups.setAdapter(documentsAdapter);
             AlertDialog dialog = dialogBuilder.create();
             iv_cancel.setOnClickListener(new View.OnClickListener() {
@@ -586,7 +690,8 @@ try{
             AndroidUtils.showAlert(e.getMessage(), getContext());
         }
     }
-    private void loadSelectedTM(){
+
+    private void loadSelectedTM() {
         String[] value = new String[selected_tm_list.size()];
         for (int i = 0; i < selected_tm_list.size(); i++) {
 //                                value += "," + family_members.get(i);
@@ -599,7 +704,7 @@ try{
         at_assigned_team_members.setText(str);
         selected_tm.setVisibility(View.VISIBLE);
         ll_assigned_team_members.removeAllViews();
-        for(int i=0;i<selected_tm_list.size();i++){
+        for (int i = 0; i < selected_tm_list.size(); i++) {
             View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);
             TextView tv_opponent_name = view_opponents.findViewById(R.id.tv_opponent_name);
             tv_opponent_name.setText(selected_tm_list.get(i).getTm_name());
@@ -638,6 +743,7 @@ try{
             ll_assigned_team_members.addView(view_opponents);
         }
     }
+
     private void loadSelectedClients() {
         String[] value = new String[selected_clients_list.size()];
         for (int i = 0; i < selected_clients_list.size(); i++) {
@@ -651,7 +757,7 @@ try{
         at_add_clients.setText(str);
         selected_clients.setVisibility(View.VISIBLE);
         ll_selected_clients.removeAllViews();
-        for(int i=0;i<selected_clients_list.size();i++){
+        for (int i = 0; i < selected_clients_list.size(); i++) {
             View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);
             TextView tv_opponent_name = view_opponents.findViewById(R.id.tv_opponent_name);
             tv_opponent_name.setText(selected_clients_list.get(i).getClient_name());
@@ -709,6 +815,7 @@ try{
             AndroidUtils.showAlert(e.getMessage(), getContext());
         }
     }
+
     private void GroupsPopup() {
         try {
 
@@ -734,7 +841,7 @@ try{
             rv_groups.setLayoutManager(layoutManager);
             rv_groups.setHasFixedSize(true);
             ADAPTER_TAG = "Groups";
-            GroupsAdapter documentsAdapter = new GroupsAdapter(groupsList,clientsList,tmList,ADAPTER_TAG);
+            GroupsAdapter documentsAdapter = new GroupsAdapter(groupsList, clientsList, tmList, ADAPTER_TAG);
             rv_groups.setAdapter(documentsAdapter);
             AlertDialog dialog = dialogBuilder.create();
             iv_cancel.setOnClickListener(new View.OnClickListener() {
@@ -765,11 +872,6 @@ try{
                     detectListChanges();
 
 
-
-
-
-
-
                     loadSelectedGroups();
                     dialog.dismiss();
                 }
@@ -788,7 +890,7 @@ try{
         int originalSize = updated_groups_list.size();
         updated_groups_list.removeAll(selected_groups_list);
         int newSize = updated_groups_list.size();
-        if (newSize > originalSize||newSize<originalSize) {
+        if (newSize > originalSize || newSize < originalSize) {
             clientsList.clear();
             tmList.clear();
             selected_clients_list.clear();
@@ -800,10 +902,10 @@ try{
             // items have been added to the list
         } else if (newSize == originalSize) {
             // items have been removed from the list
-        } else if(newSize==0||originalSize==0){
+        } else if (newSize == 0 || originalSize == 0) {
             selected_groups.setVisibility(View.GONE);
             ll_selected_groups.removeAllViews();
-        }else {
+        } else {
             // the list has not changed in size
         }
         at_add_clients.setText("");
@@ -824,7 +926,7 @@ try{
         at_add_groups.setText(str);
         selected_groups.setVisibility(View.VISIBLE);
         ll_selected_groups.removeAllViews();
-        if (selected_groups_list.size()==0){
+        if (selected_groups_list.size() == 0) {
             clientsList.clear();
             selected_clients_list.clear();
             ll_selected_clients.removeAllViews();
@@ -839,7 +941,7 @@ try{
             selected_tm.setVisibility(View.GONE);
 
         }
-        for(int i=0;i<selected_groups_list.size();i++){
+        for (int i = 0; i < selected_groups_list.size(); i++) {
             View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);
             TextView tv_opponent_name = view_opponents.findViewById(R.id.tv_opponent_name);
             tv_opponent_name.setText(selected_groups_list.get(i).getGroup_name());
@@ -862,9 +964,9 @@ try{
 //                            selected_groups_list.set(position, groupsModel);
                             String[] value = new String[selected_groups_list.size()];
                             for (int i = 0; i < selected_groups_list.size(); i++) {
-                               value[i] = selected_groups_list.get(i).getGroup_name();
+                                value[i] = selected_groups_list.get(i).getGroup_name();
                             }
-                                detectListChanges();
+                            detectListChanges();
                             String str = String.join(",", value);
                             at_add_groups.setText(str);
                         }

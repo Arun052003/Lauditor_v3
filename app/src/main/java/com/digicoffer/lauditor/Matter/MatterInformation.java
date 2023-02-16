@@ -92,7 +92,7 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
                 String myFormat = "dd-MM-yyyy";
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
                 tv_dof.setText(sdf.format(myCalendar.getTime()));
-            }
+              }
         };
         tv_dof.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -243,9 +243,10 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
         } else if (tv_dof.getText().toString().equals("")) {
             tv_dof.setError("Date of Filing is Required");
             tv_dof.requestFocus();
-        } else if(advocates_list.size()==0){
-            AndroidUtils.showToast("Please add an advocate to continue.",getContext());
-        }else {
+        } else {
+//            JSONArray group_acls = new JSONArray();
+//            JSONArray client = new JSONArray();
+//            JSONArray members = new JSONArray();
             MatterModel matterModel = new MatterModel();
             matterModel.setMatter_title(tv_matter_title.getText().toString());
             matterModel.setCase_number(tv_matter_num.getText().toString());
@@ -272,7 +273,11 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
                 e.printStackTrace();
             }
             matterModel.setOpponent_advocate(jsonArray);
-            matterArraylist.add(matterModel);
+            if(matterArraylist.size()==0) {
+                matterArraylist.add(matterModel);
+            }else{
+                matterArraylist.set(0,matterModel);
+            }
             matter.loadGCT();
         }
     }

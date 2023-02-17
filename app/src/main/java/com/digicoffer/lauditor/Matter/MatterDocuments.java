@@ -151,7 +151,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                     try {
                         for (int g = 0; g < exisiting_group_acls.length(); g++) {
                             GroupsModel groupsModel = new GroupsModel();
-                            JSONObject jsonObject = exisiting_group_acls.getJSONObject(i);
+                            JSONObject jsonObject = exisiting_group_acls.getJSONObject(g);
                             groupsModel.setGroup_id(jsonObject.getString("id"));
                             groupsModel.setGroup_name(jsonObject.getString("name"));
                             groupsModel.setChecked(jsonObject.getBoolean("isChecked"));
@@ -160,8 +160,8 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                         if (existing_documents!=null){
                             for (int d=0;d<existing_documents.length();d++){
                                 DocumentsModel documentsModel = new DocumentsModel();
-                                JSONObject jsonObject =existing_documents.getJSONObject(i);
-                                documentsModel.setDocid(jsonObject.getString("id"));
+                                JSONObject jsonObject =existing_documents.getJSONObject(d);
+                                documentsModel.setDocid(jsonObject.getString("docid"));
                                 documentsModel.setName(jsonObject.getString("name"));
                                 documentsModel.setUser_id(jsonObject.getString("user_id"));
                                 documentsModel.setDoctype(jsonObject.getString("doctype"));
@@ -173,7 +173,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                             for (int ed=0;ed<existing_documents_list.length();ed++){
                                 DocumentsModel documentsModel = new DocumentsModel();
                                 JSONObject jsonObject =existing_documents_list.getJSONObject(ed);
-                                documentsModel.setDocid(jsonObject.getString("id"));
+                                documentsModel.setDocid(jsonObject.getString("docid"));
                                 documentsModel.setName(jsonObject.getString("name"));
                                 documentsModel.setUser_id(jsonObject.getString("user_id"));
                                 documentsModel.setDoctype(jsonObject.getString("doctype"));

@@ -246,8 +246,8 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
                         existing_documents = matterModel.getDocuments();
                         for (int d = 0; d < existing_documents.length(); d++) {
                             DocumentsModel documentsModel = new DocumentsModel();
-                            JSONObject jsonObject = existing_documents.getJSONObject(i);
-                            documentsModel.setDocid(jsonObject.getString("id"));
+                            JSONObject jsonObject = existing_documents.getJSONObject(d);
+                            documentsModel.setDocid(jsonObject.getString("docid"));
                             documentsModel.setName(jsonObject.getString("name"));
                             documentsModel.setUser_id(jsonObject.getString("user_id"));
                             documentsModel.setDoctype(jsonObject.getString("doctype"));
@@ -263,7 +263,7 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
                         for (int ed = 0; ed < existing_documents_list.length(); ed++) {
                             DocumentsModel documentsModel = new DocumentsModel();
                             JSONObject jsonObject = existing_documents_list.getJSONObject(ed);
-                            documentsModel.setDocid(jsonObject.getString("id"));
+                            documentsModel.setDocid(jsonObject.getString("docid"));
                             documentsModel.setName(jsonObject.getString("name"));
                             documentsModel.setUser_id(jsonObject.getString("user_id"));
                             documentsModel.setDoctype(jsonObject.getString("doctype"));

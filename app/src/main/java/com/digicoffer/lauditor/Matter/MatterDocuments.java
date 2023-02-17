@@ -55,6 +55,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pgpainless.key.selection.key.util.And;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,6 +66,7 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -109,6 +111,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
     private ArrayList<TeamModel> tmList = new ArrayList<>();
     private String uploaded_document_name;
     private AbstractCollection<DocumentsModel> MergedList;
+    private int changedCollection;
 
     @Nullable
     @Override
@@ -359,8 +362,9 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
             try {
                 if (upload_documents_list.size()>=1){
                     try{
-                        MergedList.addAll(upload_documents_list);
+                            changedCollection = upload_documents_list.size();
                         for (int i = 0; i < upload_documents_list.size(); i++) {
+//                            changedCollection--;
                             String name = upload_documents_list.get(i).getName();
                             JSONArray new_clients = new JSONArray();
                             JSONArray new_groups = new JSONArray();
@@ -369,6 +373,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
 //                JSONArray tags = new JSONArray();
                             String docname = "";
                             DocumentsModel documentsModel = upload_documents_list.get(i);
+//                           MergedList.addAll(Collections.singleton(documentsModel));
                             filename = documentsModel.getName();
                             File new_file = documentsModel.getFile();
                             String doc_type = "pdf";
@@ -407,25 +412,31 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                                 jsonObject.put("tags", upload_documents_list.get(i).getTags_list());
                             }
 
-
                             if (doc_type.equalsIgnoreCase("apng") || doc_type.equalsIgnoreCase("avif") || doc_type.equalsIgnoreCase("gif") || doc_type.equalsIgnoreCase("jpeg") || doc_type.equalsIgnoreCase("png") || doc_type.equalsIgnoreCase("svg") || doc_type.equalsIgnoreCase("webp") || doc_type.equalsIgnoreCase("jpg")) {
                                 jsonObject.put("content_type", "image/" + doc_type);
                             } else {
                                 jsonObject.put("content_type", "application/" + doc_type);
                             }
+                            progress_dialog = AndroidUtils.get_progress(getActivity());
                             WebServiceHelper.callHttpUploadWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/document/upload", "Upload Document", new_file, jsonObject.toString());
                         }
 //            AndroidUtils.showAlert(jsonObject.toString(),getContext());
                     } catch (JSONException e) {
+                        if (progress_dialog != null && progress_dialog.isShowing())
+                            AndroidUtils.dismiss_dialog(progress_dialog);
                         e.printStackTrace();
                     }
                 }
+                if (progress_dialog != null && progress_dialog.isShowing())
+                    AndroidUtils.dismiss_dialog(progress_dialog);
 
 
 //                matter.loadDocuments();
 
                 }
              catch (Exception e) {
+                 if (progress_dialog != null && progress_dialog.isShowing())
+                     AndroidUtils.dismiss_dialog(progress_dialog);
                 e.printStackTrace();
             }
         }
@@ -562,7 +573,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
         documentsModel.setFile(file);
         documentsModel.setIsenabled(true);
         upload_documents_list.add(documentsModel);
-
+//        MergedList.addAll(Collections);
 //        if (docsList.size() == 1) {
 //            ll_hide_document_details.setVisibility(View.VISIBLE);
 //            hideDisableDownloadBackground();
@@ -691,17 +702,26 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                         AndroidUtils.showAlert(result.getString("msg"),getContext());
                     }else{
                         String docid = result.getString("docid");
+                        AndroidUtils.showAlert(result.getString("msg"),getContext());
                         addDocsToMatter(docid);
-                        if (MergedList.size()>1){
-                            for (int i=0;i<MergedList.size();i++){
-                                if (i== MergedList.size()-1){
-                                    if (i>0)
-                                        MergedList.remove(i);
-                                }
-                            }
-                        }else{
+                        AndroidUtils.showToast(String.valueOf(changedCollection),getContext());
+                        changedCollection++;
+//                        if (changedCollection==0){
+                            if (progress_dialog != null && progress_dialog.isShowing())
+                                AndroidUtils.dismiss_dialog(progress_dialog);
                             submitMatter();
-                        }
+//                        }
+//                        if (MergedList.size()>1){
+//                            for (int i=0;i<MergedList.size();i++){
+//                                if (i== MergedList.size()-1){
+//                                    if (i>0)
+//                                        MergedList.remove(i);
+//                                }
+//                            }
+
+//                        }else{
+
+//                        }
                     }
                 }
             } catch (JSONException e) {
@@ -844,7 +864,20 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
             matterModel.setOpponent_advocate(jsonArray);
             matterModel.setDocuments(documents);
             matterModel.setDocuments_list(new_documents_list);
+            String message = ""; // initialize the message string
+
             matterArraylist.set(0, matterModel);
+            if (changedCollection>=upload_documents_list.size()) {
+                if (progress_dialog != null && progress_dialog.isShowing())
+                    AndroidUtils.dismiss_dialog(progress_dialog);
+                for (int i = 0; i < matterArraylist.size(); i++) {
+                    MatterModel model = matterArraylist.get(i);
+                    message += "Item " + (i + 1) + ": " + model.toString() + "\n"; // concatenate the model object's string representation
+                }
+                AndroidUtils.showToast(message,getContext());
+            }
+
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1029,7 +1062,7 @@ private void loadUploadedDocuments(){
                 position = (Integer) v.getTag();
                 v= ll_uploaded_documents.getChildAt(position);
                 DocumentsModel documentsModel1 = upload_documents_list.get(position);
-                EditDocuments(documentsModel1.getName(),documentsModel1.getDescription(),position,v);
+                EditDocuments(documentsModel1.getName(),documentsModel1.getDescription(),documentsModel1.getFile(),position,v);
 
             }
         });
@@ -1313,7 +1346,7 @@ private void loadUploadedDocuments(){
         }
     }
 
-    private void EditDocuments(String name, String description, int position, View v) {
+    private void EditDocuments(String name, String description,File file, int position, View v) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view_edit_documents = inflater.inflate(R.layout.edit_meta_data, null);
@@ -1347,6 +1380,7 @@ private void loadUploadedDocuments(){
                     DocumentsModel documentsModel = new DocumentsModel();
                     documentsModel.setName(tv_doc_name.getText().toString());
                     documentsModel.setDescription(tv_description.getText().toString());
+                    documentsModel.setFile(file);
                     upload_documents_list.set(position, documentsModel);
                    dialog.dismiss();
                     loadUploadedDocuments();

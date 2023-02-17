@@ -107,6 +107,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
     String CATEGORY_TAG = "";
     CheckBox chk_select_all;
     String filename;
+    int currentpoistion = 0;
     ArrayList<DocumentsModel> selected_groups_list = new ArrayList<>();
     RecyclerView rv_documents,rv_display_view_docs;
     ArrayList<DocumentsModel> docsList = new ArrayList<>();
@@ -645,7 +646,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
                 }
                 else{
                     for (int i = 0; i < docsList.size(); i++) {
-
+                        currentpoistion++;
                         JSONObject jsonObject = new JSONObject();
                         JSONArray clients = new JSONArray();
                         JSONObject clients_jobject = new JSONObject();

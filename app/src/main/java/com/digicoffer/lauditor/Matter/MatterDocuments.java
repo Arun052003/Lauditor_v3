@@ -47,6 +47,7 @@ import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.digicoffer.lauditor.Webservice.WebServiceHelper;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common.BottomSheetUploadFile;
+import com.digicoffer.lauditor.common.Constants;
 import com.google.android.material.textfield.TextInputEditText;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -61,6 +62,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -105,6 +107,8 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
     private ArrayList<GroupsModel> groupsList = new ArrayList<>();
     private ArrayList<ClientsModel> clientsList = new ArrayList<>();
     private ArrayList<TeamModel> tmList = new ArrayList<>();
+    private String uploaded_document_name;
+    private AbstractCollection<DocumentsModel> MergedList;
 
     @Nullable
     @Override
@@ -353,203 +357,75 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
             AndroidUtils.showToast("Please add atleast one document from existing documents or upload a new one",getContext());
         }else{
             try {
-                JSONArray clients = new JSONArray();
-                JSONArray group_acls = new JSONArray();
-                JSONArray members = new JSONArray();
-                JSONArray new_groups_list = new JSONArray();
-                JSONArray new_clients_list = new JSONArray();
-                JSONArray new_tm_list = new JSONArray();
-                JSONArray documents = new JSONArray();
-                JSONArray new_documents_list = new JSONArray();
-//                JSONArray advocates_list = new JSONArray();
-                MatterModel matterModel = new MatterModel();
-                for (int i = 0; i < selected_groups_list.size(); i++) {
-                    try {
-                        GroupsModel groupsModel = selected_groups_list.get(i);
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("id", groupsModel.getGroup_id());
-                        jsonObject.put("name", groupsModel.getGroup_name());
-                        jsonObject.put("isChecked", groupsModel.isChecked());
-                        group_acls.put(jsonObject);
+                if (upload_documents_list.size()>=1){
+                    try{
+                        MergedList.addAll(upload_documents_list);
+                        for (int i = 0; i < upload_documents_list.size(); i++) {
+                            String name = upload_documents_list.get(i).getName();
+                            JSONArray new_clients = new JSONArray();
+                            JSONArray new_groups = new JSONArray();
+                            JSONObject clients_jobject = new JSONObject();
+                            JSONArray matter = new JSONArray();
+//                JSONArray tags = new JSONArray();
+                            String docname = "";
+                            DocumentsModel documentsModel = upload_documents_list.get(i);
+                            filename = documentsModel.getName();
+                            File new_file = documentsModel.getFile();
+                            String doc_type = "pdf";
+                            String content_string = new_file.getName().replace(".", "/");
+                            String[] content_type = content_string.split("/");
+                            if (content_type.length >= 2) {
+                                doc_type = content_type[1];
+                                docname = content_type[0];
+                            }
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                for (int i = 0; i < groupsList.size(); i++) {
-                    try {
-                        GroupsModel groupsModel = groupsList.get(i);
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("id", groupsModel.getGroup_id());
-                        jsonObject.put("name", groupsModel.getGroup_name());
-                        new_groups_list.put(jsonObject);
+                            for (int j = 0; j < selected_clients_list.size(); j++) {
+//                                if (sele.get(j).getId().matches(client_id)) {
+                                ClientsModel clientsModel = selected_clients_list.get(j);
+                                clients_jobject.put("id", clientsModel.getClient_id());
+                                clients_jobject.put("type", clientsModel.getClient_type());
+                                new_clients.put(clients_jobject);
+                            }
+                            for(int g=0;g<selected_groups_list.size();g++){
+                                GroupsModel groupsModel = selected_groups_list.get(g);
+                                new_groups.put(groupsModel.getGroup_id());
+                            }
+
+                            JSONObject jsonObject = new JSONObject();
+//                            matter.put(matter_id);
+                            uploaded_document_name = name;
+                            jsonObject.put("name", name);
+                            jsonObject.put("description", upload_documents_list.get(i).getDescription());
+                            jsonObject.put("filename", docname);
+                            jsonObject.put("category", "client");
+                            jsonObject.put("clients", new_clients);
+                            jsonObject.put("groups",new_groups);
+                            jsonObject.put("downloadDisabled","false");
+                            if (upload_documents_list.get(i).getTags_list() == null) {
+                                jsonObject.put("tags", "");
+                            } else {
+                                jsonObject.put("tags", upload_documents_list.get(i).getTags_list());
+                            }
+
+
+                            if (doc_type.equalsIgnoreCase("apng") || doc_type.equalsIgnoreCase("avif") || doc_type.equalsIgnoreCase("gif") || doc_type.equalsIgnoreCase("jpeg") || doc_type.equalsIgnoreCase("png") || doc_type.equalsIgnoreCase("svg") || doc_type.equalsIgnoreCase("webp") || doc_type.equalsIgnoreCase("jpg")) {
+                                jsonObject.put("content_type", "image/" + doc_type);
+                            } else {
+                                jsonObject.put("content_type", "application/" + doc_type);
+                            }
+                            WebServiceHelper.callHttpUploadWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/document/upload", "Upload Document", new_file, jsonObject.toString());
+                        }
+//            AndroidUtils.showAlert(jsonObject.toString(),getContext());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
 
-                for (int i = 0; i < selected_clients_list.size(); i++) {
-                    try {
-                        ClientsModel clientsModel = selected_clients_list.get(i);
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("id", clientsModel.getClient_id());
-                        jsonObject.put("type", clientsModel.getClient_type());
-                        jsonObject.put("name", clientsModel.getClient_name());
-                        clients.put(jsonObject);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
 
-                }
-                for (int i = 0; i < clientsList.size(); i++) {
-                    ClientsModel clientsModel = clientsList.get(i);
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("id", clientsModel.getClient_id());
-                    jsonObject.put("type", clientsModel.getClient_type());
-                    jsonObject.put("name", clientsModel.getClient_name());
-                    new_clients_list.put(jsonObject);
-                }
-                for (int i = 0; i < selected_tm_list.size(); i++) {
-                    try {
-                        TeamModel teamModel = selected_tm_list.get(i);
-                        JSONObject team_object = new JSONObject();
-                        team_object.put("id", teamModel.getTm_id());
-                        team_object.put("name", teamModel.getTm_name());
-                        team_object.put("user_id", teamModel.getUser_id());
-//                        team_object.put("")
-                        members.put(team_object);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                for (int i = 0; i < tmList.size(); i++) {
-                    try {
-                        TeamModel teamModel = tmList.get(i);
-                        JSONObject team_object = new JSONObject();
-                        team_object.put("id", teamModel.getTm_id());
-                        team_object.put("name", teamModel.getTm_name());
-                        team_object.put("user_id", teamModel.getUser_id());
-//                        team_object.put("")
-                        new_tm_list.put(team_object);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                JSONArray jsonArray = new JSONArray();
-                try {
-                    for (int i = 0; i < advocates_list.size(); i++) {
-                        AdvocateModel advocateModel = advocates_list.get(i);
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("name", advocateModel.getAdvocate_name());
-                        jsonObject.put("email", advocateModel.getEmail());
-                        jsonObject.put("phone", advocateModel.getNumber());
-                        jsonArray.put(jsonObject);
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                for (int d = 0; d < selected_documents_list.size(); d++) {
-                    DocumentsModel documentsModel = selected_documents_list.get(d);
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("docid", documentsModel.getDocid());
-                    jsonObject.put("doctype", documentsModel.getDoctype());
-                    jsonObject.put("user_id", documentsModel.getUser_id());
-                    jsonObject.put("name", documentsModel.getName());
-                    documents.put(jsonObject);
-                }
-                for (int e = 0; e< documentsList.size(); e++) {
-                    DocumentsModel documentsModel = documentsList.get(e);
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("docid", documentsModel.getDocid());
-                    jsonObject.put("doctype", documentsModel.getDoctype());
-                    jsonObject.put("user_id", documentsModel.getUser_id());
-                    jsonObject.put("name", documentsModel.getName());
-                    new_documents_list.put(jsonObject);
-                }
-                matterModel.setMatter_title(matter_title);
-                matterModel.setCase_number(case_number);
-                matterModel.setCase_type(case_type);
-                matterModel.setDescription(description);
-                matterModel.setDate_of_filing(dof);
-                matterModel.setCourt(court);
-                matterModel.setJudge(judge);
-                matterModel.setCase_priority(case_priority);
-                matterModel.setStatus(case_status);
-                matterModel.setClients(clients);
-                matterModel.setGroup_acls(group_acls);
-                matterModel.setMembers(members);
-                matterModel.setGroups_list(new_groups_list);
-                matterModel.setClients_list(new_clients_list);
-                matterModel.setMembers_list(new_tm_list);
-                matterModel.setOpponent_advocate(jsonArray);
-                matterModel.setDocuments(documents);
-                matterModel.setDocuments_list(new_documents_list);
-                matterArraylist.set(0, matterModel);
 //                matter.loadDocuments();
-//                    if (upload_documents_list.size()>=1){
-//                        try{
-//                        for (int i = 0; i < upload_documents_list.size(); i++) {
-//
-//                            String name = upload_documents_list.get(i).getName();
-//                            JSONArray new_clients = new JSONArray();
-//                            JSONArray new_groups = new JSONArray();
-//                            JSONObject clients_jobject = new JSONObject();
-//                            JSONArray matter = new JSONArray();
-////                JSONArray tags = new JSONArray();
-//                            String docname = "";
-//                            DocumentsModel documentsModel = upload_documents_list.get(i);
-//                            filename = documentsModel.getName();
-//                            File new_file = documentsModel.getFile();
-//                            String doc_type = "pdf";
-//                            String content_string = new_file.getName().replace(".", "/");
-//                            String[] content_type = content_string.split("/");
-//                            if (content_type.length >= 2) {
-//                                doc_type = content_type[1];
-//                                docname = content_type[0];
-//                            }
-//
-//                            for (int j = 0; j < selected_clients_list.size(); j++) {
-////                                if (sele.get(j).getId().matches(client_id)) {
-//                                ClientsModel clientsModel = selected_clients_list.get(j);
-//                                clients_jobject.put("id", clientsModel.getClient_id());
-//                                clients_jobject.put("type", clientsModel.getClient_type());
-//                                new_clients.put(clients_jobject);
-//                            }
-//                            for(int g=0;g<selected_groups_list.size();g++){
-//                                GroupsModel groupsModel = selected_groups_list.get(g);
-//                                new_groups.put(groupsModel.getGroup_id());
-//                            }
-//
-//                            JSONObject jsonObject = new JSONObject();
-////                            matter.put(matter_id);
-//                            jsonObject.put("name", name);
-//                            jsonObject.put("description", upload_documents_list.get(i).getDescription());
-//                            jsonObject.put("filename", docname);
-//                            jsonObject.put("category", "client");
-//                            jsonObject.put("clients", new_clients);
-//                            jsonObject.put("groups",new_groups);
-//                            jsonObject.put("downloadDisabled","false");
-//                            if (upload_documents_list.get(i).getTags_list() == null) {
-//                                jsonObject.put("tags", "");
-//                            } else {
-//                                jsonObject.put("tags", upload_documents_list.get(i).getTags_list());
-//                            }
-//
-//                            if (doc_type.equalsIgnoreCase("apng") || doc_type.equalsIgnoreCase("avif") || doc_type.equalsIgnoreCase("gif") || doc_type.equalsIgnoreCase("jpeg") || doc_type.equalsIgnoreCase("png") || doc_type.equalsIgnoreCase("svg") || doc_type.equalsIgnoreCase("webp") || doc_type.equalsIgnoreCase("jpg")) {
-//                                jsonObject.put("content_type", "image/" + doc_type);
-//                            } else {
-//                                jsonObject.put("content_type", "application/" + doc_type);
-//                            }
-//                            WebServiceHelper.callHttpUploadWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/document/upload", "Upload Document", new_file, jsonObject.toString());
-//                        }
-////            AndroidUtils.showAlert(jsonObject.toString(),getContext());
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-            } catch (JSONException e) {
+
+                }
+             catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -809,10 +685,182 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                     JSONArray data = result.getJSONArray("documents");
 //                    AndroidUtils.showAlert(data.toString(),getContext());
                     loadDocumentsData(data);
+                }else if (httpResult.getRequestType().equals("Upload Document")) {
+                    boolean error = result.getBoolean("error");
+                    if (error){
+                        AndroidUtils.showAlert(result.getString("msg"),getContext());
+                    }else{
+                        String docid = result.getString("docid");
+                        addDocsToMatter(docid);
+                        if (MergedList.size()>1){
+                            for (int i=0;i<MergedList.size();i++){
+                                if (i== MergedList.size()-1){
+                                    if (i>0)
+                                        MergedList.remove(i);
+                                }
+                            }
+                        }else{
+                            submitMatter();
+                        }
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void submitMatter() {
+        try {
+            JSONArray clients = new JSONArray();
+            JSONArray group_acls = new JSONArray();
+            JSONArray members = new JSONArray();
+            JSONArray new_groups_list = new JSONArray();
+            JSONArray new_clients_list = new JSONArray();
+            JSONArray new_tm_list = new JSONArray();
+            JSONArray documents = new JSONArray();
+            JSONArray new_documents_list = new JSONArray();
+//                JSONArray advocates_list = new JSONArray();
+            MatterModel matterModel = new MatterModel();
+            for (int i = 0; i < selected_groups_list.size(); i++) {
+                try {
+                    GroupsModel groupsModel = selected_groups_list.get(i);
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("id", groupsModel.getGroup_id());
+                    jsonObject.put("name", groupsModel.getGroup_name());
+                    jsonObject.put("isChecked", groupsModel.isChecked());
+                    group_acls.put(jsonObject);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            for (int i = 0; i < groupsList.size(); i++) {
+                try {
+                    GroupsModel groupsModel = groupsList.get(i);
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("id", groupsModel.getGroup_id());
+                    jsonObject.put("name", groupsModel.getGroup_name());
+                    new_groups_list.put(jsonObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            for (int i = 0; i < selected_clients_list.size(); i++) {
+                try {
+                    ClientsModel clientsModel = selected_clients_list.get(i);
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("id", clientsModel.getClient_id());
+                    jsonObject.put("type", clientsModel.getClient_type());
+                    jsonObject.put("name", clientsModel.getClient_name());
+                    clients.put(jsonObject);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+            for (int i = 0; i < clientsList.size(); i++) {
+                ClientsModel clientsModel = clientsList.get(i);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("id", clientsModel.getClient_id());
+                jsonObject.put("type", clientsModel.getClient_type());
+                jsonObject.put("name", clientsModel.getClient_name());
+                new_clients_list.put(jsonObject);
+            }
+            for (int i = 0; i < selected_tm_list.size(); i++) {
+                try {
+                    TeamModel teamModel = selected_tm_list.get(i);
+                    JSONObject team_object = new JSONObject();
+                    team_object.put("id", teamModel.getTm_id());
+                    team_object.put("name", teamModel.getTm_name());
+                    team_object.put("user_id", teamModel.getUser_id());
+//                        team_object.put("")
+                    members.put(team_object);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            for (int i = 0; i < tmList.size(); i++) {
+                try {
+                    TeamModel teamModel = tmList.get(i);
+                    JSONObject team_object = new JSONObject();
+                    team_object.put("id", teamModel.getTm_id());
+                    team_object.put("name", teamModel.getTm_name());
+                    team_object.put("user_id", teamModel.getUser_id());
+//                        team_object.put("")
+                    new_tm_list.put(team_object);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            JSONArray jsonArray = new JSONArray();
+            try {
+                for (int i = 0; i < advocates_list.size(); i++) {
+                    AdvocateModel advocateModel = advocates_list.get(i);
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("name", advocateModel.getAdvocate_name());
+                    jsonObject.put("email", advocateModel.getEmail());
+                    jsonObject.put("phone", advocateModel.getNumber());
+                    jsonArray.put(jsonObject);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            for (int d = 0; d < selected_documents_list.size(); d++) {
+                DocumentsModel documentsModel = selected_documents_list.get(d);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("docid", documentsModel.getDocid());
+                jsonObject.put("doctype", documentsModel.getDoctype());
+                jsonObject.put("user_id", documentsModel.getUser_id());
+                jsonObject.put("name", documentsModel.getName());
+                documents.put(jsonObject);
+            }
+            for (int e = 0; e < documentsList.size(); e++) {
+                DocumentsModel documentsModel = documentsList.get(e);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("docid", documentsModel.getDocid());
+                jsonObject.put("doctype", documentsModel.getDoctype());
+                jsonObject.put("user_id", documentsModel.getUser_id());
+                jsonObject.put("name", documentsModel.getName());
+                new_documents_list.put(jsonObject);
+            }
+            matterModel.setMatter_title(matter_title);
+            matterModel.setCase_number(case_number);
+            matterModel.setCase_type(case_type);
+            matterModel.setDescription(description);
+            matterModel.setDate_of_filing(dof);
+            matterModel.setCourt(court);
+            matterModel.setJudge(judge);
+            matterModel.setCase_priority(case_priority);
+            matterModel.setStatus(case_status);
+            matterModel.setClients(clients);
+            matterModel.setGroup_acls(group_acls);
+            matterModel.setMembers(members);
+            matterModel.setGroups_list(new_groups_list);
+            matterModel.setClients_list(new_clients_list);
+            matterModel.setMembers_list(new_tm_list);
+            matterModel.setOpponent_advocate(jsonArray);
+            matterModel.setDocuments(documents);
+            matterModel.setDocuments_list(new_documents_list);
+            matterArraylist.set(0, matterModel);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addDocsToMatter(String docid) {
+        try {
+            DocumentsModel documentsModel = new DocumentsModel();
+            JSONObject jsonObject = new JSONObject();
+            documentsModel.setDocid(docid);
+            documentsModel.setName(jsonObject.getString(uploaded_document_name));
+            documentsModel.setUser_id(jsonObject.getString(Constants.USER_ID));
+            documentsModel.setDoctype(jsonObject.getString("general"));
+            selected_documents_list.add(documentsModel);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -823,7 +871,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                 DocumentsModel documentsModel = new DocumentsModel();
                 documentsModel.setDocid(jsonObject.getString("docid"));
                 documentsModel.setDescription(jsonObject.getString("description"));
-                documentsModel.setDocid(jsonObject.getString("docid"));
+//                documentsModel.setDocid(jsonObject.getString("docid"));
                 documentsModel.setDoctype(jsonObject.getString("doctype"));
                 documentsModel.setName(jsonObject.getString("name"));
                 documentsModel.setUser_id(jsonObject.getString("user_id"));

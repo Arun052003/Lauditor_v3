@@ -137,7 +137,7 @@ public class Matter extends Fragment {
         childFragmentManager.beginTransaction().add(R.id.child_container, childFragment).commit();
     }
 
-    private void loadMatterInformation() {
+    public void loadMatterInformation() {
         siv_matter_icon.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.single_document_icon_white));
         siv_groups.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.groups_material_icon));
         siv_documents.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.documents_copy));

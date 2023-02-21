@@ -109,7 +109,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
     private ArrayList<GroupsModel> groupsList = new ArrayList<>();
     private ArrayList<ClientsModel> clientsList = new ArrayList<>();
     private ArrayList<TeamModel> tmList = new ArrayList<>();
-    private String uploaded_document_name;
+    private String uploaded_document_name,upload_description;
     private AbstractCollection<DocumentsModel> MergedList;
     private int changedCollection;
 
@@ -360,9 +360,9 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
             AndroidUtils.showToast("Please add atleast one document from existing documents or upload a new one",getContext());
         }else{
             try {
-                if (upload_documents_list.size()>=1){
+                if (upload_documents_list.size()!=0){
                     try{
-                            changedCollection = upload_documents_list.size();
+//                            changedCollection = upload_documents_list.size();
                         for (int i = 0; i < upload_documents_list.size(); i++) {
 //                            changedCollection--;
                             String name = upload_documents_list.get(i).getName();
@@ -399,6 +399,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                             JSONObject jsonObject = new JSONObject();
 //                            matter.put(matter_id);
                             uploaded_document_name = name;
+                            upload_description = upload_documents_list.get(i).getDescription();
                             jsonObject.put("name", name);
                             jsonObject.put("description", upload_documents_list.get(i).getDescription());
                             jsonObject.put("filename", docname);
@@ -418,6 +419,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                                 jsonObject.put("content_type", "application/" + doc_type);
                             }
                             progress_dialog = AndroidUtils.get_progress(getActivity());
+                            upload_documents_list.remove(documentsModel);
                             WebServiceHelper.callHttpUploadWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/document/upload", "Upload Document", new_file, jsonObject.toString());
                         }
 //            AndroidUtils.showAlert(jsonObject.toString(),getContext());
@@ -427,71 +429,8 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                         e.printStackTrace();
                     }
                 }else{
-                    JSONObject postdata = new JSONObject();
-
-                    JSONArray clients = new JSONArray();
-                    JSONArray documents = new JSONArray();
-                    JSONArray group_acls = new JSONArray();
-                    JSONArray members = new JSONArray();
-                    JSONArray opponent_advocates = new JSONArray();
-
-                    for (int i=0;i<selected_clients_list.size();i++){
-                        JSONObject jsonObject = new JSONObject();
-                        ClientsModel clientsModel = selected_clients_list.get(i);
-                        jsonObject.put("id",clientsModel.getClient_id());
-                        jsonObject.put("type",clientsModel.getClient_type());
-                        clients.put(jsonObject);
-                    }
-
-                    for (int i=0;i<selected_documents_list.size();i++){
-                        JSONObject jsonObject = new JSONObject();
-                        DocumentsModel documentsModel = selected_documents_list.get(i);
-                        jsonObject.put("docid",documentsModel.getDocid());
-                        jsonObject.put("doctype",documentsModel.getDoctype());
-                        jsonObject.put("user_id",documentsModel.getUser_id());
-                        documents.put(jsonObject);
-                    }
-
-                    for (int i=0;i<selected_groups_list.size();i++){
-                        GroupsModel groupsModel = selected_groups_list.get(i);
-                        group_acls.put(groupsModel.getGroup_id());
-                    }
-
-                    for (int i=0;i<selected_tm_list.size();i++){
-                        TeamModel teamModel = selected_tm_list.get(i);
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("id",teamModel.getTm_id());
-                        members.put(jsonObject);
-                    }
-
-                    for (int i=0;i<advocates_list.size();i++){
-                        JSONObject jsonObject = new JSONObject();
-                        AdvocateModel advocateModel = advocates_list.get(i);
-                        jsonObject.put("name",advocateModel.getAdvocate_name());
-                        jsonObject.put("email",advocateModel.getEmail());
-                        jsonObject.put("phone",advocateModel.getNumber());
-                        opponent_advocates.put(jsonObject);
-                    }
-                    postdata.put("title",matter_title);
-                    postdata.put("case_number",case_number);
-                    postdata.put("date_of_filling",dof);
-                    postdata.put("affidavit_filing_date","");
-                    postdata.put("affidavit_isfiled","");
-                    postdata.put("case_type",case_type);
-                    postdata.put("court_name",court);
-                    postdata.put("description",description);
-                    postdata.put("judges",judge);
-                    postdata.put("priority",case_priority);
-                    postdata.put("status",case_status);
-                    postdata.put("clients",clients);
-                    postdata.put("documents",documents);
-                    postdata.put("group_acls",group_acls);
-                    postdata.put("members",members);
-                    postdata.put("opponent_advocates",opponent_advocates);
-                    WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.POST,"matter/legal/create","Create Matter",postdata.toString());
+                    submitMatter();
                 }
-                if (progress_dialog != null && progress_dialog.isShowing())
-                    AndroidUtils.dismiss_dialog(progress_dialog);
 
 
 //                matter.loadDocuments();
@@ -765,33 +704,19 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                         AndroidUtils.showAlert(result.getString("msg"),getContext());
                     }else{
                         String docid = result.getString("docid");
-                        AndroidUtils.showAlert(result.getString("msg"),getContext());
+//                        AndroidUtils.showAlert(result.getString("msg"),getContext());
                         addDocsToMatter(docid);
-                        AndroidUtils.showToast(String.valueOf(changedCollection),getContext());
-                        changedCollection++;
-//                        if (changedCollection==0){
-                            if (progress_dialog != null && progress_dialog.isShowing())
-                                AndroidUtils.dismiss_dialog(progress_dialog);
-                            submitMatter();
-//                        }
-//                        if (MergedList.size()>1){
-//                            for (int i=0;i<MergedList.size();i++){
-//                                if (i== MergedList.size()-1){
-//                                    if (i>0)
-//                                        MergedList.remove(i);
-//                                }
-//                            }
+                        submitMatterInformation();
 
-//                        }else{
-
-//                        }
+//
                     }
                 }else if(httpResult.getRequestType()=="Create Matter"){
                     boolean error = result.getBoolean("error");
                     String msg = result.getString("msg");
                     if (error){
                         AndroidUtils.showToast(msg,getContext());
-                    }else
+                    }
+                    else
                     {
                         AndroidUtils.showToast(msg,getContext());
                         matter.loadMatterInformation();
@@ -806,151 +731,69 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
 
     private void submitMatter() {
         try {
-            JSONArray clients = new JSONArray();
-            JSONArray group_acls = new JSONArray();
-            JSONArray members = new JSONArray();
-            JSONArray new_groups_list = new JSONArray();
-            JSONArray new_clients_list = new JSONArray();
-            JSONArray new_tm_list = new JSONArray();
-            JSONArray documents = new JSONArray();
-            JSONArray new_documents_list = new JSONArray();
-//                JSONArray advocates_list = new JSONArray();
-            MatterModel matterModel = new MatterModel();
-            for (int i = 0; i < selected_groups_list.size(); i++) {
-                try {
-                    GroupsModel groupsModel = selected_groups_list.get(i);
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("id", groupsModel.getGroup_id());
-                    jsonObject.put("name", groupsModel.getGroup_name());
-                    jsonObject.put("isChecked", groupsModel.isChecked());
-                    group_acls.put(jsonObject);
+            if(upload_documents_list.size()==0) {
+                JSONObject postdata = new JSONObject();
+                JSONArray clients = new JSONArray();
+                JSONArray documents = new JSONArray();
+                JSONArray group_acls = new JSONArray();
+                JSONArray members = new JSONArray();
+                JSONArray opponent_advocates = new JSONArray();
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            for (int i = 0; i < groupsList.size(); i++) {
-                try {
-                    GroupsModel groupsModel = groupsList.get(i);
+                for (int i = 0; i < selected_clients_list.size(); i++) {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("id", groupsModel.getGroup_id());
-                    jsonObject.put("name", groupsModel.getGroup_name());
-                    new_groups_list.put(jsonObject);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            for (int i = 0; i < selected_clients_list.size(); i++) {
-                try {
                     ClientsModel clientsModel = selected_clients_list.get(i);
-                    JSONObject jsonObject = new JSONObject();
                     jsonObject.put("id", clientsModel.getClient_id());
                     jsonObject.put("type", clientsModel.getClient_type());
-                    jsonObject.put("name", clientsModel.getClient_name());
                     clients.put(jsonObject);
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
 
-            }
-            for (int i = 0; i < clientsList.size(); i++) {
-                ClientsModel clientsModel = clientsList.get(i);
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("id", clientsModel.getClient_id());
-                jsonObject.put("type", clientsModel.getClient_type());
-                jsonObject.put("name", clientsModel.getClient_name());
-                new_clients_list.put(jsonObject);
-            }
-            for (int i = 0; i < selected_tm_list.size(); i++) {
-                try {
-                    TeamModel teamModel = selected_tm_list.get(i);
-                    JSONObject team_object = new JSONObject();
-                    team_object.put("id", teamModel.getTm_id());
-                    team_object.put("name", teamModel.getTm_name());
-                    team_object.put("user_id", teamModel.getUser_id());
-//                        team_object.put("")
-                    members.put(team_object);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            for (int i = 0; i < tmList.size(); i++) {
-                try {
-                    TeamModel teamModel = tmList.get(i);
-                    JSONObject team_object = new JSONObject();
-                    team_object.put("id", teamModel.getTm_id());
-                    team_object.put("name", teamModel.getTm_name());
-                    team_object.put("user_id", teamModel.getUser_id());
-//                        team_object.put("")
-                    new_tm_list.put(team_object);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            JSONArray jsonArray = new JSONArray();
-            try {
-                for (int i = 0; i < advocates_list.size(); i++) {
-                    AdvocateModel advocateModel = advocates_list.get(i);
+                for (int i = 0; i < selected_documents_list.size(); i++) {
                     JSONObject jsonObject = new JSONObject();
+                    DocumentsModel documentsModel = selected_documents_list.get(i);
+                    jsonObject.put("docid", documentsModel.getDocid());
+                    jsonObject.put("doctype", documentsModel.getDoctype());
+                    jsonObject.put("user_id", documentsModel.getUser_id());
+                    documents.put(jsonObject);
+                }
+
+                for (int i = 0; i < selected_groups_list.size(); i++) {
+                    GroupsModel groupsModel = selected_groups_list.get(i);
+                    group_acls.put(groupsModel.getGroup_id());
+                }
+
+                for (int i = 0; i < selected_tm_list.size(); i++) {
+                    TeamModel teamModel = selected_tm_list.get(i);
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("id", teamModel.getTm_id());
+                    members.put(jsonObject);
+                }
+
+                for (int i = 0; i < advocates_list.size(); i++) {
+                    JSONObject jsonObject = new JSONObject();
+                    AdvocateModel advocateModel = advocates_list.get(i);
                     jsonObject.put("name", advocateModel.getAdvocate_name());
                     jsonObject.put("email", advocateModel.getEmail());
                     jsonObject.put("phone", advocateModel.getNumber());
-                    jsonArray.put(jsonObject);
+                    opponent_advocates.put(jsonObject);
                 }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+                postdata.put("title", matter_title);
+                postdata.put("case_number", case_number);
+                postdata.put("date_of_filling", dof);
+                postdata.put("affidavit_filing_date", "");
+                postdata.put("affidavit_isfiled", "");
+                postdata.put("case_type", case_type);
+                postdata.put("court_name", court);
+                postdata.put("description", description);
+                postdata.put("judges", judge);
+                postdata.put("priority", case_priority);
+                postdata.put("status", case_status);
+                postdata.put("clients", clients);
+                postdata.put("documents", documents);
+                postdata.put("group_acls", group_acls);
+                postdata.put("members", members);
+                postdata.put("opponent_advocates", opponent_advocates);
+                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "matter/legal/create", "Create Matter", postdata.toString());
             }
-            for (int d = 0; d < selected_documents_list.size(); d++) {
-                DocumentsModel documentsModel = selected_documents_list.get(d);
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("docid", documentsModel.getDocid());
-                jsonObject.put("doctype", documentsModel.getDoctype());
-                jsonObject.put("user_id", documentsModel.getUser_id());
-                jsonObject.put("name", documentsModel.getName());
-                documents.put(jsonObject);
-            }
-            for (int e = 0; e < documentsList.size(); e++) {
-                DocumentsModel documentsModel = documentsList.get(e);
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("docid", documentsModel.getDocid());
-                jsonObject.put("doctype", documentsModel.getDoctype());
-                jsonObject.put("user_id", documentsModel.getUser_id());
-                jsonObject.put("name", documentsModel.getName());
-                new_documents_list.put(jsonObject);
-            }
-            matterModel.setMatter_title(matter_title);
-            matterModel.setCase_number(case_number);
-            matterModel.setCase_type(case_type);
-            matterModel.setDescription(description);
-            matterModel.setDate_of_filing(dof);
-            matterModel.setCourt(court);
-            matterModel.setJudge(judge);
-            matterModel.setCase_priority(case_priority);
-            matterModel.setStatus(case_status);
-            matterModel.setClients(clients);
-            matterModel.setGroup_acls(group_acls);
-            matterModel.setMembers(members);
-            matterModel.setGroups_list(new_groups_list);
-            matterModel.setClients_list(new_clients_list);
-            matterModel.setMembers_list(new_tm_list);
-            matterModel.setOpponent_advocate(jsonArray);
-            matterModel.setDocuments(documents);
-            matterModel.setDocuments_list(new_documents_list);
-            String message = ""; // initialize the message string
-
-            matterArraylist.set(0, matterModel);
-            if (changedCollection>=upload_documents_list.size()) {
-                if (progress_dialog != null && progress_dialog.isShowing())
-                    AndroidUtils.dismiss_dialog(progress_dialog);
-                for (int i = 0; i < matterArraylist.size(); i++) {
-                    MatterModel model = matterArraylist.get(i);
-                    message += "Item " + (i + 1) + ": " + model.toString() + "\n"; // concatenate the model object's string representation
-                }
-                AndroidUtils.showToast(message,getContext());
-            }
-
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -960,13 +803,14 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
     private void addDocsToMatter(String docid) {
         try {
             DocumentsModel documentsModel = new DocumentsModel();
-            JSONObject jsonObject = new JSONObject();
+//            JSONObject jsonObject = new JSONObject();
             documentsModel.setDocid(docid);
-            documentsModel.setName(jsonObject.getString(uploaded_document_name));
-            documentsModel.setUser_id(jsonObject.getString(Constants.USER_ID));
-            documentsModel.setDoctype(jsonObject.getString("general"));
+            documentsModel.setName(uploaded_document_name);
+            documentsModel.setUser_id(Constants.USER_ID);
+            documentsModel.setDoctype("general");
+            documentsModel.setDescription(upload_description);
             selected_documents_list.add(documentsModel);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

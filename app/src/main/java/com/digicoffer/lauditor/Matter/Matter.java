@@ -70,7 +70,10 @@ public class Matter extends Fragment {
         siv_matter_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              loadMatterInformation();
+                if (matter_arraylist.size()!=0){
+                    loadMatterInformation();
+                }
+
 //                FragmentManager childFragmentManager = getChildFragmentManager();
 //                childFragmentManager.beginTransaction().add(R.id.child_container, childFragment).commit();
             }
@@ -78,13 +81,17 @@ public class Matter extends Fragment {
         siv_groups.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadGCT();
+                if (matter_arraylist.size()!=0) {
+                    loadGCT();
+                }
             }
         });
         siv_documents.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadDocuments();
+                if (matter_arraylist.size()!=0) {
+                    loadDocuments();
+                }
             }
         });
         matter_arraylist = new ArrayList<>();

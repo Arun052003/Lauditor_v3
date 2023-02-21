@@ -50,7 +50,7 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
     boolean[] selectedTM;
     ArrayList<MatterModel> matterArraylist;
     JSONArray exisiting_group_acls;
-    String matter_title, case_number, case_type, description, dof, court, judge, case_priority, case_status;
+    String matter_title, case_number, case_type, description, dof,start_date,end_date, court, judge, case_priority, case_status;
     JSONArray existing_clients;
     JSONArray existing_members;
     ArrayList<DocumentsModel> selected_documents_list = new ArrayList<>();
@@ -289,6 +289,12 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
                 if(matterModel.getDate_of_filing()!=null){
                     dof =matterModel.getDate_of_filing();
                 }
+                if (matterModel.getStart_date()!=null){
+                    start_date = matterModel.getStart_date();
+                }
+                if (matterModel.getEnd_date()!=null){
+                    end_date = matterModel.getEnd_date();
+                }
                 if (matterModel.getCourt()!=null){
                     court = matterModel.getCourt();
                 }
@@ -491,6 +497,8 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
                 matterModel.setCase_type(case_type);
                 matterModel.setDescription(description);
                 matterModel.setDate_of_filing(dof);
+                matterModel.setStart_date(start_date);
+                matterModel.setEnd_date(end_date);
                 matterModel.setCourt(court);
                 matterModel.setJudge(judge);
                 matterModel.setCase_priority(case_priority);

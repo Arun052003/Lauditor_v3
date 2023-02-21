@@ -7,6 +7,7 @@ public class Constants {
     public static String PROBIZ_TYPE = "";
     public static String pdfFilePath;
     public static Boolean ISPRODUCTION = false;
+    public static String MATTER_TYPE = "";
 
 //    public static String MyDay_KPI =
     public static String PROF_URL = ISPRODUCTION ? "https://api.digicoffer.com/professional/" : "https://apidev2.digicoffer.com/professional/";

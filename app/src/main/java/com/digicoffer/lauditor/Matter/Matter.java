@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.digicoffer.lauditor.Matter.Models.MatterModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
+import com.digicoffer.lauditor.common.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class Matter extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_matter, container, false);
+        Constants.MATTER_TYPE = "Legal";
         siv_matter_icon = view.findViewById(R.id.siv_matter_icon);
         siv_groups = view.findViewById(R.id.siv_groups);
         siv_documents = view.findViewById(R.id.siv_documents);
@@ -114,13 +116,16 @@ public class Matter extends Fragment {
     }
 
     private void loadLegalMatter() {
+        Constants.MATTER_TYPE="Legal";
         tv_legal_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_general_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
-
+        loadMatterInformation();
     }
     private void loadGeneralMatter(){
+        Constants.MATTER_TYPE="General";
         tv_legal_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_general_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+        loadMatterInformation();
     }
 
     public void loadDocuments() {

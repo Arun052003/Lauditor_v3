@@ -75,7 +75,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
     private TextView tv_tag_document_name,matter_date,tv_document_library,tv_device_drive,at_add_documents,tv_selected_file;
     private LinearLayout ll_added_tags, ll_add_documents,ll_selected_documents,ll_select_doc,ll_uploaded_documents;
     private Button btn_browse,btn_add_documents;
-    String matter_title, case_number, case_type, description, dof, court, judge, case_priority, case_status;
+    String matter_title, case_number, case_type, description, dof,start_date,end_date, court, judge, case_priority, case_status;
     private JSONArray existing_opponents;
     TextInputEditText tv_tag_type, tv_tag_name;
     ArrayList<AdvocateModel> advocates_list = new ArrayList<>();
@@ -277,6 +277,12 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                         }
                         if(matterModel.getDate_of_filing()!=null){
                             dof =matterModel.getDate_of_filing();
+                        }
+                        if (matterModel.getStart_date()!=null){
+                            start_date = matterModel.getStart_date();
+                        }
+                        if (matterModel.getEnd_date()!=null){
+                            end_date = matterModel.getEnd_date();
                         }
                         if (matterModel.getCourt()!=null){
                             court = matterModel.getCourt();
@@ -732,6 +738,7 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
     private void submitMatter() {
         try {
             if(upload_documents_list.size()==0) {
+                String Matter_type = "legal";
                 JSONObject postdata = new JSONObject();
                 JSONArray clients = new JSONArray();
                 JSONArray documents = new JSONArray();
@@ -777,14 +784,14 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                     opponent_advocates.put(jsonObject);
                 }
                 postdata.put("title", matter_title);
-                postdata.put("case_number", case_number);
-                postdata.put("date_of_filling", dof);
+
+
                 postdata.put("affidavit_filing_date", "");
                 postdata.put("affidavit_isfiled", "");
-                postdata.put("case_type", case_type);
-                postdata.put("court_name", court);
+
+
                 postdata.put("description", description);
-                postdata.put("judges", judge);
+
                 postdata.put("priority", case_priority);
                 postdata.put("status", case_status);
                 postdata.put("clients", clients);
@@ -792,7 +799,21 @@ public class MatterDocuments extends Fragment implements AsyncTaskCompleteListen
                 postdata.put("group_acls", group_acls);
                 postdata.put("members", members);
                 postdata.put("opponent_advocates", opponent_advocates);
-                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "matter/legal/create", "Create Matter", postdata.toString());
+                if (Constants.MATTER_TYPE=="Legal") {
+                    postdata.put("judges", judge);
+                    postdata.put("date_of_filling", dof);
+                    postdata.put("court_name", court);
+                    postdata.put("case_number", case_number);
+                    postdata.put("case_type", case_type);
+                    Matter_type = "legal";
+                }else{
+                    postdata.put("startdate",start_date);
+                    postdata.put("closedate",end_date);
+                    postdata.put("matter_number", case_number);
+                    postdata.put("matter_type", case_type);
+                    Matter_type = "general";
+                }
+                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "matter/"+Matter_type+"/create", "Create Matter", postdata.toString());
             }
 
         } catch (JSONException e) {

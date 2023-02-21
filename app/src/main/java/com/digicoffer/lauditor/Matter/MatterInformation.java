@@ -3,6 +3,7 @@ package com.digicoffer.lauditor.Matter;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.digicoffer.lauditor.Matter.Models.AdvocateModel;
 import com.digicoffer.lauditor.Matter.Models.MatterModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
+import com.digicoffer.lauditor.common.Constants;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONArray;
@@ -35,13 +37,14 @@ import java.util.Date;
 import java.util.Locale;
 
 public class MatterInformation extends Fragment implements View.OnClickListener {
-    TextInputEditText tv_matter_title, tv_matter_num, tv_case_type, tv_matter_description, tv_dof, tv_court, tv_judge;
+    TextInputEditText tv_matter_title, tv_matter_num, tv_case_type, tv_matter_description, tv_dof, tv_court, tv_judge,tv_start_date,tv_end_date;
     TextView tv_high_priority, tv_medium_priority, tv_low_priority, tv_status_active, tv_status_pending;
     Button btn_add_advocate;
     ArrayList<AdvocateModel> advocates_list = new ArrayList<>();
     ArrayList<MatterModel> matterArraylist;
+    TextView m_c_number,m_c_type;
     AppCompatButton btn_cancel_save, btn_create;
-    LinearLayout ll_add_advocate;
+    LinearLayout ll_add_advocate,ll_start_date,ll_end_date,ll_court,ll_judge,ll_dof;
     JSONArray existing_opponents;
     TextView tv_opponent_name;
     String CASE_PRIORITY = "High";
@@ -56,6 +59,17 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
         tv_matter_title = view.findViewById(R.id.tv_matter_title);
         tv_matter_num = view.findViewById(R.id.tv_matter_num);
         tv_case_type = view.findViewById(R.id.tv_case_type);
+
+        ll_court = view.findViewById(R.id.ll_court);
+        ll_judge = view.findViewById(R.id.ll_judge);
+        ll_dof  = view.findViewById(R.id.ll_dof);
+        m_c_number = view.findViewById(R.id.m_c_number);
+        m_c_type = view.findViewById(R.id.m_c_type);
+        ll_end_date = view.findViewById(R.id.ll_end_date);
+        ll_start_date = view.findViewById(R.id.ll_start_date);
+        tv_start_date = view.findViewById(R.id.tv_start_date);
+        tv_end_date = view.findViewById(R.id.tv_end_date);
+
         tv_matter_description = view.findViewById(R.id.tv_matter_description);
         tv_dof = view.findViewById(R.id.tv_dof);
         tv_court = view.findViewById(R.id.tv_court);
@@ -78,35 +92,30 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
         btn_create.setOnClickListener(this);
         ll_add_advocate = view.findViewById(R.id.ll_add_advocate);
         matter = (Matter) getParentFragment();
-        Calendar myCalendar = Calendar.getInstance();
-        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, month);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                updateLabel();
-            }
+        tv_start_date.setInputType(InputType.TYPE_NULL);
+        tv_end_date.setInputType(InputType.TYPE_NULL);
+        tv_dof.setInputType(InputType.TYPE_NULL);
+        if (Constants.MATTER_TYPE=="Legal"){
+            m_c_number.setText("Case Number");
+            m_c_type.setText("Case Type");
+            ll_court.setVisibility(View.VISIBLE);
+            ll_judge.setVisibility(View.VISIBLE);
+            ll_dof.setVisibility(View.VISIBLE);
+            ll_start_date.setVisibility(View.GONE);
+            ll_end_date.setVisibility(View.GONE);
+            datePickerData();
+        }else{
+            m_c_number.setText("Matter Number");
+            m_c_type.setText("Matter Type");
+            ll_court.setVisibility(View.GONE);
+            ll_judge.setVisibility(View.GONE);
+            ll_dof.setVisibility(View.GONE);
+            ll_start_date.setVisibility(View.VISIBLE);
+            ll_end_date.setVisibility(View.VISIBLE);
+            datePickerStartDate();
+            datePickerEndDate();
+        }
 
-            private void updateLabel() {
-                String myFormat = "dd-MM-yyyy";
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-                tv_dof.setText(sdf.format(myCalendar.getTime()));
-              }
-        };
-        tv_dof.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
-                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
-                datePickerDialog.show();
-            }
-        });
-        Date c = Calendar.getInstance().getTime();
-        System.out.println("Current time => " + c);
-        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-        String formattedDate = df.format(c);
-        tv_dof.setText(formattedDate);
         matterArraylist = matter.getMatter_arraylist();
 
         if (matterArraylist.size() != 0) {
@@ -135,8 +144,19 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
                 if (matterModel.getDate_of_filing() != null) {
                     tv_dof.setText(matterModel.getDate_of_filing());
                 } else {
-                    tv_dof.setText("");
+                    datePickerData();
                 }
+                if (matterModel.getStart_date()!=null){
+                    tv_start_date.setText(matterModel.getStart_date());
+                }else{
+                    datePickerStartDate();
+                }
+                if (matterModel.getEnd_date()!=null){
+                    tv_end_date.setText(matterModel.getEnd_date());
+                }else{
+                    datePickerEndDate();
+                }
+
                 if (matterModel.getCourt() != null) {
                     tv_court.setText(matterModel.getCourt());
                 } else {
@@ -202,6 +222,118 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
 
     }
 
+    private void datePickerStartDate() {
+        Calendar myCalendar = Calendar.getInstance();
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, month);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+
+            private void updateLabel() {
+                String myFormat = "dd-MM-yyyy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+//                tv_dof.setText(sdf.format(myCalendar.getTime()));
+                tv_start_date.setText(sdf.format(myCalendar.getTime()));
+//                tv_end_date.setText(sdf.format(myCalendar.getTime()));
+            }
+        };
+
+        tv_start_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+                datePickerDialog.show();
+            }
+        });
+
+        Date c = Calendar.getInstance().getTime();
+        System.out.println("Current time => " + c);
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String formattedDate = df.format(c);
+//        tv_dof.setText(formattedDate);
+        tv_start_date.setText(formattedDate);
+//        tv_end_date.setText(formattedDate);
+    }
+    private void datePickerEndDate() {
+        Calendar myCalendar = Calendar.getInstance();
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, month);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+
+            private void updateLabel() {
+                String myFormat = "dd-MM-yyyy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+//                tv_dof.setText(sdf.format(myCalendar.getTime()));
+                tv_end_date.setText(sdf.format(myCalendar.getTime()));
+//                tv_end_date.setText(sdf.format(myCalendar.getTime()));
+            }
+        };
+
+        tv_end_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+                datePickerDialog.show();
+            }
+        });
+
+        Date c = Calendar.getInstance().getTime();
+        System.out.println("Current time => " + c);
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String formattedDate = df.format(c);
+//        tv_dof.setText(formattedDate);
+//        tv_start_date.setText(formattedDate);
+        tv_end_date.setText(formattedDate);
+    }
+
+    private void datePickerData() {
+        Calendar myCalendar = Calendar.getInstance();
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, month);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+
+            private void updateLabel() {
+                String myFormat = "dd-MM-yyyy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                tv_dof.setText(sdf.format(myCalendar.getTime()));
+//                tv_start_date.setText(sdf.format(myCalendar.getTime()));
+//                tv_end_date.setText(sdf.format(myCalendar.getTime()));
+            }
+        };
+        tv_dof.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+                datePickerDialog.show();
+            }
+        });
+
+        Date c = Calendar.getInstance().getTime();
+        System.out.println("Current time => " + c);
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String formattedDate = df.format(c);
+        tv_dof.setText(formattedDate);
+//        tv_start_date.setText(formattedDate);
+//        tv_end_date.setText(formattedDate);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -240,46 +372,69 @@ public class MatterInformation extends Fragment implements View.OnClickListener 
         } else if (tv_matter_description.getText().toString().equals("")) {
             tv_matter_description.setError("Description is Required");
             tv_matter_description.requestFocus();
-        } else if (tv_dof.getText().toString().equals("")) {
-            tv_dof.setError("Date of Filing is Required");
-            tv_dof.requestFocus();
-        } else {
-//            JSONArray group_acls = new JSONArray();
+        } else if (Constants.MATTER_TYPE=="Legal") {
+            if(tv_dof.getText().toString().equals("")) {
+                tv_dof.setError("Date of Filing is Required");
+                tv_dof.requestFocus();
+            }
+            else{
+                submitMatter();
+            }
+        } else if(Constants.MATTER_TYPE=="General"){
+            if (tv_start_date.getText().toString().equals("")){
+                tv_start_date.setError("Start Date is Required");
+                tv_start_date.requestFocus();
+            }else if(tv_end_date.getText().toString().equals("")){
+                tv_end_date.setError("Close Date is Required");
+                tv_end_date.requestFocus();
+            }
+            else{
+                submitMatter();
+            }
+        }else {
+            submitMatter();
+//
+        }
+    }
+
+    private void submitMatter() {
+        JSONArray group_acls = new JSONArray();
 //            JSONArray client = new JSONArray();
 //            JSONArray members = new JSONArray();
-            MatterModel matterModel = new MatterModel();
-            matterModel.setMatter_title(tv_matter_title.getText().toString());
-            matterModel.setCase_number(tv_matter_num.getText().toString());
-            matterModel.setCase_type(tv_case_type.getText().toString());
-            matterModel.setDescription(tv_matter_description.getText().toString());
-            matterModel.setDate_of_filing(tv_dof.getText().toString());
-            matterModel.setCourt(tv_court.getText().toString());
-            matterModel.setJudge(tv_judge.getText().toString());
-            matterModel.setCase_priority(CASE_PRIORITY);
-            matterModel.setStatus(STATUS);
-            JSONArray jsonArray = new JSONArray();
-            try {
-                for (int i = 0; i < advocates_list.size(); i++) {
-                    AdvocateModel advocateModel = advocates_list.get(i);
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("name", advocateModel.getAdvocate_name());
-                    jsonObject.put("email", advocateModel.getEmail());
-                    jsonObject.put("phone", advocateModel.getNumber());
-                    jsonArray.put(jsonObject);
+        MatterModel matterModel = new MatterModel();
+        matterModel.setMatter_title(tv_matter_title.getText().toString());
+        matterModel.setCase_number(tv_matter_num.getText().toString());
+        matterModel.setCase_type(tv_case_type.getText().toString());
+        matterModel.setDescription(tv_matter_description.getText().toString());
+        matterModel.setDate_of_filing(tv_dof.getText().toString());
+        matterModel.setStart_date(tv_start_date.getText().toString());
+        matterModel.setEnd_date(tv_end_date.getText().toString());
+        matterModel.setCourt(tv_court.getText().toString());
+        matterModel.setJudge(tv_judge.getText().toString());
+        matterModel.setCase_priority(CASE_PRIORITY);
+        matterModel.setStatus(STATUS);
+        JSONArray jsonArray = new JSONArray();
+        try {
+            for (int i = 0; i < advocates_list.size(); i++) {
+                AdvocateModel advocateModel = advocates_list.get(i);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("name", advocateModel.getAdvocate_name());
+                jsonObject.put("email", advocateModel.getEmail());
+                jsonObject.put("phone", advocateModel.getNumber());
+                jsonArray.put(jsonObject);
 
-                }
+            }
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            matterModel.setOpponent_advocate(jsonArray);
-            if(matterArraylist.size()==0) {
-                matterArraylist.add(matterModel);
-            }else{
-                matterArraylist.set(0,matterModel);
-            }
-            matter.loadGCT();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+        matterModel.setOpponent_advocate(jsonArray);
+        if(matterArraylist.size()==0) {
+            matterArraylist.add(matterModel);
+        }else{
+            matterArraylist.set(0,matterModel);
+        }
+        matter.loadGCT();
     }
 
 

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,10 +20,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.MyViewHolder>  {
+public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.MyViewHolder> implements Filterable {
     ArrayList<ViewMatterModel> itemsArrayList;
     ArrayList<ViewMatterModel> list_item;
     Context context;
+
     @NonNull
     @Override
     public ViewMatterAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -31,7 +34,7 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
 
     @Override
     public void onBindViewHolder(@NonNull ViewMatterAdapter.MyViewHolder holder, int position) {
-            ViewMatterModel viewMatterModel = itemsArrayList.get(position);
+        ViewMatterModel viewMatterModel = itemsArrayList.get(position);
 
         try {
             JSONObject owner = viewMatterModel.getOwner();
@@ -52,7 +55,7 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
 //                notifyDataSetChanged();
             }
         } catch (Exception e) {
-            AndroidUtils.showToast(e.getMessage(),context);
+            AndroidUtils.showToast(e.getMessage(), context);
             e.printStackTrace();
         }
     }
@@ -68,11 +71,54 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
         return itemsArrayList.size();
     }
 
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    itemsArrayList = list_item;
+                } else {
+                    ArrayList<ViewMatterModel> filteredList = new ArrayList<>();
+                    for (ViewMatterModel row : list_item) {
+//                            if (row.isChecked()){
+//                                row.setChecked(false);
+//                            }else
+//                            {
+//                                row.setChecked(true  );
+//                            }
+                        // name match condition. this might differ depending on your requirement
+                        // here we are looking for name or phone number match
+                        if (AndroidUtils.isNull(row.getTitle()).toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(row);
+                        }
+                    }
+                    itemsArrayList = filteredList;
+                }
+                FilterResults filterResults = new FilterResults();
+                filterResults.count = itemsArrayList.size();
+                filterResults.values = itemsArrayList;
+                return filterResults;
+            }
 
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                itemsArrayList = (ArrayList<ViewMatterModel>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView tv_matter_title,tv_case_number,tv_date_of_filling,tv_client_name,tv_owner_name,tv_initiated;
+        TextView tv_matter_title, tv_case_number, tv_date_of_filling, tv_client_name, tv_owner_name, tv_initiated;
         ImageView iv_initiated;
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_matter_title = itemView.findViewById(R.id.tv_matter_title);

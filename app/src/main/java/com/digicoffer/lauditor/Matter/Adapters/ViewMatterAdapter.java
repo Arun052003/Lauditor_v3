@@ -41,7 +41,16 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
             holder.tv_case_number.setText(viewMatterModel.getCaseNumber());
             holder.tv_owner_name.setText(owner_name);
             holder.tv_date_of_filling.setText(viewMatterModel.getDate_of_filling());
+            if (viewMatterModel.getStatus().equals("Active")) {
+                holder.tv_initiated.setText("Active");
 
+                holder.iv_initiated.setImageDrawable(context.getResources().getDrawable(R.drawable.green_circular));
+//                notifyDataSetChanged();
+            } else {
+                holder.tv_initiated.setText("Pending");
+                holder.iv_initiated.setImageDrawable(context.getResources().getDrawable(R.drawable.red_circular));
+//                notifyDataSetChanged();
+            }
         } catch (Exception e) {
             AndroidUtils.showToast(e.getMessage(),context);
             e.printStackTrace();

@@ -1,21 +1,28 @@
 package com.digicoffer.lauditor.Matter.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.Groups.Adapters.ViewGroupsAdpater;
+import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
 import com.digicoffer.lauditor.Matter.Models.ViewMatterModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
+import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -23,19 +30,37 @@ import java.util.ArrayList;
 public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.MyViewHolder> implements Filterable {
     ArrayList<ViewMatterModel> itemsArrayList;
     ArrayList<ViewMatterModel> list_item;
+    ArrayList<ActionModel> actions_List = new ArrayList<ActionModel>();
     Context context;
-
+    InterfaceListener eventListener;
     @NonNull
     @Override
     public ViewMatterAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_matter_recyclerview_design, parent, false);
         return new ViewMatterAdapter.MyViewHolder(itemView);
     }
+    public interface InterfaceListener {
 
+        void View_Details(ViewMatterModel viewMatterModel);
+
+        void DeleteMatter(ViewMatterModel viewMatterModel, ArrayList<ViewMatterModel> itemsArrayList);
+
+        void Edit_Matter_Info(ViewMatterModel viewMatterModel, ArrayList<ViewMatterModel> itemsArrayList);
+
+        void Update_Group(ViewMatterModel viewMatterModel);
+
+        void Close_Matter(ViewMatterModel viewMatterModel);
+    }
     @Override
     public void onBindViewHolder(@NonNull ViewMatterAdapter.MyViewHolder holder, int position) {
         ViewMatterModel viewMatterModel = itemsArrayList.get(position);
-
+        actions_List.clear();
+        actions_List.add(new ActionModel("Choose Actions"));
+        actions_List.add(new ActionModel("View Details"));
+        actions_List.add(new ActionModel("Edit Matter Info"));
+        actions_List.add(new ActionModel("Update Group(s))"));
+        actions_List.add(new ActionModel("Close Matter"));
+        actions_List.add(new ActionModel("Delete"));
         try {
             JSONObject owner = viewMatterModel.getOwner();
             String owner_name = owner.getString("name");
@@ -54,6 +79,39 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
                 holder.iv_initiated.setImageDrawable(context.getResources().getDrawable(R.drawable.red_circular));
 //                notifyDataSetChanged();
             }
+            final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) context, actions_List);
+            holder.sp_action.setAdapter(spinner_adapter);
+            holder.sp_action.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                    String name = actions_List.get(adapterView.getSelectedItemPosition()).getName();
+                    if (name == "View Details") {
+                        eventListener.View_Details(viewMatterModel);
+                    } else if (name == "Delete") {
+                        eventListener.DeleteMatter(viewMatterModel, itemsArrayList);
+                    } else if (name == "Edit Matter Info") {
+                        eventListener.Edit_Matter_Info(viewMatterModel, itemsArrayList);
+                    } else if (name == "Update Group(s)") {
+                        try {
+                            eventListener.Update_Group(viewMatterModel);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else if (name == "Close Matter") {
+                        try {
+                            eventListener.Close_Matter(viewMatterModel);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
         } catch (Exception e) {
             AndroidUtils.showToast(e.getMessage(), context);
             e.printStackTrace();
@@ -118,7 +176,7 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tv_matter_title, tv_case_number, tv_date_of_filling, tv_client_name, tv_owner_name, tv_initiated;
         ImageView iv_initiated;
-
+        Spinner sp_action;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_matter_title = itemView.findViewById(R.id.tv_matter_title);
@@ -128,7 +186,7 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
             tv_owner_name = itemView.findViewById(R.id.tv_owner_name);
             tv_initiated = itemView.findViewById(R.id.tv_initiated);
             iv_initiated = itemView.findViewById(R.id.iv_initiated);
-
+            sp_action = itemView.findViewById(R.id.sp_action);
         }
     }
 }

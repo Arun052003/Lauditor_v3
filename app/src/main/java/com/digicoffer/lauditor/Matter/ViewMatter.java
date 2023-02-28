@@ -34,7 +34,7 @@ import org.pgpainless.key.selection.key.util.And;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class ViewMatter extends Fragment implements AsyncTaskCompleteListener {
+public class ViewMatter extends Fragment implements AsyncTaskCompleteListener,ViewMatterAdapter.InterfaceListener {
     TextInputLayout search_matter;
     RecyclerView rv_matter_list;
     TextInputEditText et_search_matter;
@@ -159,5 +159,30 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener {
         } catch (Exception e) {
             AndroidUtils.showToast(e.getMessage(),getContext());
         }
+    }
+
+    @Override
+    public void View_Details(ViewMatterModel viewMatterModel) {
+
+    }
+
+    @Override
+    public void DeleteMatter(ViewMatterModel viewMatterModel, ArrayList<ViewMatterModel> itemsArrayList) {
+
+    }
+
+    @Override
+    public void Edit_Matter_Info(ViewMatterModel viewMatterModel, ArrayList<ViewMatterModel> itemsArrayList) {
+
+    }
+
+    @Override
+    public void Update_Group(ViewMatterModel viewMatterModel) {
+
+    }
+
+    @Override
+    public void Close_Matter(ViewMatterModel viewMatterModel) {
+
     }
 }

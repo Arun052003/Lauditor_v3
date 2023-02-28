@@ -107,7 +107,16 @@ public class Matter extends Fragment {
     private void loadViewUI() {
         tv_create.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+        viewMatter();
+    }
 
+    private void viewMatter() {
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        ViewMatter matterInformation = new ViewMatter();
+        ft.replace(R.id.child_container,matterInformation);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     private void loadCreateUI() {

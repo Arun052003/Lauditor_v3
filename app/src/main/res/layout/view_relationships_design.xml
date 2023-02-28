@@ -64,10 +64,10 @@
                 <ImageView
                     android:id="@+id/iv_initiated"
                     android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/circular"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:scaleType="centerCrop"/>
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/circular" />
 
             </androidx.cardview.widget.CardView>
 

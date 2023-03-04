@@ -14,6 +14,7 @@ import com.digicoffer.lauditor.Documents.models.MattersModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.LoginActivity.FirmsDo;
+import com.digicoffer.lauditor.Matter.Models.ViewMatterModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common_objects.TimeZonesDO;
 import com.digicoffer.lauditor.common_objects.UsersDO;
@@ -67,6 +68,8 @@ public class CommonSpinnerAdapter<Object> extends BaseAdapter {
             data = ((MattersModel)listData).getTitle();
         }if (listData instanceof ClientsModel){
             data = ((ClientsModel)listData).getName();
+        }if(listData instanceof ViewMatterModel){
+            data = ((ViewMatterModel)listData).getTitle();
         }
         listTextView.setText(data);
 

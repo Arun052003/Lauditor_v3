@@ -22,8 +22,8 @@ import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 
-import org.json.JSONException;
 import org.json.JSONObject;
+import org.pgpainless.key.selection.key.util.And;
 
 import java.util.ArrayList;
 
@@ -33,12 +33,23 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
     ArrayList<ActionModel> actions_List = new ArrayList<ActionModel>();
     Context context;
     InterfaceListener eventListener;
+    ViewMatterModel new_view_model;
+
+    public ViewMatterAdapter(ArrayList<ViewMatterModel> itemsArrayList, Context context, InterfaceListener eventListener) {
+        this.itemsArrayList = itemsArrayList;
+        this.list_item = itemsArrayList;
+        this.context = context;
+
+        this.eventListener = eventListener;
+    }
+
     @NonNull
     @Override
     public ViewMatterAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_matter_recyclerview_design, parent, false);
         return new ViewMatterAdapter.MyViewHolder(itemView);
     }
+
     public interface InterfaceListener {
 
         void View_Details(ViewMatterModel viewMatterModel);
@@ -51,16 +62,13 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
 
         void Close_Matter(ViewMatterModel viewMatterModel);
     }
+
     @Override
     public void onBindViewHolder(@NonNull ViewMatterAdapter.MyViewHolder holder, int position) {
         ViewMatterModel viewMatterModel = itemsArrayList.get(position);
-        actions_List.clear();
-        actions_List.add(new ActionModel("Choose Actions"));
-        actions_List.add(new ActionModel("View Details"));
-        actions_List.add(new ActionModel("Edit Matter Info"));
-        actions_List.add(new ActionModel("Update Group(s))"));
-        actions_List.add(new ActionModel("Close Matter"));
-        actions_List.add(new ActionModel("Delete"));
+        new_view_model = viewMatterModel;
+        itemsArrayList = list_item;
+
         try {
             JSONObject owner = viewMatterModel.getOwner();
             String owner_name = owner.getString("name");
@@ -69,43 +77,57 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
             holder.tv_case_number.setText(viewMatterModel.getCaseNumber());
             holder.tv_owner_name.setText(owner_name);
             holder.tv_date_of_filling.setText(viewMatterModel.getDate_of_filling());
-            if (viewMatterModel.getStatus().equals("Active")) {
-                holder.tv_initiated.setText("Active");
+            String upperString = viewMatterModel.getStatus().substring(0, 1).toUpperCase() + viewMatterModel.getStatus().substring(1).toLowerCase();
 
+            if (viewMatterModel.getStatus().equals("Active")) {
+                holder.tv_initiated.setText(upperString);
                 holder.iv_initiated.setImageDrawable(context.getResources().getDrawable(R.drawable.green_circular));
 //                notifyDataSetChanged();
             } else {
-                holder.tv_initiated.setText("Pending");
+                holder.tv_initiated.setText(upperString);
                 holder.iv_initiated.setImageDrawable(context.getResources().getDrawable(R.drawable.red_circular));
 //                notifyDataSetChanged();
             }
+            actions_List.clear();
+            actions_List.add(new ActionModel("Choose Actions"));
+            actions_List.add(new ActionModel("View Details"));
+            actions_List.add(new ActionModel("Edit Matter Info"));
+            actions_List.add(new ActionModel("Update Group(s)"));
+            actions_List.add(new ActionModel("Close Matter"));
+            actions_List.add(new ActionModel("Delete"));
+
             final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) context, actions_List);
             holder.sp_action.setAdapter(spinner_adapter);
             holder.sp_action.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    try {
+                        String name = actions_List.get(adapterView.getSelectedItemPosition()).getName();
 
-                    String name = actions_List.get(adapterView.getSelectedItemPosition()).getName();
-                    if (name == "View Details") {
-                        eventListener.View_Details(viewMatterModel);
-                    } else if (name == "Delete") {
-                        eventListener.DeleteMatter(viewMatterModel, itemsArrayList);
-                    } else if (name == "Edit Matter Info") {
-                        eventListener.Edit_Matter_Info(viewMatterModel, itemsArrayList);
-                    } else if (name == "Update Group(s)") {
-                        try {
-                            eventListener.Update_Group(viewMatterModel);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        if (name == "View Details") {
+
+//                            AndroidUtils.showToast(new_view_model);
+                            eventListener.View_Details(new_view_model);
+
+                        } else if (name == "Delete") {
+                            eventListener.DeleteMatter(new_view_model, itemsArrayList);
+                        } else if (name == "Edit Matter Info") {
+                            eventListener.Edit_Matter_Info(new_view_model, itemsArrayList);
+                        } else if (name == "Update Group(s)") {
+
+                                eventListener.Update_Group(new_view_model);
+
+                        } else if (name == "Close Matter") {
+
+                                eventListener.Close_Matter(new_view_model);
+
                         }
-                    } else if (name == "Close Matter") {
-                        try {
-                            eventListener.Close_Matter(viewMatterModel);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    }  catch (Exception e) {
+                    e.printStackTrace();
+                    AndroidUtils.showAlert(e.getMessage(), context);
                 }
+                }
+
 
                 @Override
                 public void onNothingSelected(AdapterView<?> adapterView) {
@@ -118,11 +140,6 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
         }
     }
 
-    public ViewMatterAdapter(ArrayList<ViewMatterModel> itemsArrayList, Context context) {
-        this.itemsArrayList = itemsArrayList;
-        this.list_item = itemsArrayList;
-        this.context = context;
-    }
 
     @Override
     public int getItemCount() {
@@ -177,6 +194,7 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
         TextView tv_matter_title, tv_case_number, tv_date_of_filling, tv_client_name, tv_owner_name, tv_initiated;
         ImageView iv_initiated;
         Spinner sp_action;
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_matter_title = itemView.findViewById(R.id.tv_matter_title);

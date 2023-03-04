@@ -7,6 +7,9 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +32,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pgpainless.key.selection.key.util.And;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -124,17 +129,52 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 historyList.add(historyModel);
             }
         } catch (JSONException e) {
+            AndroidUtils.showToast(e.getMessage(),getContext());
             e.printStackTrace();
         }
         openViewDetailsPopUp();
     }
 
     private void openViewDetailsPopUp() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.add_opponent_advocate, null);
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View view = inflater.inflate(R.layout.view_matter_details, null);
+            final AlertDialog dialog = builder.create();
+            ImageView close_details = view.findViewById(R.id.close_details);
+            LinearLayout ll_timeline = view.findViewById(R.id.ll_timeLine);
+            ll_timeline.removeAllViews();
+            for (int i=0;i<historyList.size();i++){
+                View view_timeLine = LayoutInflater.from(getContext()).inflate(R.layout.matter_timeline, null);
+                TextView tv_timeline_title = view_timeLine.findViewById(R.id.tv_timeline_title);
+                TextView tv_timeline_date = view_timeLine.findViewById(R.id.tv_timeline_date);
 
+                ImageView iv_view_timeLine = view_timeLine.findViewById(R.id.iv_view);
+                ImageView iv_edit_notes = view_timeLine.findViewById(R.id.iv_notes);
+                if (!historyList.get(i).isAllday()){
+                    iv_edit_notes.setVisibility(View.VISIBLE);
+                    
+                }else
+                {
+                    iv_edit_notes.setVisibility(View.GONE);
+                }
+                tv_timeline_title.setText(historyList.get(i).getTitle());
+                tv_timeline_date.setText(historyList.get(i).getFrom_ts());
+                ll_timeline.addView(view_timeLine);
+            }
+            close_details.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
 
+            dialog.setCancelable(false);
+            dialog.setView(view);
+            dialog.show();
+        } catch (Exception e) {
+            AndroidUtils.showToast(e.getMessage(),getContext());
+        }
     }
 
     private void loadMattersList(JSONArray matters) {
@@ -219,7 +259,7 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
             int offset = timeZone.getRawOffset();
             long hours = TimeUnit.MILLISECONDS.toMinutes(offset);
             long timezoneoffset = (-1) * (hours);
-            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "matter/" + Constants.MATTER_TYPE + "/" + id + "/history/" + timezoneoffset, "TimeLine", postdata.toString());
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "matter/" + Constants.MATTER_TYPE.toLowerCase(Locale.ROOT) + "/" + id + "/history/" + timezoneoffset, "TimeLine", postdata.toString());
 
         } catch (Exception e) {
             if (progressDialog != null || progressDialog.isShowing()) {

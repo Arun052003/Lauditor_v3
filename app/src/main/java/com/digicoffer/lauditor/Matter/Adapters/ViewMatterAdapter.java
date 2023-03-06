@@ -39,7 +39,6 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
         this.itemsArrayList = itemsArrayList;
         this.list_item = itemsArrayList;
         this.context = context;
-
         this.eventListener = eventListener;
     }
 
@@ -66,7 +65,7 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
     @Override
     public void onBindViewHolder(@NonNull ViewMatterAdapter.MyViewHolder holder, int position) {
         ViewMatterModel viewMatterModel = itemsArrayList.get(position);
-        new_view_model = viewMatterModel;
+//        new_view_model = viewMatterModel;
         itemsArrayList = list_item;
 
         try {
@@ -107,19 +106,19 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
                         if (name == "View Details") {
 
 //                            AndroidUtils.showToast(new_view_model);
-                            eventListener.View_Details(new_view_model);
+                            eventListener.View_Details(viewMatterModel);
 
                         } else if (name == "Delete") {
-                            eventListener.DeleteMatter(new_view_model, itemsArrayList);
+                            eventListener.DeleteMatter(viewMatterModel, itemsArrayList);
                         } else if (name == "Edit Matter Info") {
-                            eventListener.Edit_Matter_Info(new_view_model, itemsArrayList);
+                            eventListener.Edit_Matter_Info(viewMatterModel, itemsArrayList);
                         } else if (name == "Update Group(s)") {
 
-                                eventListener.Update_Group(new_view_model);
+                                eventListener.Update_Group(viewMatterModel);
 
                         } else if (name == "Close Matter") {
 
-                                eventListener.Close_Matter(new_view_model);
+                                eventListener.Close_Matter(viewMatterModel);
 
                         }
                     }  catch (Exception e) {
@@ -185,10 +184,10 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
         };
     }
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
+//    @Override
+//    public long getItemId(int position) {
+//        return position;
+//    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tv_matter_title, tv_case_number, tv_date_of_filling, tv_client_name, tv_owner_name, tv_initiated;

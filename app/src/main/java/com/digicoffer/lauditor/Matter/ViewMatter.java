@@ -1,7 +1,6 @@
 package com.digicoffer.lauditor.Matter;
 
 import android.app.AlertDialog;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -34,8 +33,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.pgpainless.key.selection.key.util.And;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,6 +48,7 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
     AlertDialog progressDialog;
     ArrayList<ViewMatterModel> matterList = new ArrayList<>();
     ArrayList<HistoryModel> historyList = new ArrayList<>();
+     String TimeLineId = "";
 
     @Nullable
     @Override
@@ -105,6 +103,9 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                     } else {
                         loadHistory(result);
                     }
+                }else if(httpResult.getRequestType().equals("Notes")){
+                    historyList.clear();
+                    callTimeLineWebservice();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -121,6 +122,8 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 HistoryModel historyModel = new HistoryModel();
                 if (jsonObject.has("allday")){
                     historyModel.setAllday(jsonObject.getBoolean("allday"));
+                }else{
+                    historyModel.setAllday(true);
                 }
                 historyModel.setId(jsonObject.getString("id"));
                 historyModel.setDescription(jsonObject.getString("description"));
@@ -165,12 +168,12 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
 
 //                normal_notes.setPaintFlags(normal_notes.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
                 ImageView iv_edit_notes = view_timeLine.findViewById(R.id.iv_notes);
-                if (!historyList.get(i).isAllday()){
-                    iv_edit_notes.setVisibility(View.VISIBLE);
-                    
+                boolean allday = historyList.get(i).isAllday();
+                if (allday){
+                    iv_edit_notes.setVisibility(View.GONE);
                 }else
                 {
-                    iv_edit_notes.setVisibility(View.GONE);
+                    iv_edit_notes.setVisibility(View.VISIBLE);
                 }
                 if(historyList.get(i).getNotes().equals(null)){
                     normal_notes.setText("....");
@@ -180,6 +183,42 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 }else {
                     normal_notes.setText(historyList.get(i).getNotes());
                 }
+                iv_edit_notes.setTag(i);
+                iv_edit_notes.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int position =0;
+                        if (v.getTag() instanceof Integer){
+                            position = (Integer)v.getTag();
+                            v = ll_timeline.getChildAt(position);
+                            ll_empty_notes.setVisibility(View.GONE);
+                            ll_edit_notes.setVisibility(View.VISIBLE);
+
+                            HistoryModel historyModel = historyList.get(position);
+                            tv_edit_notes.setText(historyModel.getNotes());
+                            btn_cancel_save.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    ll_empty_notes.setVisibility(View.VISIBLE);
+                                    ll_edit_notes.setVisibility(View.GONE);
+                                }
+                            });
+                            btn_create.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (tv_edit_notes.getText().toString().equals("")){
+                                        tv_edit_notes.setError("Please fill the notes");
+                                        tv_edit_notes.requestFocus();
+                                    }else{
+                                        dialog.dismiss();
+                                        callEditNotesWebservice(historyModel.getId(),tv_edit_notes.getText().toString().trim());
+                                    }
+                                }
+                            });
+
+                        }
+                    }
+                });
                 tv_timeline_title.setText(historyList.get(i).getTitle());
                 tv_timeline_date.setText(historyList.get(i).getFrom_ts());
                 ll_timeline.addView(view_timeLine);
@@ -196,6 +235,19 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
             dialog.show();
         } catch (Exception e) {
             AndroidUtils.showToast(e.getMessage(),getContext());
+        }
+    }
+
+    private void callEditNotesWebservice(String id, String notes) {
+        progressDialog = AndroidUtils.get_progress(getActivity());
+        try{
+            JSONObject postdata = new JSONObject();
+            postdata.put("notes",notes);
+            WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.PUT,"event/notes/"+id,"Notes",postdata.toString());
+        } catch (Exception e) {
+            if (progressDialog!=null||progressDialog.isShowing()){
+                AndroidUtils.dismiss_dialog(progressDialog);
+            }
         }
     }
 
@@ -269,10 +321,13 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
 
     @Override
     public void View_Details(ViewMatterModel viewMatterModel) {
-        callTimeLineWebservice(viewMatterModel.getId());
+        TimeLineId = viewMatterModel.getId();
+        callTimeLineWebservice();
+
+//        AndroidUtils.showAlert(viewMatterModel.getTitle(),getContext());
     }
 
-    private void callTimeLineWebservice(String id) {
+    private void callTimeLineWebservice() {
         try {
             progressDialog = AndroidUtils.get_progress(getActivity());
             JSONObject postdata = new JSONObject();
@@ -281,7 +336,7 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
             int offset = timeZone.getRawOffset();
             long hours = TimeUnit.MILLISECONDS.toMinutes(offset);
             long timezoneoffset = (-1) * (hours);
-            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "matter/" + Constants.MATTER_TYPE.toLowerCase(Locale.ROOT) + "/" + id + "/history/" + timezoneoffset, "TimeLine", postdata.toString());
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "matter/" + Constants.MATTER_TYPE.toLowerCase(Locale.ROOT) + "/" + TimeLineId + "/history/" + timezoneoffset, "TimeLine", postdata.toString());
 
         } catch (Exception e) {
             if (progressDialog != null || progressDialog.isShowing()) {

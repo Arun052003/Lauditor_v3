@@ -68,8 +68,6 @@ public class CommonSpinnerAdapter<Object> extends BaseAdapter {
             data = ((MattersModel)listData).getTitle();
         }if (listData instanceof ClientsModel){
             data = ((ClientsModel)listData).getName();
-        }if(listData instanceof ViewMatterModel){
-            data = ((ViewMatterModel)listData).getTitle();
         }
         listTextView.setText(data);
 

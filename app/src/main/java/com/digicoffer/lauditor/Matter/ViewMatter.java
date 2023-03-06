@@ -1,6 +1,7 @@
 package com.digicoffer.lauditor.Matter;
 
 import android.app.AlertDialog;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -112,6 +114,7 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
 
     private void loadHistory(JSONObject result) {
         try {
+            historyList.clear();
             JSONArray jsonArray = result.getJSONArray("history");
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -148,8 +151,19 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 View view_timeLine = LayoutInflater.from(getContext()).inflate(R.layout.matter_timeline, null);
                 TextView tv_timeline_title = view_timeLine.findViewById(R.id.tv_timeline_title);
                 TextView tv_timeline_date = view_timeLine.findViewById(R.id.tv_timeline_date);
-
+                LinearLayout ll_empty_notes = view_timeLine.findViewById(R.id.ll_empty_notes);
+                LinearLayout ll_edit_notes = view_timeLine.findViewById(R.id.ll_edit_notes);
+                TextInputEditText tv_edit_notes = view_timeLine.findViewById(R.id.tv_edit_notes);
+                TextView word_count_text_view = view_timeLine.findViewById(R.id.word_count_text_view);
+                AppCompatButton btn_cancel_save = view_timeLine.findViewById(R.id.btn_cancel_save);
+                AppCompatButton btn_create = view_timeLine.findViewById(R.id.btn_create);
+                TextInputEditText tv_view_notes = view_timeLine.findViewById(R.id.tv_view_notes);
                 ImageView iv_view_timeLine = view_timeLine.findViewById(R.id.iv_view);
+                TextView normal_notes = view_timeLine.findViewById(R.id.normal_notes);
+                ll_empty_notes.setVisibility(View.VISIBLE);
+                normal_notes.setVisibility(View.VISIBLE);
+
+//                normal_notes.setPaintFlags(normal_notes.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
                 ImageView iv_edit_notes = view_timeLine.findViewById(R.id.iv_notes);
                 if (!historyList.get(i).isAllday()){
                     iv_edit_notes.setVisibility(View.VISIBLE);
@@ -157,6 +171,14 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 }else
                 {
                     iv_edit_notes.setVisibility(View.GONE);
+                }
+                if(historyList.get(i).getNotes().equals(null)){
+                    normal_notes.setText("....");
+                }else if(historyList.get(i).getNotes().equals("")){
+                    normal_notes.setText("....");
+
+                }else {
+                    normal_notes.setText(historyList.get(i).getNotes());
                 }
                 tv_timeline_title.setText(historyList.get(i).getTitle());
                 tv_timeline_date.setText(historyList.get(i).getFrom_ts());

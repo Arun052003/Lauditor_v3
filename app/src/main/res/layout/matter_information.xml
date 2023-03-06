@@ -20,10 +20,10 @@
             android:layout_margin="5dp"
             android:elevation="50dp"
             android:padding="5dp"
-            android:layout_marginBottom="20dp"
             android:visibility="visible"
             app:cardCornerRadius="5dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -85,8 +85,8 @@
                             android:enabled="true"
 
                             android:fontFamily="sans-serif-condensed-medium"
-                            android:padding="5dp"
                             android:hint="@string/matter_title"
+                            android:padding="5dp"
                             android:textColor="@color/Blue_text_color"
                             android:textSize="15dp" />
 
@@ -147,10 +147,10 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:enabled="true"
-                            android:inputType="phone"
                             android:fontFamily="sans-serif-condensed-medium"
-                            android:padding="5dp"
                             android:hint="@string/matter_num"
+                            android:inputType="phone"
+                            android:padding="5dp"
                             android:textColor="@color/Blue_text_color"
                             android:textSize="15dp" />
 
@@ -212,8 +212,8 @@
                             android:layout_gravity="center"
                             android:enabled="true"
                             android:fontFamily="sans-serif-condensed-medium"
-                            android:padding="5dp"
                             android:hint="@string/case_type"
+                            android:padding="5dp"
                             android:textColor="@color/Blue_text_color"
                             android:textSize="15dp" />
 
@@ -348,6 +348,7 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/ll_start_date"
                     android:layout_width="match_parent"
@@ -412,6 +413,7 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/ll_end_date"
                     android:layout_width="match_parent"

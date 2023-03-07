@@ -10,6 +10,15 @@
     <style name="SquareFabShapeOverlay" parent="ShapeAppearanceOverlay.MaterialComponents.FloatingActionButton">
         <item name="cornerSize">0dp</item>
     </style>
+    <style name="TextLimitStyle" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">@color/Blue_text_color</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TextLimitError" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">@color/Red</item>
+    </style>
     <style name="Spinner_new_style" parent="Platform.Widget.AppCompat.Spinner">
         <item name="android:background">@drawable/rectangle_grey_background</item>
         <item name="android:popupBackground">@drawable/abc_popup_background_mtrl_mult</item>

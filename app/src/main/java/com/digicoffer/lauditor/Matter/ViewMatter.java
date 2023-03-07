@@ -3,6 +3,7 @@ package com.digicoffer.lauditor.Matter;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -150,78 +151,175 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
             ImageView close_details = view.findViewById(R.id.close_details);
             LinearLayout ll_timeline = view.findViewById(R.id.ll_timeLine);
             ll_timeline.removeAllViews();
-            for (int i=0;i<historyList.size();i++){
-                View view_timeLine = LayoutInflater.from(getContext()).inflate(R.layout.matter_timeline, null);
-                TextView tv_timeline_title = view_timeLine.findViewById(R.id.tv_timeline_title);
-                TextView tv_timeline_date = view_timeLine.findViewById(R.id.tv_timeline_date);
-                LinearLayout ll_empty_notes = view_timeLine.findViewById(R.id.ll_empty_notes);
-                LinearLayout ll_edit_notes = view_timeLine.findViewById(R.id.ll_edit_notes);
-                TextInputEditText tv_edit_notes = view_timeLine.findViewById(R.id.tv_edit_notes);
-                TextView word_count_text_view = view_timeLine.findViewById(R.id.word_count_text_view);
-                AppCompatButton btn_cancel_save = view_timeLine.findViewById(R.id.btn_cancel_save);
-                AppCompatButton btn_create = view_timeLine.findViewById(R.id.btn_create);
-                TextInputEditText tv_view_notes = view_timeLine.findViewById(R.id.tv_view_notes);
-                ImageView iv_view_timeLine = view_timeLine.findViewById(R.id.iv_view);
-                TextView normal_notes = view_timeLine.findViewById(R.id.normal_notes);
-                ll_empty_notes.setVisibility(View.VISIBLE);
-                normal_notes.setVisibility(View.VISIBLE);
+            for (int i=0;i<historyList.size();i++) {
+                try {
+                    View view_timeLine = LayoutInflater.from(getContext()).inflate(R.layout.matter_timeline, null);
+                    TextView tv_timeline_title = view_timeLine.findViewById(R.id.tv_timeline_title);
+                    TextView tv_timeline_date = view_timeLine.findViewById(R.id.tv_timeline_date);
+                    LinearLayout ll_empty_notes = view_timeLine.findViewById(R.id.ll_empty_notes);
+                    LinearLayout ll_edit_notes = view_timeLine.findViewById(R.id.ll_edit_notes);
+                    TextInputEditText tv_edit_notes = view_timeLine.findViewById(R.id.tv_edit_notes);
+                    TextView word_count_text_view = view_timeLine.findViewById(R.id.word_count_text_view);
+                    AppCompatButton btn_cancel_save = view_timeLine.findViewById(R.id.btn_cancel_save);
+                    AppCompatButton btn_create = view_timeLine.findViewById(R.id.btn_create);
+                    TextInputEditText tv_view_notes = view_timeLine.findViewById(R.id.tv_view_notes);
+                    ImageView iv_view_timeLine = view_timeLine.findViewById(R.id.iv_view);
+                    TextView normal_notes = view_timeLine.findViewById(R.id.normal_notes);
+
+                    ll_empty_notes.setVisibility(View.VISIBLE);
+                    normal_notes.setVisibility(View.VISIBLE);
+//                int maxLength = 3;
+//                tv_edit_notes.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
 
 //                normal_notes.setPaintFlags(normal_notes.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-                ImageView iv_edit_notes = view_timeLine.findViewById(R.id.iv_notes);
-                boolean allday = historyList.get(i).isAllday();
-                if (allday){
-                    iv_edit_notes.setVisibility(View.GONE);
-                }else
-                {
-                    iv_edit_notes.setVisibility(View.VISIBLE);
-                }
-                if(historyList.get(i).getNotes().equals(null)){
-                    normal_notes.setText("....");
-                }else if(historyList.get(i).getNotes().equals("")){
-                    normal_notes.setText("....");
+                    ImageView iv_edit_notes = view_timeLine.findViewById(R.id.iv_notes);
+                    boolean allday = historyList.get(i).isAllday();
+                    if (allday) {
+                        iv_edit_notes.setVisibility(View.GONE);
+                    } else {
+                        iv_edit_notes.setVisibility(View.VISIBLE);
+                    }
+                    if (historyList.get(i).getNotes().equals(null)) {
+                        normal_notes.setText("....");
+                    } else if (historyList.get(i).getNotes().equals("")) {
+                        normal_notes.setText("....");
 
-                }else {
-                    normal_notes.setText(historyList.get(i).getNotes());
-                }
-                iv_edit_notes.setTag(i);
-                iv_edit_notes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int position =0;
-                        if (v.getTag() instanceof Integer){
-                            position = (Integer)v.getTag();
-                            v = ll_timeline.getChildAt(position);
-                            ll_empty_notes.setVisibility(View.GONE);
-                            ll_edit_notes.setVisibility(View.VISIBLE);
+                    } else {
+                        normal_notes.setText(historyList.get(i).getNotes());
+                    }
 
-                            HistoryModel historyModel = historyList.get(position);
-                            tv_edit_notes.setText(historyModel.getNotes());
-                            btn_cancel_save.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    ll_empty_notes.setVisibility(View.VISIBLE);
-                                    ll_edit_notes.setVisibility(View.GONE);
-                                }
-                            });
-                            btn_create.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (tv_edit_notes.getText().toString().equals("")){
-                                        tv_edit_notes.setError("Please fill the notes");
-                                        tv_edit_notes.requestFocus();
-                                    }else{
-                                        dialog.dismiss();
-                                        callEditNotesWebservice(historyModel.getId(),tv_edit_notes.getText().toString().trim());
+//                    tv_edit_notes.addTextChangedListener(new TextWatcher() {
+//                        @Override
+//                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                            String[] words = s.toString().trim().split("\\s+");
+//                            int wordCount = words.length;
+//
+//                            // Update the word count TextView
+//                            float wordCountFraction = (float) wordCount / 1000;
+//                            String wordCountText = String.format(Locale.getDefault(), "%.2f /1000", wordCountFraction);
+//                            word_count_text_view.setText(wordCountText);
+//
+//                            // Check if the word count exceeds the limit
+//                            if (wordCount > 1000) {
+//                                // Remove the last word if it exceeds the limit
+//                                int lastSpace = s.toString().lastIndexOf(" ", s.length() - 2);
+//                                tv_edit_notes.setText(s.subSequence(0, lastSpace));
+//                                tv_edit_notes.setSelection(lastSpace);
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                            // Count the number of words
+//                            String[] words = s.toString().trim().split("\\s+");
+//                            int wordCount = words.length;
+//
+//                            // Update the word count TextView
+//                            float wordCountFraction = (float) wordCount / 1000;
+//                            String wordCountText = String.format(Locale.getDefault(), "%.2f /1000", wordCountFraction);
+//                            word_count_text_view.setText(wordCountText);
+//
+//                            // Check if the word count exceeds the limit
+//                            if (wordCount > 1000) {
+//                                // Remove the last word if it exceeds the limit
+//                                int lastSpace = s.toString().lastIndexOf(" ", s.length() - 2);
+//                                tv_edit_notes.setText(s.subSequence(0, lastSpace));
+//                                tv_edit_notes.setSelection(lastSpace);
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void afterTextChanged(Editable s) {
+//                            // Not used
+//                        }
+//                    });
+
+                    iv_edit_notes.setTag(i);
+                    iv_edit_notes.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                int position = 0;
+                                if (v.getTag() instanceof Integer) {
+                                    position = (Integer) v.getTag();
+                                    v = ll_timeline.getChildAt(position);
+                                    if (ll_edit_notes.getVisibility()==View.VISIBLE){
+                                        ll_empty_notes.setVisibility(View.VISIBLE);
+                                        ll_edit_notes.setVisibility(View.GONE);
+                                        tv_view_notes.setVisibility(View.GONE);
                                     }
+                                    else
+                                    {
+                                        ll_empty_notes.setVisibility(View.GONE);
+                                        ll_edit_notes.setVisibility(View.VISIBLE);
+                                        tv_view_notes.setVisibility(View.GONE);
+
+                                    }
+
+                                    HistoryModel historyModel = historyList.get(position);
+                                    tv_edit_notes.setText(historyModel.getNotes());
+                                    btn_cancel_save.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            ll_empty_notes.setVisibility(View.VISIBLE);
+                                            ll_edit_notes.setVisibility(View.GONE);
+                                            tv_view_notes.setVisibility(View.GONE);
+                                        }
+                                    });
+                                    btn_create.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            if (tv_edit_notes.getText().toString().equals("")) {
+                                                tv_edit_notes.setError("Please fill the notes");
+                                                tv_edit_notes.requestFocus();
+                                            } else {
+                                                dialog.dismiss();
+                                                callEditNotesWebservice(historyModel.getId(), tv_edit_notes.getText().toString().trim());
+                                            }
+                                        }
+                                    });
+
                                 }
-                            });
+                            } catch (Exception e) {
+                                AndroidUtils.showAlert(e.getMessage(), getContext());
+                            }
+                        }
+                    });
+                    iv_view_timeLine.setTag(i);
+                    iv_view_timeLine.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                int position = 0;
+                                if (v.getTag() instanceof Integer) {
+                                    position = (Integer) v.getTag();
+                                    v = ll_timeline.getChildAt(position);
+                                    if (tv_view_notes.getVisibility() == View.VISIBLE) {
+                                        ll_empty_notes.setVisibility(View.VISIBLE);
+                                        ll_edit_notes.setVisibility(View.GONE);
+                                        tv_view_notes.setVisibility(View.GONE);
+                                    } else {
+                                        ll_empty_notes.setVisibility(View.GONE);
+                                        ll_edit_notes.setVisibility(View.GONE);
+                                        tv_view_notes.setVisibility(View.VISIBLE);
+
+                                    }
+
+                                    HistoryModel historyModel = historyList.get(position);
+                                    tv_view_notes.setText(historyModel.getNotes());
+                                }
+                            } catch (Exception e) {
+                                AndroidUtils.showAlert(e.getMessage(), getContext());
+                            }
 
                         }
-                    }
-                });
-                tv_timeline_title.setText(historyList.get(i).getTitle());
-                tv_timeline_date.setText(historyList.get(i).getFrom_ts());
-                ll_timeline.addView(view_timeLine);
+                    });
+                    tv_timeline_title.setText(historyList.get(i).getTitle());
+                    tv_timeline_date.setText(historyList.get(i).getFrom_ts());
+                    ll_timeline.addView(view_timeLine);
+                } catch (Exception ex) {
+                    AndroidUtils.showAlert(ex.getMessage(),getContext());
+                }
             }
             close_details.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -233,6 +331,7 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
             dialog.setCancelable(false);
             dialog.setView(view);
             dialog.show();
+
         } catch (Exception e) {
             AndroidUtils.showToast(e.getMessage(),getContext());
         }

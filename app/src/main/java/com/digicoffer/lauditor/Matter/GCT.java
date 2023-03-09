@@ -26,6 +26,7 @@ import com.digicoffer.lauditor.Matter.Models.DocumentsModel;
 import com.digicoffer.lauditor.Matter.Models.GroupsModel;
 import com.digicoffer.lauditor.Matter.Models.MatterModel;
 import com.digicoffer.lauditor.Matter.Models.TeamModel;
+import com.digicoffer.lauditor.Matter.Models.ViewMatterModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
@@ -35,6 +36,7 @@ import com.digicoffer.lauditor.common.AndroidUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.minidns.record.A;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -71,6 +73,7 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
     ArrayList<GroupsModel> groupsList = new ArrayList<>();
     ArrayList<DocumentsModel> documentsList = new ArrayList<>();
     ArrayList<ClientsModel> clientsList = new ArrayList<>();
+    ArrayList<ViewMatterModel> new_groupsList = new ArrayList<>();
     ArrayList<TeamModel> tmList = new ArrayList<>();
     Matter matter;
     private JSONArray existing_opponents;
@@ -546,7 +549,7 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
             rv_groups.setLayoutManager(layoutManager);
             rv_groups.setHasFixedSize(true);
             ADAPTER_TAG = "TM";
-            GroupsAdapter documentsAdapter = new GroupsAdapter(groupsList, clientsList, tmList, ADAPTER_TAG);
+            GroupsAdapter documentsAdapter = new GroupsAdapter(groupsList, clientsList, tmList,new_groupsList, ADAPTER_TAG);
             rv_groups.setAdapter(documentsAdapter);
             AlertDialog dialog = dialogBuilder.create();
             iv_cancel.setOnClickListener(new View.OnClickListener() {
@@ -712,7 +715,7 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
             rv_groups.setLayoutManager(layoutManager);
             rv_groups.setHasFixedSize(true);
             ADAPTER_TAG = "Clients";
-            GroupsAdapter documentsAdapter = new GroupsAdapter(groupsList, clientsList, tmList, ADAPTER_TAG);
+            GroupsAdapter documentsAdapter = new GroupsAdapter(groupsList, clientsList, tmList,new_groupsList, ADAPTER_TAG);
             rv_groups.setAdapter(documentsAdapter);
             AlertDialog dialog = dialogBuilder.create();
             iv_cancel.setOnClickListener(new View.OnClickListener() {
@@ -906,7 +909,7 @@ public class GCT extends Fragment implements View.OnClickListener, AsyncTaskComp
             rv_groups.setLayoutManager(layoutManager);
             rv_groups.setHasFixedSize(true);
             ADAPTER_TAG = "Groups";
-            GroupsAdapter documentsAdapter = new GroupsAdapter(groupsList, clientsList, tmList, ADAPTER_TAG);
+            GroupsAdapter documentsAdapter = new GroupsAdapter(groupsList, clientsList, tmList,new_groupsList, ADAPTER_TAG);
             rv_groups.setAdapter(documentsAdapter);
             AlertDialog dialog = dialogBuilder.create();
             iv_cancel.setOnClickListener(new View.OnClickListener() {

@@ -13,7 +13,10 @@ import com.digicoffer.lauditor.Matter.Models.ClientsModel;
 import com.digicoffer.lauditor.Matter.Models.DocumentsModel;
 import com.digicoffer.lauditor.Matter.Models.GroupsModel;
 import com.digicoffer.lauditor.Matter.Models.TeamModel;
+import com.digicoffer.lauditor.Matter.Models.ViewMatterModel;
 import com.digicoffer.lauditor.R;
+
+import org.minidns.record.A;
 
 import java.util.ArrayList;
 
@@ -22,15 +25,17 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.Viewholder
     ArrayList<GroupsModel> list_item = new ArrayList<>();
     ArrayList<ClientsModel> clientsList = new ArrayList<>();
     ArrayList<TeamModel> tmList = new ArrayList<>();
+    ArrayList<ViewMatterModel> groupsList = new ArrayList<>();
+
     String TAG = "Groups";
 
 
-    public GroupsAdapter(ArrayList<GroupsModel> sharedList, ArrayList<ClientsModel> clientsList, ArrayList<TeamModel> teamList,  String Tag) {
+    public GroupsAdapter(ArrayList<GroupsModel> sharedList, ArrayList<ClientsModel> clientsList, ArrayList<TeamModel> teamList,ArrayList<ViewMatterModel> groups_list,  String Tag) {
         this.sharedList = sharedList;
         this.list_item = sharedList;
         this.clientsList = clientsList;
         this.tmList = teamList;
-
+        this.groupsList = groups_list;
         this.TAG = Tag;
     }
 
@@ -91,6 +96,22 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.Viewholder
                     }
                 }
             });
+        }else if(TAG == "UGM"){
+            ViewMatterModel viewMatterModel = groupsList.get(position);
+            holder.cb_documents.setChecked(groupsList.get(position).isChecked());
+            holder.cb_documents.setTag(position);
+            holder.tv_tm_name.setText(viewMatterModel.getGroup_name());
+            holder.cb_documents.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Integer pos = (Integer) holder.cb_documents.getTag();
+                    if (groupsList.get(pos).isChecked()) {
+                        groupsList.get(pos).setChecked(false);
+                    } else {
+                        groupsList.get(pos).setChecked(true);
+                    }
+                }
+            });
         }
 
     }
@@ -107,6 +128,9 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.Viewholder
         return tmList;
     }
 
+    public ArrayList<ViewMatterModel> getGroupsList(){
+        return groupsList;
+    }
 
     @Override
     public int getItemCount() {
@@ -114,10 +138,11 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.Viewholder
             return sharedList.size();
         } else if (TAG == "Clients") {
             return clientsList.size();
-        } else  {
+        } else if(TAG == "UGM"){
+            return groupsList.size();
+        }else  {
             return tmList.size();
         }
-
     }
 
     @Override

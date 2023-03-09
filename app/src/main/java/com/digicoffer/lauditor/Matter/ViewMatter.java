@@ -3,11 +3,11 @@ package com.digicoffer.lauditor.Matter;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,10 +17,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.Matter.Adapters.GroupsAdapter;
 import com.digicoffer.lauditor.Matter.Adapters.ViewMatterAdapter;
+import com.digicoffer.lauditor.Matter.Models.ClientsModel;
+import com.digicoffer.lauditor.Matter.Models.GroupsModel;
 import com.digicoffer.lauditor.Matter.Models.HistoryModel;
+import com.digicoffer.lauditor.Matter.Models.TeamModel;
 import com.digicoffer.lauditor.Matter.Models.ViewMatterModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
@@ -49,7 +54,16 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
     AlertDialog progressDialog;
     ArrayList<ViewMatterModel> matterList = new ArrayList<>();
     ArrayList<HistoryModel> historyList = new ArrayList<>();
+    ArrayList<ViewMatterModel> groupsArrayList = new ArrayList<>();
+    ArrayList<GroupsModel> list_item = new ArrayList<>();
+    ArrayList<ClientsModel> clientsList = new ArrayList<>();
+    ArrayList<TeamModel> tmList = new ArrayList<>();
+    int i ;
      String TimeLineId = "";
+     String Header_name = "";
+     String Matter_id = "";
+    ViewMatterModel viewMatterModel;
+    private ArrayList<GroupsModel> groupsList;
 
     @Nullable
     @Override
@@ -107,10 +121,123 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 }else if(httpResult.getRequestType().equals("Notes")){
                     historyList.clear();
                     callTimeLineWebservice();
+                }else if(httpResult.getRequestType().equals("Groups")){
+                    groupsArrayList.clear();
+                    JSONArray data = result.getJSONArray("data");
+//                    loadViewGroups(data);
+                }else if(httpResult.getRequestType().equals("Update Groups")){
+                    groupsArrayList.clear();
+                    callMatterListWebservice();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void openViewGroupsPopup() {
+        groupsArrayList.clear();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.update_groups_popup, null);
+        LinearLayout ll_groups = view.findViewById(R.id.ll_groups);
+        AppCompatButton btn_cancel_save = view.findViewById(R.id.btn_cancel_save);
+        AppCompatButton btn_create = view.findViewById(R.id.btn_create);
+        ImageView close_details = view.findViewById(R.id.close_details);
+//        RecyclerView rv_groups = view.findViewById(R.id.rv_groups);
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+//        rv_groups.setLayoutManager(layoutManager);
+
+//        String ADAPTER_TAG = "UGM";
+//        GroupsAdapter groupsAdapter = new GroupsAdapter(groupsList, clientsList, tmList,groupsArrayList, ADAPTER_TAG);
+//        rv_groups.setAdapter(groupsAdapter);
+//        rv_groups.setHasFixedSize(true);
+
+        ll_groups.removeAllViews();
+
+        for ( i= 0; i<groupsArrayList.size(); i++){
+            View view_groups = LayoutInflater.from(getContext()).inflate(R.layout.select_team_members, null);
+            TextView tv_group_name = view_groups.findViewById(R.id.tv_tm_name);
+            CheckBox chk_selected = view_groups.findViewById(R.id.chk_selected);
+            tv_group_name.setText(groupsArrayList.get(i).getGroup_name());
+            chk_selected.setChecked(groupsArrayList.get(i).isChecked());
+//            chk_selected.setId(groupsArrayList.get(i).getGroup_id());
+            chk_selected.setTag(i);
+            chk_selected.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = 0;
+                    if (v.getTag() instanceof Integer) {
+                        position = (Integer) v.getTag();
+                        v = ll_groups.getChildAt(position);
+                        viewMatterModel = groupsArrayList.get(position);
+
+                    }
+
+//                    int position =i;
+                    if(viewMatterModel.isChecked()){
+                        viewMatterModel.setChecked(false);
+
+                    }else{
+                        viewMatterModel.setChecked(true);
+
+
+//                        groupsArrayList.set()
+                    }
+                    groupsArrayList.set(position,viewMatterModel);
+                    CheckBox checkBox=v.findViewById(R.id.chk_selected);
+                    checkBox.setChecked(viewMatterModel.isChecked());
+//                    groupsArrayList.set(position,viewMatterModel);
+//                    groupsArrayList.get(i).setChecked(chk_selected.isChecked());
+                }
+            });
+            ll_groups.addView(view_groups);
+        }
+        final AlertDialog dialog = builder.create();
+        btn_cancel_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        btn_create.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                callUpdateGroupsWebservice(groupsArrayList);
+            }
+        });
+        close_details.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.setCancelable(false);
+        dialog.setView(view);
+        dialog.show();
+    }
+
+    private void callUpdateGroupsWebservice(ArrayList<ViewMatterModel> groupsList) {
+        progressDialog = AndroidUtils.get_progress(getActivity());
+        try {
+            JSONObject postdata = new JSONObject();
+            JSONArray group_acls = new JSONArray();
+            for (int i = 0; i < groupsList.size(); i++) {
+                ViewMatterModel viewMatterModel = groupsList.get(i);
+                if (viewMatterModel.isChecked()) {
+                    group_acls.put(groupsList.get(i).getGroup_id());
+                }
+            }
+            if (group_acls.length() == 0) {
+                AndroidUtils.showToast("Please select atleast one group", getContext());
+            }
+            else {
+                postdata.put("group_acls", group_acls);
+                WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PUT, "matter/legal/" + Matter_id + "/acls", "Update Groups", postdata.toString());
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -147,14 +274,18 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             LayoutInflater inflater = getActivity().getLayoutInflater();
             View view = inflater.inflate(R.layout.view_matter_details, null);
-            final AlertDialog dialog = builder.create();
+
             ImageView close_details = view.findViewById(R.id.close_details);
             LinearLayout ll_timeline = view.findViewById(R.id.ll_timeLine);
+            TextView tv_header_name = view.findViewById(R.id.header_name);
+            tv_header_name.setText(Header_name);
+            final AlertDialog dialog = builder.create();
             ll_timeline.removeAllViews();
             for (int i=0;i<historyList.size();i++) {
                 try {
                     View view_timeLine = LayoutInflater.from(getContext()).inflate(R.layout.matter_timeline, null);
                     TextView tv_timeline_title = view_timeLine.findViewById(R.id.tv_timeline_title);
+
                     TextView tv_timeline_date = view_timeLine.findViewById(R.id.tv_timeline_date);
                     LinearLayout ll_empty_notes = view_timeLine.findViewById(R.id.ll_empty_notes);
                     LinearLayout ll_edit_notes = view_timeLine.findViewById(R.id.ll_edit_notes);
@@ -421,6 +552,7 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
     @Override
     public void View_Details(ViewMatterModel viewMatterModel) {
         TimeLineId = viewMatterModel.getId();
+        Header_name = viewMatterModel.getTitle();
         callTimeLineWebservice();
 
 //        AndroidUtils.showAlert(viewMatterModel.getTitle(),getContext());
@@ -457,7 +589,34 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
 
     @Override
     public void Update_Group(ViewMatterModel viewMatterModel) {
+        try {
+            Matter_id = viewMatterModel.getId();
+            for (int i = 0; i < viewMatterModel.getGroups().length(); i++) {
+                JSONObject jsonObject = viewMatterModel.getGroups().getJSONObject(i);
+                ViewMatterModel viewMatterModel1 = new ViewMatterModel();
+                viewMatterModel1.setGroup_id(jsonObject.getString("id"));
+                viewMatterModel1.setGroup_name(jsonObject.getString("name"));
+                viewMatterModel1.setChecked(true);
+                groupsArrayList.add(viewMatterModel1);
+            }
+            openViewGroupsPopup();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+//        callgroupsWebservice();
 
+    }
+
+    private void callgroupsWebservice() {
+        progressDialog = AndroidUtils.get_progress(getActivity());
+        try{
+            JSONObject postdata = new JSONObject();
+            WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.GET,"v3/groups","Groups",postdata.toString());
+
+        } catch (Exception e) {
+            AndroidUtils.showAlert(e.getMessage(),getContext());
+            e.printStackTrace();
+        }
     }
 
     @Override

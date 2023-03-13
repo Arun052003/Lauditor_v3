@@ -1,11 +1,13 @@
 package com.digicoffer.lauditor.Matter.Adapters;
 
 import android.app.Activity;
+import android.app.Notification;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -23,6 +25,7 @@ import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 
 import org.json.JSONObject;
+import org.minidns.record.A;
 import org.pgpainless.key.selection.key.util.And;
 
 import java.util.ArrayList;
@@ -33,6 +36,8 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
     ArrayList<ActionModel> actions_List = new ArrayList<ActionModel>();
     Context context;
     InterfaceListener eventListener;
+    String[] items = {"Choose Actions","View Details", "Edit Matter Info", "Update Group(s)", "Delete", "Close/ReOpen Matter"};
+
     ViewMatterModel new_view_model;
 
     public ViewMatterAdapter(ArrayList<ViewMatterModel> itemsArrayList, Context context, InterfaceListener eventListener) {
@@ -40,6 +45,7 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
         this.list_item = itemsArrayList;
         this.context = context;
         this.eventListener = eventListener;
+
     }
 
     @NonNull
@@ -60,13 +66,15 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
         void Update_Group(ViewMatterModel viewMatterModel);
 
         void Close_Matter(ViewMatterModel viewMatterModel);
+
+        void ReopenMatter(ViewMatterModel viewMatterModel);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewMatterAdapter.MyViewHolder holder, int position) {
         ViewMatterModel viewMatterModel = itemsArrayList.get(position);
 //        new_view_model = viewMatterModel;
-        itemsArrayList = list_item;
+//        itemsArrayList = list_item;
 
         try {
             JSONObject owner = viewMatterModel.getOwner();
@@ -77,50 +85,115 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
             holder.tv_owner_name.setText(owner_name);
             holder.tv_date_of_filling.setText(viewMatterModel.getDate_of_filling());
             String upperString = viewMatterModel.getStatus().substring(0, 1).toUpperCase() + viewMatterModel.getStatus().substring(1).toLowerCase();
-
-            if (viewMatterModel.getStatus().equals("Active")) {
-                holder.tv_initiated.setText(upperString);
-                holder.iv_initiated.setImageDrawable(context.getResources().getDrawable(R.drawable.green_circular));
-//                notifyDataSetChanged();
-            } else {
-                holder.tv_initiated.setText(upperString);
-                holder.iv_initiated.setImageDrawable(context.getResources().getDrawable(R.drawable.red_circular));
-//                notifyDataSetChanged();
-            }
             actions_List.clear();
             actions_List.add(new ActionModel("Choose Actions"));
             actions_List.add(new ActionModel("View Details"));
             actions_List.add(new ActionModel("Edit Matter Info"));
             actions_List.add(new ActionModel("Update Group(s)"));
-            actions_List.add(new ActionModel("Close Matter"));
             actions_List.add(new ActionModel("Delete"));
+            actions_List.add(new ActionModel("Close Matter"));
+////            actions_List.add(new ActionModel())
+//            for (int i=0;i<actions_List.size();i++){
+//                ActionModel actionModel = actions_List.get(i);
+//                if (actionModel.getName().equals("Close Matter")) {
+//                    if (viewMatterModel.getStatus().equals("Active")) {
+//
+//                        actionModel.setName("Close Matter");
+////                        actions_List.set(i, actionModel);
+//                    } else if (viewMatterModel.getStatus().equals("Closed")) {
+//                        actionModel.setName("ReopenMatter");
+////                        actions_List.set(i, actionModel);
+//                    }
+//                }
+//            }
+//            ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinner.getAdapter();
 
-            final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) context, actions_List);
-            holder.sp_action.setAdapter(spinner_adapter);
+//            final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) context, actions_List);
+//            holder.sp_action.setAdapter(spinner_adapter);
+            if (viewMatterModel.getStatus().equals("Active")) {
+
+
+                holder.tv_initiated.setText("Active");
+                holder.iv_initiated.setImageDrawable(context.getResources().getDrawable(R.drawable.green_circular));
+//                actions_List.add(new ActionModel("Close Matter"));
+                //                actions_List.add(new ActionModel("Close Matter"));
+//                notifyDataSetChanged();
+            } else if(viewMatterModel.getStatus().equals("Closed")){
+//                String[] newItems = new String[items.length - 1];
+//                for (int i = 0; i < items.length; i++) {
+//                    if (items[i].equals("Close Matter")) {
+//                        items[i] = "Reopen Matter";
+//                        break;
+//                    }
+//                }
+//                items = newItems;
+//                for (int i = 0; i < items.length; i++) {
+//                    if (items[i].equals("Close Matter")) {
+//                        items[i] = "Reopen Matter";
+//                        break;
+//                    }
+//                }
+                holder.tv_initiated.setText("Closed");
+                holder.iv_initiated.setImageDrawable(context.getResources().getDrawable(R.drawable.circular));
+//
+                   actions_List.add(new ActionModel("Reopen Matter"));
+            }else
+            {
+//                for (int i=0;i<actions_List.size();i++){
+//                    if (actions_List.get(i).getName().equals("Close/Reopen Matter")){
+//                        actions_List.remove(i);
+//                    }
+//                }
+
+                String[] newItems = new String[items.length - 1];
+                for (int i = 0, j = 0; i < items.length; i++) {
+                    if (!items[i].equals("Close/ReOpen Matter")) {
+                        newItems[j++] = items[i];
+                    }
+                }
+                items = newItems;
+//                for (int i = 0; i < items.length(); i++) {
+//                    if (items.get(i).equals("Item 5")) {
+//                        items.remove(i);
+//                    }
+//                }
+
+//                spinner_adapter.
+                holder.tv_initiated.setText("Pending");
+                holder.iv_initiated.setImageDrawable(context.getResources().getDrawable(R.drawable.red_circular));
+//               adapter.remove("");
+//                actions_List.add(new ActionModel("Reopen Matter"));
+            }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, items);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            holder.sp_action.setAdapter(adapter);
+//            holder.sp_action.setSelection(Spinner.INVALID_POSITION);
+            adapter.notifyDataSetChanged();
+
+//            if ()
             holder.sp_action.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     try {
-                        String name = actions_List.get(adapterView.getSelectedItemPosition()).getName();
+                        String name = (String) adapterView.getItemAtPosition(i);
 
-                        if (name == "View Details") {
-
+                        if (name.equals("View Details")) {
 //                            AndroidUtils.showToast(new_view_model);
                             eventListener.View_Details(viewMatterModel);
-
-                        } else if (name == "Delete") {
+                        } else if (name.equals("Delete")) {
                             eventListener.DeleteMatter(viewMatterModel, itemsArrayList);
-                        } else if (name == "Edit Matter Info") {
+                        } else if (name.equals("Edit Matter Info")) {
                             eventListener.Edit_Matter_Info(viewMatterModel, itemsArrayList);
-                        } else if (name == "Update Group(s)") {
-
+                        } else if (name.equals("Update Group(s)")) {
                                 eventListener.Update_Group(viewMatterModel);
-
-                        } else if (name == "Close Matter") {
-
-                                eventListener.Close_Matter(viewMatterModel);
-
+                        }else if(name.equals("Close/ReOpen Matter")){
+                            eventListener.Close_Matter(viewMatterModel);
                         }
+//                        else if (name.equals("Reopen Matter")){
+//                            eventListener.ReopenMatter(viewMatterModel);
+//                        }
+//                        notifyDataSetChanged();
                     }  catch (Exception e) {
                     e.printStackTrace();
                     AndroidUtils.showAlert(e.getMessage(), context);
@@ -133,6 +206,7 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
 
                 }
             });
+//            notifyDataSetChanged();
         } catch (Exception e) {
             AndroidUtils.showToast(e.getMessage(), context);
             e.printStackTrace();

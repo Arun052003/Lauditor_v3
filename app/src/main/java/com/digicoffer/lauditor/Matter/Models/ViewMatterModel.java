@@ -14,6 +14,106 @@ public class ViewMatterModel {
     JSONArray documents;
     JSONArray groupAcls;
     JSONArray groups;
+    String client_id;
+    String client_type;
+    String doc_id;
+    String doc_type;
+    String user_id;
+    String member_id;
+    String Email;
+    String member_name;
+
+    public String getMember_name() {
+        return member_name;
+    }
+
+    public void setMember_name(String member_name) {
+        this.member_name = member_name;
+    }
+
+    String Advocate_name;
+    String Number;
+    public boolean isCanDelete() {
+        return canDelete;
+    }
+
+    public void setCanDelete(boolean canDelete) {
+        this.canDelete = canDelete;
+    }
+
+    boolean canDelete;
+    public String getAdvocate_name() {
+        return Advocate_name;
+    }
+
+    public void setAdvocate_name(String advocate_name) {
+        Advocate_name = advocate_name;
+    }
+
+    public String getNumber() {
+        return Number;
+    }
+
+    public void setNumber(String number) {
+        Number = number;
+    }
+
+    public String getEmail() {
+        return Email;
+    }
+
+    public void setEmail(String email) {
+        Email = email;
+    }
+
+    public String getMember_id() {
+        return member_id;
+    }
+
+    public void setMember_id(String member_id) {
+        this.member_id = member_id;
+    }
+
+    public String getDoc_id() {
+        return doc_id;
+    }
+
+    public void setDoc_id(String doc_id) {
+        this.doc_id = doc_id;
+    }
+
+    public String getDoc_type() {
+        return doc_type;
+    }
+
+    public void setDoc_type(String doc_type) {
+        this.doc_type = doc_type;
+    }
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
+
+    public String getClient_id() {
+        return client_id;
+    }
+
+    public void setClient_id(String client_id) {
+        this.client_id = client_id;
+    }
+
+    public String getClient_type() {
+        return client_type;
+    }
+
+    public void setClient_type(String client_type) {
+        this.client_type = client_type;
+    }
+
     private boolean isSelected;
     boolean isChecked;
 

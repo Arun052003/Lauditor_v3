@@ -17,11 +17,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.digicoffer.lauditor.Matter.Adapters.GroupsAdapter;
+import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
 import com.digicoffer.lauditor.Matter.Adapters.ViewMatterAdapter;
+import com.digicoffer.lauditor.Matter.Models.AdvocateModel;
 import com.digicoffer.lauditor.Matter.Models.ClientsModel;
 import com.digicoffer.lauditor.Matter.Models.GroupsModel;
 import com.digicoffer.lauditor.Matter.Models.HistoryModel;
@@ -39,9 +39,13 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.minidns.record.A;
+import org.pgpainless.key.selection.key.util.And;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -55,6 +59,12 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
     ArrayList<ViewMatterModel> matterList = new ArrayList<>();
     ArrayList<HistoryModel> historyList = new ArrayList<>();
     ArrayList<ViewMatterModel> groupsArrayList = new ArrayList<>();
+    ArrayList<ActionModel> actions_List = new ArrayList<ActionModel>();
+    ArrayList<ViewMatterModel>existing_clients = new ArrayList<>();
+    ArrayList<ViewMatterModel>existing_documents = new ArrayList<>();
+    ArrayList<ViewMatterModel>existing_members = new ArrayList<>();
+    ArrayList<ViewMatterModel>existing_advocates = new ArrayList<>();
+    ArrayList<ViewMatterModel> existing_groups = new ArrayList<>();
     ArrayList<GroupsModel> list_item = new ArrayList<>();
     ArrayList<ClientsModel> clientsList = new ArrayList<>();
     ArrayList<TeamModel> tmList = new ArrayList<>();
@@ -62,6 +72,9 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
      String TimeLineId = "";
      String Header_name = "";
      String Matter_id = "";
+     String Matter_Status ="";
+     String Matter_Title = "";
+     String Case_Number = "";
     ViewMatterModel viewMatterModel;
     private ArrayList<GroupsModel> groupsList;
 
@@ -109,7 +122,12 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                         AndroidUtils.showToast(msg, getContext());
                     } else {
                         JSONArray matters = result.getJSONArray("matters");
-                        loadMattersList(matters);
+                        try {
+                            loadMattersList(matters);
+                        } catch (Exception e) {
+                            AndroidUtils.showAlert(e.getMessage(),getContext());
+                            e.printStackTrace();
+                        }
                     }
                 } else if (httpResult.getRequestType().equals("TimeLine")) {
                     if (error) {
@@ -128,6 +146,18 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 }else if(httpResult.getRequestType().equals("Update Groups")){
                     groupsArrayList.clear();
                     callMatterListWebservice();
+                }else if(httpResult.getRequestType().equals("Update Matter")){
+
+                    String msg = result.getString("msg");
+                    if (error) {
+
+                        AndroidUtils.showToast(msg, getContext());
+                    } else {
+                    matterList.clear();
+                        AndroidUtils.showToast(msg, getContext());
+                        callMatterListWebservice();
+                    }
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -136,7 +166,7 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
     }
 
     private void openViewGroupsPopup() {
-        groupsArrayList.clear();
+//        groupsArrayList.clear();
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.update_groups_popup, null);
@@ -197,12 +227,14 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
         btn_cancel_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                groupsArrayList.clear();
                 dialog.dismiss();
             }
         });
         btn_create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 dialog.dismiss();
                 callUpdateGroupsWebservice(groupsArrayList);
             }
@@ -210,6 +242,7 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
         close_details.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                groupsArrayList.clear();
                 dialog.dismiss();
             }
         });
@@ -490,19 +523,24 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 viewMatterModel.setCaseNumber(jsonObject.getString("caseNumber"));
                 viewMatterModel.setCasetype(jsonObject.getString("caseType"));
                 viewMatterModel.setClients(jsonObject.getJSONArray("clients"));
+
                 viewMatterModel.setCourtName(jsonObject.getString("courtName"));
                 viewMatterModel.setDate_of_filling(jsonObject.getString("date_of_filling"));
                 viewMatterModel.setDescription(jsonObject.getString("description"));
                 viewMatterModel.setDocuments(jsonObject.getJSONArray("documents"));
+
                 viewMatterModel.setGroupAcls(jsonObject.getJSONArray("groupAcls"));
                 viewMatterModel.setGroups(jsonObject.getJSONArray("groups"));
+
                 viewMatterModel.setHearingDateDetails(jsonObject.getJSONObject("hearingDateDetails"));
                 viewMatterModel.setIs_editable(jsonObject.getBoolean("is_editable"));
                 viewMatterModel.setJudges(jsonObject.getString("judges"));
                 viewMatterModel.setMatterClosedDate(jsonObject.getString("matterClosedDate"));
                 viewMatterModel.setMembers(jsonObject.getJSONArray("members"));
+
                 viewMatterModel.setNextHearingDate(jsonObject.getString("nextHearingDate"));
                 viewMatterModel.setOpponentAdvocates(jsonObject.getJSONArray("opponentAdvocates"));
+
                 viewMatterModel.setOwner(jsonObject.getJSONObject("owner"));
                 viewMatterModel.setPriority(jsonObject.getString("priority"));
                 viewMatterModel.setStatus(jsonObject.getString("status"));
@@ -510,8 +548,13 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 viewMatterModel.setTempClients(jsonObject.getJSONArray("tempClients"));
                 viewMatterModel.setTemporaryClients(jsonObject.getJSONArray("temporaryClients"));
                 viewMatterModel.setTitle(jsonObject.getString("title"));
+//                actions_List.clear();
+//              viewMatterModel = viewMatterModel;
                 matterList.add(viewMatterModel);
             }
+
+
+
             loadMatterRecyclerview();
         } catch (JSONException e) {
             AndroidUtils.showToast(e.getMessage(), getContext());
@@ -521,10 +564,12 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
 
     private void loadMatterRecyclerview() {
         try {
+
             rv_matter_list.setLayoutManager(new GridLayoutManager(getContext(), 1));
             ViewMatterAdapter viewMatterAdapter = new ViewMatterAdapter(matterList, getContext(), this);
             rv_matter_list.setAdapter(viewMatterAdapter);
             rv_matter_list.setHasFixedSize(true);
+            viewMatterAdapter.notifyDataSetChanged();
             et_search_matter.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -542,7 +587,7 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 }
 
             });
-            viewMatterAdapter.notifyDataSetChanged();
+//            viewMatterAdapter.notifyDataSetChanged();
 
         } catch (Exception e) {
             AndroidUtils.showToast(e.getMessage(), getContext());
@@ -621,6 +666,190 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
 
     @Override
     public void Close_Matter(ViewMatterModel viewMatterModel) {
+        existing_clients.clear();
+        existing_groups.clear();
+        existing_documents.clear();
+        existing_advocates.clear();
+        existing_members.clear();
+        for (int i=0;i<matterList.size();i++){
+            try {
+                if(viewMatterModel.getId().equals(matterList.get(i).getId())) {
+                    for (int j = 0; j < matterList.get(i).getClients().length(); j++) {
+                        JSONObject clients_obj = matterList.get(i).getClients().getJSONObject(j);
+                        ViewMatterModel viewMatterModel1 = new ViewMatterModel();
+                        viewMatterModel1.setClient_id(clients_obj.getString("id"));
+                        viewMatterModel1.setClient_type(clients_obj.getString("type"));
+                        existing_clients.add(viewMatterModel1);
+                    }
+                    for (int a = 0; a < matterList.get(i).getOpponentAdvocates().length(); a++) {
+                        ViewMatterModel viewMatterModel1 = new ViewMatterModel();
+                        JSONObject advocate_obj = matterList.get(i).getOpponentAdvocates().getJSONObject(i);
+                        viewMatterModel1.setAdvocate_name(advocate_obj.getString("name"));
+                        viewMatterModel1.setNumber(advocate_obj.getString("phone"));
+                        viewMatterModel1.setEmail(advocate_obj.getString("email"));
+                        existing_advocates.add(viewMatterModel1);
+                    }
+                    for (int m = 0; m < matterList.get(i).getMembers().length(); m++) {
+                        JSONObject mem_obj = matterList.get(i).getMembers().getJSONObject(m);
+                        ViewMatterModel viewMatterModel1 = new ViewMatterModel();
+                        viewMatterModel1.setMember_id(mem_obj.getString("id"));
+                        viewMatterModel1.setMember_name(mem_obj.getString("name"));
+                        existing_members.add(viewMatterModel1);
+                    }
+                    for (int g = 0; g < matterList.get(i).getGroups().length(); g++) {
+                        JSONObject groups_obj = matterList.get(i).getGroups().getJSONObject(i);
+                        ViewMatterModel viewMatterModel1 = new ViewMatterModel();
+                        viewMatterModel1.setGroup_id(groups_obj.getString("id"));
+                        viewMatterModel1.setGroup_name(groups_obj.getString("name"));
+                        viewMatterModel1.setCanDelete(groups_obj.getBoolean("canDelete"));
+                        existing_groups.add(viewMatterModel1);
+                    }
+                    for (int k = 0; k < matterList.get(i).getDocuments().length(); k++) {
+                        JSONObject doc_obj = matterList.get(i).getDocuments().getJSONObject(k);
+                        ViewMatterModel viewMatterModel1 = new ViewMatterModel();
+                        viewMatterModel1.setDoc_id(doc_obj.getString("docid"));
+                        viewMatterModel1.setDoc_type(doc_obj.getString("doctype"));
+                        viewMatterModel1.setUser_id(doc_obj.getString("user_id"));
+                        existing_documents.add(viewMatterModel1);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+            openCloseMatterPopup(viewMatterModel);
+
+    }
+
+    private void openCloseMatterPopup(ViewMatterModel viewMatterModel) {
+        try {
+
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View view = inflater.inflate(R.layout.delete_relationship, null);
+            TextInputEditText tv_confirmation = view.findViewById(R.id.et_confirmation);
+            if(viewMatterModel.getStatus().equals("Closed")){
+                tv_confirmation.setText("Are you sure you want to ReOpen " +viewMatterModel.getTitle() + "?");
+                Matter_Status = "Active";
+            }else{
+                tv_confirmation.setText("Are you sure you want to Close " +viewMatterModel.getTitle() + "?");
+                Matter_Status = "Closed";
+            }
+
+            AppCompatButton bt_yes = view.findViewById(R.id.btn_yes);
+            AppCompatButton btn_no = view.findViewById(R.id.btn_No);
+            final AlertDialog dialog = dialogBuilder.create();
+//            ad_dialog_delete = dialog;
+            btn_no.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            bt_yes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                    callCloseMatterWebService(viewMatterModel,Matter_Status);
+                }
+            });
+
+            dialog.setView(view);
+            dialog.show();
+        } catch (Exception e) {
+            AndroidUtils.showToast(e.getMessage(), getContext());
+        }
+
+    }
+
+    private void callCloseMatterWebService(ViewMatterModel viewMatterModel, String matter_Status) {
+        progressDialog = AndroidUtils.get_progress(getActivity());
+        try{
+            JSONObject postdata = new JSONObject();
+            JSONArray clients = new JSONArray();
+            JSONArray documents = new JSONArray();
+            JSONArray members = new JSONArray();
+            JSONArray groups = new JSONArray();
+            JSONArray group_acls = new JSONArray();
+            JSONArray advocates = new JSONArray();
+            for (int i=0;i<existing_clients.size();i++){
+//                ViewMatterModel viewMatterModel1 = viewMatterModel.getClients().get(i);
+             ViewMatterModel   viewMatterModel1 = existing_clients.get(i);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("id",viewMatterModel1.getClient_id());
+                jsonObject.put("type",viewMatterModel1.getClient_type());
+                clients.put(jsonObject);
+            }
+            for (int i=0;i<existing_documents.size();i++){
+                ViewMatterModel viewMatterModel1 =existing_documents.get(i);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("docid",viewMatterModel1.getDoc_id());
+                jsonObject.put("doctype",viewMatterModel1.getDoc_type());
+                jsonObject.put("user_id",viewMatterModel1.getUser_id());
+                documents.put(jsonObject);
+            }
+            for (int i=0;i<existing_members.size();i++){
+                ViewMatterModel viewMatterModel1 = existing_members.get(i);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("id",viewMatterModel1.getMember_id());
+//                jsonObject.put("name",viewMatterModel1.getMember_name());
+                members.put(jsonObject);
+            }
+            for (int i = 0; i < existing_advocates.size(); i++) {
+                ViewMatterModel advocateModel = existing_advocates.get(i);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("name", advocateModel.getAdvocate_name());
+                jsonObject.put("email", advocateModel.getEmail());
+                jsonObject.put("phone", advocateModel.getNumber());
+                advocates.put(jsonObject);
+
+            }
+            for (int i=0;i<existing_groups.size();i++){
+                ViewMatterModel viewMatterModel1 = existing_groups.get(i);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("id",viewMatterModel1.getGroup_id());
+                jsonObject.put("name",viewMatterModel1.getGroup_name());
+                jsonObject.put("canDelete",viewMatterModel1.isCanDelete());
+                groups.put(jsonObject);
+                group_acls.put(viewMatterModel1.getGroup_id());
+            }
+            String inputDate = viewMatterModel.getDate_of_filling();
+            SimpleDateFormat inputFormat = new SimpleDateFormat("MMM dd, yyyy");
+            Date date = inputFormat.parse(inputDate);
+
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
+            String date_of_filling = outputFormat.format(date);
+
+//            for (int i=0;i<existing_groups.size())
+            postdata.put("affidavit_filing_date","");
+            postdata.put("affidavit_isfiled","");
+            postdata.put("case_number",viewMatterModel.getCaseNumber());
+            postdata.put("case_type",viewMatterModel.getCasetype());
+            postdata.put("clients",clients);
+            postdata.put("court_name",viewMatterModel.getCourtName());
+            postdata.put("date_of_filling",date_of_filling);
+            postdata.put("description",viewMatterModel.getDescription());
+            postdata.put("documents",documents);
+            postdata.put("group_acls",group_acls);
+            postdata.put("judges",viewMatterModel.getJudges());
+            postdata.put("members",members);
+            postdata.put("opponent_advocates",advocates);
+            postdata.put("priority",viewMatterModel.getPriority());
+            postdata.put("status",matter_Status);
+            postdata.put("title",viewMatterModel.getTitle());
+
+//            AndroidUtils.showAlert(postdata.toString(),getContext());
+            WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.PUT,"matter/"+Constants.MATTER_TYPE.toLowerCase(Locale.ROOT)+"/update/"+viewMatterModel.getId(),"Update Matter",postdata.toString());
+        } catch (Exception e) {
+            if (progressDialog!=null&&progressDialog.isShowing()){
+                progressDialog.dismiss();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void ReopenMatter(ViewMatterModel viewMatterModel) {
 
     }
 }

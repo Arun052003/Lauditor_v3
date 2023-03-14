@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -28,7 +29,7 @@ public class Matter extends Fragment {
     private  TextView tv_legal_matter,tv_general_matter;
     private  TextView tv_create,tv_view;
     public ArrayList<MatterModel> matter_arraylist;
-
+    public LinearLayoutCompat create_matter_view;
 
     @Nullable
     @Override
@@ -36,6 +37,7 @@ public class Matter extends Fragment {
         View view = inflater.inflate(R.layout.create_matter, container, false);
         Constants.MATTER_TYPE = "Legal";
         siv_matter_icon = view.findViewById(R.id.siv_matter_icon);
+        create_matter_view = view.findViewById(R.id.create_matter_view);
         siv_groups = view.findViewById(R.id.siv_groups);
         siv_documents = view.findViewById(R.id.siv_documents);
         tv_legal_matter = view.findViewById(R.id.tv_legal_matter);
@@ -107,6 +109,7 @@ public class Matter extends Fragment {
     private void loadViewUI() {
         tv_create.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+        create_matter_view.setVisibility(View.GONE);
         viewMatter();
     }
 
@@ -120,8 +123,10 @@ public class Matter extends Fragment {
     }
 
     private void loadCreateUI() {
+        create_matter_view.setVisibility(View.VISIBLE);
         tv_create.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+        loadMatterInformation();
     }
 
     private void loadLegalMatter() {

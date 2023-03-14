@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -240,10 +241,12 @@
     <FrameLayout
         android:id="@+id/child_container"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="match_parent"
         android:layout_margin="10dp"
+        android:paddingBottom="250dp"
 
         />
+
         </LinearLayout>
 
     </ScrollView>

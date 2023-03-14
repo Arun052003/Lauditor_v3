@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="@dimen/thirty_dp"
+
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/search_matter"
@@ -31,7 +31,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_matter_list"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"

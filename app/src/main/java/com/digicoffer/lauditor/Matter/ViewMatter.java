@@ -161,6 +161,18 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
 //                        viewMatter();
                     }
 
+                }else if(httpResult.getRequestType().equals("Delete Matter")){
+                    String msg = result.getString("msg");
+                    if (error) {
+
+                        AndroidUtils.showToast(msg, getContext());
+                    } else {
+
+                        rv_matter_list.removeAllViews();
+                        callMatterListWebservice();
+                        AndroidUtils.showToast(msg, getContext());
+//                        viewMatter();
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -638,6 +650,57 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
 
     @Override
     public void DeleteMatter(ViewMatterModel viewMatterModel, ArrayList<ViewMatterModel> itemsArrayList) {
+        try {
+
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View view = inflater.inflate(R.layout.delete_relationship, null);
+            TextInputEditText tv_confirmation = view.findViewById(R.id.et_confirmation);
+
+                tv_confirmation.setText("Are you sure you want to Delete " +viewMatterModel.getTitle() + "?");
+//                Matter_Status = "Closed";
+
+
+            AppCompatButton bt_yes = view.findViewById(R.id.btn_yes);
+            AppCompatButton btn_no = view.findViewById(R.id.btn_No);
+            final AlertDialog dialog = dialogBuilder.create();
+//            ad_dialog_delete = dialog;
+            btn_no.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            bt_yes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                    callDeleteMatterWebService(viewMatterModel);
+//                    callCloseMatterWebService(viewMatterModel,Matter_Status);
+                }
+            });
+
+            dialog.setView(view);
+            dialog.show();
+        } catch (Exception e) {
+            AndroidUtils.showToast(e.getMessage(), getContext());
+        }
+    }
+
+    private void callDeleteMatterWebService(ViewMatterModel viewMatterModel) {
+        progressDialog = AndroidUtils.get_progress(getActivity());
+        try{
+            JSONObject postdata = new JSONObject();
+            WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.DELETE,"matter/"+Constants.MATTER_TYPE.toLowerCase(Locale.ROOT)+"/delete/"+viewMatterModel.getId(),"Delete Matter",postdata.toString());
+
+//            WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.DELETE,)
+
+        } catch (Exception e) {
+            if (progressDialog!=null&&progressDialog.isShowing()){
+                AndroidUtils.dismiss_dialog(progressDialog);
+            }
+            e.printStackTrace();
+        }
 
     }
 

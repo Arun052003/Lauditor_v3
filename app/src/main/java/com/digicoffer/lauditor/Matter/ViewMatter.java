@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -153,9 +154,11 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
 
                         AndroidUtils.showToast(msg, getContext());
                     } else {
-                    matterList.clear();
+
+                    rv_matter_list.removeAllViews();
+                    callMatterListWebservice();
                         AndroidUtils.showToast(msg, getContext());
-                        callMatterListWebservice();
+//                        viewMatter();
                     }
 
                 }
@@ -163,6 +166,16 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 e.printStackTrace();
             }
         }
+    }
+
+    private void viewMatter() {
+
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        ViewMatter matterInformation = new ViewMatter();
+        ft.replace(R.id.child_container,matterInformation);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     private void openViewGroupsPopup() {
@@ -516,6 +529,7 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
 
     private void loadMattersList(JSONArray matters) {
         try {
+            matterList.clear();
             for (int i = 0; i < matters.length(); i++) {
                 JSONObject jsonObject = matters.getJSONObject(i);
                 ViewMatterModel viewMatterModel = new ViewMatterModel();
@@ -564,12 +578,12 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
 
     private void loadMatterRecyclerview() {
         try {
-
+            rv_matter_list.removeAllViews();
             rv_matter_list.setLayoutManager(new GridLayoutManager(getContext(), 1));
             ViewMatterAdapter viewMatterAdapter = new ViewMatterAdapter(matterList, getContext(), this);
             rv_matter_list.setAdapter(viewMatterAdapter);
             rv_matter_list.setHasFixedSize(true);
-            viewMatterAdapter.notifyDataSetChanged();
+//            viewMatterAdapter.notifyDataSetChanged();
             et_search_matter.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {

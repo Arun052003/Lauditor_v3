@@ -1,7 +1,5 @@
 package com.digicoffer.lauditor.Matter.Adapters;
 
-import android.app.Activity;
-import android.app.Notification;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,16 +15,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.digicoffer.lauditor.Groups.Adapters.ViewGroupsAdpater;
 import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
 import com.digicoffer.lauditor.Matter.Models.ViewMatterModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
-import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 
 import org.json.JSONObject;
-import org.minidns.record.A;
-import org.pgpainless.key.selection.key.util.And;
 
 import java.util.ArrayList;
 
@@ -36,7 +30,7 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
     ArrayList<ActionModel> actions_List = new ArrayList<ActionModel>();
     Context context;
     InterfaceListener eventListener;
-    String[] items = {"Choose Actions","View Details", "Edit Matter Info", "Update Group(s)", "Delete", "Close/ReOpen Matter"};
+    String[] items = {"Choose Actions", "View Details", "Edit Matter Info", "Update Group(s)", "Delete", "Close/ReOpen Matter"};
 
     ViewMatterModel new_view_model;
 
@@ -84,66 +78,20 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
             holder.tv_case_number.setText(viewMatterModel.getCaseNumber());
             holder.tv_owner_name.setText(owner_name);
             holder.tv_date_of_filling.setText(viewMatterModel.getDate_of_filling());
-            String upperString = viewMatterModel.getStatus().substring(0, 1).toUpperCase() + viewMatterModel.getStatus().substring(1).toLowerCase();
-            actions_List.clear();
-            actions_List.add(new ActionModel("Choose Actions"));
-            actions_List.add(new ActionModel("View Details"));
-            actions_List.add(new ActionModel("Edit Matter Info"));
-            actions_List.add(new ActionModel("Update Group(s)"));
-            actions_List.add(new ActionModel("Delete"));
-            actions_List.add(new ActionModel("Close Matter"));
-////            actions_List.add(new ActionModel())
-//            for (int i=0;i<actions_List.size();i++){
-//                ActionModel actionModel = actions_List.get(i);
-//                if (actionModel.getName().equals("Close Matter")) {
-//                    if (viewMatterModel.getStatus().equals("Active")) {
-//
-//                        actionModel.setName("Close Matter");
-////                        actions_List.set(i, actionModel);
-//                    } else if (viewMatterModel.getStatus().equals("Closed")) {
-//                        actionModel.setName("ReopenMatter");
-////                        actions_List.set(i, actionModel);
-//                    }
-//                }
-//            }
-//            ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinner.getAdapter();
-
-//            final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) context, actions_List);
-//            holder.sp_action.setAdapter(spinner_adapter);
             if (viewMatterModel.getStatus().equals("Active")) {
 
 
                 holder.tv_initiated.setText("Active");
                 holder.iv_initiated.setImageDrawable(context.getResources().getDrawable(R.drawable.green_circular));
-//                actions_List.add(new ActionModel("Close Matter"));
-                //                actions_List.add(new ActionModel("Close Matter"));
-//                notifyDataSetChanged();
-            } else if(viewMatterModel.getStatus().equals("Closed")){
-//                String[] newItems = new String[items.length - 1];
-//                for (int i = 0; i < items.length; i++) {
-//                    if (items[i].equals("Close Matter")) {
-//                        items[i] = "Reopen Matter";
-//                        break;
-//                    }
-//                }
-//                items = newItems;
-//                for (int i = 0; i < items.length; i++) {
-//                    if (items[i].equals("Close Matter")) {
-//                        items[i] = "Reopen Matter";
-//                        break;
-//                    }
-//                }
+
+            } else if (viewMatterModel.getStatus().equals("Closed")) {
+
                 holder.tv_initiated.setText("Closed");
                 holder.iv_initiated.setImageDrawable(context.getResources().getDrawable(R.drawable.circular));
 //
-                   actions_List.add(new ActionModel("Reopen Matter"));
-            }else
-            {
-//                for (int i=0;i<actions_List.size();i++){
-//                    if (actions_List.get(i).getName().equals("Close/Reopen Matter")){
-//                        actions_List.remove(i);
-//                    }
-//                }
+                actions_List.add(new ActionModel("Reopen Matter"));
+            } else {
+
 
                 String[] newItems = new String[items.length - 1];
                 for (int i = 0, j = 0; i < items.length; i++) {
@@ -169,7 +117,7 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             holder.sp_action.setAdapter(adapter);
 //            holder.sp_action.setSelection(Spinner.INVALID_POSITION);
-            adapter.notifyDataSetChanged();
+//            adapter.notifyDataSetChanged();
 
 //            if ()
             holder.sp_action.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -186,18 +134,18 @@ public class ViewMatterAdapter extends RecyclerView.Adapter<ViewMatterAdapter.My
                         } else if (name.equals("Edit Matter Info")) {
                             eventListener.Edit_Matter_Info(viewMatterModel, itemsArrayList);
                         } else if (name.equals("Update Group(s)")) {
-                                eventListener.Update_Group(viewMatterModel);
-                        }else if(name.equals("Close/ReOpen Matter")){
+                            eventListener.Update_Group(viewMatterModel);
+                        } else if (name.equals("Close/ReOpen Matter")) {
                             eventListener.Close_Matter(viewMatterModel);
                         }
 //                        else if (name.equals("Reopen Matter")){
 //                            eventListener.ReopenMatter(viewMatterModel);
 //                        }
 //                        notifyDataSetChanged();
-                    }  catch (Exception e) {
-                    e.printStackTrace();
-                    AndroidUtils.showAlert(e.getMessage(), context);
-                }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        AndroidUtils.showAlert(e.getMessage(), context);
+                    }
                 }
 
 

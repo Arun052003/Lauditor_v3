@@ -601,7 +601,13 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 viewMatterModel.setPriority(jsonObject.getString("priority"));
                 viewMatterModel.setStatus(jsonObject.getString("status"));
                 viewMatterModel.setTags(jsonObject.getJSONObject("tags"));
-                viewMatterModel.setTempClients(jsonObject.getJSONArray("tempClients"));
+                if (jsonObject.has("tempClients")){
+                    viewMatterModel.setTempClients(jsonObject.getJSONArray("tempClients"));
+                }
+                if(jsonObject.has("timesheets")){
+                    viewMatterModel.setTimesheets(jsonObject.getJSONArray("timesheets"));
+                }
+
                 viewMatterModel.setTemporaryClients(jsonObject.getJSONArray("temporaryClients"));
                 viewMatterModel.setTitle(jsonObject.getString("title"));
 //                actions_List.clear();
@@ -781,21 +787,26 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
         for (int i=0;i<matterList.size();i++){
             try {
                 if(viewMatterModel.getId().equals(matterList.get(i).getId())) {
-                    for (int j = 0; j < matterList.get(i).getClients().length(); j++) {
-                        JSONObject clients_obj = matterList.get(i).getClients().getJSONObject(j);
-                        ViewMatterModel viewMatterModel1 = new ViewMatterModel();
-                        viewMatterModel1.setClient_id(clients_obj.getString("id"));
-                        viewMatterModel1.setClient_type(clients_obj.getString("type"));
-                        existing_clients.add(viewMatterModel1);
+
+                        for (int j = 0; j < matterList.get(i).getClients().length(); j++) {
+                            JSONObject clients_obj = matterList.get(i).getClients().getJSONObject(j);
+                            ViewMatterModel viewMatterModel1 = new ViewMatterModel();
+                            viewMatterModel1.setClient_id(clients_obj.getString("id"));
+                            viewMatterModel1.setClient_type(clients_obj.getString("type"));
+                            existing_clients.add(viewMatterModel1);
+                        }
+                    if (matterList.get(i).getOpponentAdvocates()!=null) {
+
+                        for (int a = 0; a < matterList.get(i).getOpponentAdvocates().length(); a++) {
+                            ViewMatterModel viewMatterModel1 = new ViewMatterModel();
+                            JSONObject advocate_obj = matterList.get(i).getOpponentAdvocates().getJSONObject(a);
+                            viewMatterModel1.setAdvocate_name(advocate_obj.getString("name"));
+                            viewMatterModel1.setNumber(advocate_obj.getString("phone"));
+                            viewMatterModel1.setEmail(advocate_obj.getString("email"));
+                            existing_advocates.add(viewMatterModel1);
+                        }
                     }
-                    for (int a = 0; a < matterList.get(i).getOpponentAdvocates().length(); a++) {
-                        ViewMatterModel viewMatterModel1 = new ViewMatterModel();
-                        JSONObject advocate_obj = matterList.get(i).getOpponentAdvocates().getJSONObject(i);
-                        viewMatterModel1.setAdvocate_name(advocate_obj.getString("name"));
-                        viewMatterModel1.setNumber(advocate_obj.getString("phone"));
-                        viewMatterModel1.setEmail(advocate_obj.getString("email"));
-                        existing_advocates.add(viewMatterModel1);
-                    }
+
                     for (int m = 0; m < matterList.get(i).getMembers().length(); m++) {
                         JSONObject mem_obj = matterList.get(i).getMembers().getJSONObject(m);
                         ViewMatterModel viewMatterModel1 = new ViewMatterModel();
@@ -804,7 +815,7 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                         existing_members.add(viewMatterModel1);
                     }
                     for (int g = 0; g < matterList.get(i).getGroups().length(); g++) {
-                        JSONObject groups_obj = matterList.get(i).getGroups().getJSONObject(i);
+                        JSONObject groups_obj = matterList.get(i).getGroups().getJSONObject(g);
                         ViewMatterModel viewMatterModel1 = new ViewMatterModel();
                         viewMatterModel1.setGroup_id(groups_obj.getString("id"));
                         viewMatterModel1.setGroup_name(groups_obj.getString("name"));
@@ -819,9 +830,9 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                         viewMatterModel1.setUser_id(doc_obj.getString("user_id"));
                         existing_documents.add(viewMatterModel1);
                     }
-                    for (int t=0;t<matterList.get(i).getTimesheets().length();t++){
-//                        JSONObject
-                    }
+//                    for (int t=0;t<matterList.get(i).getTimesheets().length();t++){
+////                        JSONObject
+//                    }
 //                    for (int )
                 }
             } catch (JSONException e) {
@@ -860,8 +871,13 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
             bt_yes.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    dialog.dismiss();
-                    callCloseMatterWebService(viewMatterModel,Matter_Status);
+                    try {
+                        dialog.dismiss();
+                        callCloseMatterWebService(viewMatterModel, Matter_Status);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        AndroidUtils.showToast(e.getMessage(),getContext());
+                    }
                 }
             });
 
@@ -924,27 +940,40 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 groups.put(jsonObject);
                 group_acls.put(viewMatterModel1.getGroup_id());
             }
-            String inputDate = viewMatterModel.getDate_of_filling();
-            SimpleDateFormat inputFormat = new SimpleDateFormat("MMM dd, yyyy");
-            Date date = inputFormat.parse(inputDate);
 
-            SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
-            String date_of_filling = outputFormat.format(date);
 
 //            for (int i=0;i<existing_groups.size())
             postdata.put("affidavit_filing_date","");
             postdata.put("affidavit_isfiled","");
-            postdata.put("case_number",viewMatterModel.getCaseNumber());
-            postdata.put("case_type",viewMatterModel.getCasetype());
+            if (Constants.MATTER_TYPE.equals("Legal")) {
+                String inputDate = viewMatterModel.getDate_of_filling();
+                SimpleDateFormat inputFormat = new SimpleDateFormat("MMM dd, yyyy");
+                Date date = inputFormat.parse(inputDate);
+
+                SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
+                String date_of_filling = outputFormat.format(date);
+                postdata.put("case_number", viewMatterModel.getCaseNumber());
+                postdata.put("judges",viewMatterModel.getJudges());
+                postdata.put("case_type", viewMatterModel.getCasetype());
+                postdata.put("opponent_advocates",advocates);
+                postdata.put("court_name",viewMatterModel.getCourtName());
+                postdata.put("date_of_filling",date_of_filling);
+            }else{
+                String inputDate = viewMatterModel.getStartdate();
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = inputFormat.parse(inputDate);
+
+                SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
+                String date_of_filling = outputFormat.format(date);
+                postdata.put("closedate",date_of_filling);
+                postdata.put("matter_number",viewMatterModel.getMatterNumber());
+                postdata.put("matter_type",viewMatterModel.getMatterType());
+            }
             postdata.put("clients",clients);
-            postdata.put("court_name",viewMatterModel.getCourtName());
-            postdata.put("date_of_filling",date_of_filling);
             postdata.put("description",viewMatterModel.getDescription());
             postdata.put("documents",documents);
             postdata.put("group_acls",group_acls);
-            postdata.put("judges",viewMatterModel.getJudges());
             postdata.put("members",members);
-            postdata.put("opponent_advocates",advocates);
             postdata.put("priority",viewMatterModel.getPriority());
             postdata.put("status",matter_Status);
             postdata.put("title",viewMatterModel.getTitle());
@@ -954,6 +983,7 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
         } catch (Exception e) {
             if (progressDialog!=null&&progressDialog.isShowing()){
                 progressDialog.dismiss();
+                AndroidUtils.showToast(e.getMessage(),getContext());
             }
             e.printStackTrace();
         }

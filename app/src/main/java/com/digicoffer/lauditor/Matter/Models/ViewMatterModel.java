@@ -22,6 +22,51 @@ public class ViewMatterModel {
     String member_id;
     String Email;
     String member_name;
+    String closedate;
+    String matterNumber;
+    String matterType;
+    String startdate;
+    JSONArray timesheets;
+
+    public JSONArray getTimesheets() {
+        return timesheets;
+    }
+
+    public void setTimesheets(JSONArray timesheets) {
+        this.timesheets = timesheets;
+    }
+
+    public String getClosedate() {
+        return closedate;
+    }
+
+    public void setClosedate(String closedate) {
+        this.closedate = closedate;
+    }
+
+    public String getMatterNumber() {
+        return matterNumber;
+    }
+
+    public void setMatterNumber(String matterNumber) {
+        this.matterNumber = matterNumber;
+    }
+
+    public String getMatterType() {
+        return matterType;
+    }
+
+    public void setMatterType(String matterType) {
+        this.matterType = matterType;
+    }
+
+    public String getStartdate() {
+        return startdate;
+    }
+
+    public void setStartdate(String startdate) {
+        this.startdate = startdate;
+    }
 
     public String getMember_name() {
         return member_name;

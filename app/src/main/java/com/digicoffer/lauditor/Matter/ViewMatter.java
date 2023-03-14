@@ -63,6 +63,7 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
     ArrayList<ActionModel> actions_List = new ArrayList<ActionModel>();
     ArrayList<ViewMatterModel>existing_clients = new ArrayList<>();
     ArrayList<ViewMatterModel>existing_documents = new ArrayList<>();
+    ArrayList<ViewMatterModel>timesheets = new ArrayList<>();
     ArrayList<ViewMatterModel>existing_members = new ArrayList<>();
     ArrayList<ViewMatterModel>existing_advocates = new ArrayList<>();
     ArrayList<ViewMatterModel> existing_groups = new ArrayList<>();
@@ -546,27 +547,56 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                 JSONObject jsonObject = matters.getJSONObject(i);
                 ViewMatterModel viewMatterModel = new ViewMatterModel();
                 viewMatterModel.setId(jsonObject.getString("id"));
-                viewMatterModel.setCaseNumber(jsonObject.getString("caseNumber"));
-                viewMatterModel.setCasetype(jsonObject.getString("caseType"));
+                if (jsonObject.has("caseNumber")) {
+                    viewMatterModel.setCaseNumber(jsonObject.getString("caseNumber"));
+                }
+                if(jsonObject.has("caseType")) {
+                    viewMatterModel.setCasetype(jsonObject.getString("caseType"));
+                }
                 viewMatterModel.setClients(jsonObject.getJSONArray("clients"));
-
+                if(jsonObject.has("courtName")){
                 viewMatterModel.setCourtName(jsonObject.getString("courtName"));
-                viewMatterModel.setDate_of_filling(jsonObject.getString("date_of_filling"));
+                }
+                if (jsonObject.has("date_of_filling")){
+                    viewMatterModel.setDate_of_filling(jsonObject.getString("date_of_filling"));
+                }
+                if(jsonObject.has("closedate")){
+                    viewMatterModel.setClosedate(jsonObject.getString("closedate"));
+                }
+                if(jsonObject.has("matterNumber")){
+                    viewMatterModel.setMatterNumber(jsonObject.getString("matterNumber"));
+                }
+                if(jsonObject.has("matterType")){
+                    viewMatterModel.setMatterType(jsonObject.getString("matterType"));
+                }
+                if (jsonObject.has("startdate")){
+                    viewMatterModel.setStartdate(jsonObject.getString("startdate"));
+                }
+                if(jsonObject.has("timesheets")){
+                    viewMatterModel.setTimesheets(jsonObject.getJSONArray("timesheets"));
+                }
                 viewMatterModel.setDescription(jsonObject.getString("description"));
                 viewMatterModel.setDocuments(jsonObject.getJSONArray("documents"));
 
                 viewMatterModel.setGroupAcls(jsonObject.getJSONArray("groupAcls"));
                 viewMatterModel.setGroups(jsonObject.getJSONArray("groups"));
-
+                if(jsonObject.has("hearingDateDetails")){
                 viewMatterModel.setHearingDateDetails(jsonObject.getJSONObject("hearingDateDetails"));
+                }
                 viewMatterModel.setIs_editable(jsonObject.getBoolean("is_editable"));
-                viewMatterModel.setJudges(jsonObject.getString("judges"));
+                if (jsonObject.has("judges")) {
+                    viewMatterModel.setJudges(jsonObject.getString("judges"));
+                }
+                if (jsonObject.has("matterClosedDate")){
                 viewMatterModel.setMatterClosedDate(jsonObject.getString("matterClosedDate"));
+                }
                 viewMatterModel.setMembers(jsonObject.getJSONArray("members"));
-
-                viewMatterModel.setNextHearingDate(jsonObject.getString("nextHearingDate"));
-                viewMatterModel.setOpponentAdvocates(jsonObject.getJSONArray("opponentAdvocates"));
-
+                if(jsonObject.has("nextHearingDate")) {
+                    viewMatterModel.setNextHearingDate(jsonObject.getString("nextHearingDate"));
+                }
+                if(jsonObject.has("opponentAdvocates")) {
+                    viewMatterModel.setOpponentAdvocates(jsonObject.getJSONArray("opponentAdvocates"));
+                }
                 viewMatterModel.setOwner(jsonObject.getJSONObject("owner"));
                 viewMatterModel.setPriority(jsonObject.getString("priority"));
                 viewMatterModel.setStatus(jsonObject.getString("status"));
@@ -789,6 +819,10 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
                         viewMatterModel1.setUser_id(doc_obj.getString("user_id"));
                         existing_documents.add(viewMatterModel1);
                     }
+                    for (int t=0;t<matterList.get(i).getTimesheets().length();t++){
+//                        JSONObject
+                    }
+//                    for (int )
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

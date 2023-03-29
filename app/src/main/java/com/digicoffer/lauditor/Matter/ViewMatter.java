@@ -2,6 +2,7 @@ package com.digicoffer.lauditor.Matter;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -16,10 +17,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.Dashboard.Dashboard;
 import com.digicoffer.lauditor.Groups.GroupModels.ActionModel;
 import com.digicoffer.lauditor.Matter.Adapters.ViewMatterAdapter;
 import com.digicoffer.lauditor.Matter.Models.AdvocateModel;
@@ -743,6 +746,14 @@ public class ViewMatter extends Fragment implements AsyncTaskCompleteListener, V
     @Override
     public void Edit_Matter_Info(ViewMatterModel viewMatterModel, ArrayList<ViewMatterModel> itemsArrayList) {
 
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("viewMatterModel",  viewMatterModel);
+        Fragment fragment = new EditMatterTimeline();
+        fragment.setArguments(bundle);
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.id_framelayout, fragment);
+        ft.commit();
     }
 
     @Override

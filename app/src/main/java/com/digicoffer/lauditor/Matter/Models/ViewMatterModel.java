@@ -1,9 +1,14 @@
 package com.digicoffer.lauditor.Matter.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class ViewMatterModel {
+public class ViewMatterModel implements Parcelable {
     String id;
     String caseNumber;
     String casetype;
@@ -402,5 +407,15 @@ public class ViewMatterModel {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+
     }
 }

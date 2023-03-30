@@ -4,9 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,17 +13,13 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.digicoffer.lauditor.Matter.ViewMatter;
+import com.digicoffer.lauditor.Matter.EditMatterTimeline;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common.Constants;
 
-import org.w3c.dom.Text;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class TimeSheets extends Fragment {
 TextView tv_aggregated_ts,tv_my_ts,tv_ns_timesheet,tv_submitted,tv_week,tv_month;
@@ -68,11 +62,11 @@ LinearLayoutCompat ll_timesheet_type,ll_submitted_type;
         String [] seperated = updated_date.split("-");
         tv_from_date_timesheet.setText(seperated[0]);
         tv_to_date_timesheet.setText(seperated[1]);
-
+    String s = "";
         // Set up the onClickListeners for the next and previous buttons
         ImageButton iv_next_week = view.findViewById(R.id.iv_next_week);
         ImageButton iv_previous_week = view.findViewById(R.id.iv_previous_week);
-        loadFragment();
+        loadFragment(s);
         tv_aggregated_ts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,6 +126,7 @@ LinearLayoutCompat ll_timesheet_type,ll_submitted_type;
 
                     tv_from_date_timesheet.setText(seperated[0]);
                     tv_to_date_timesheet.setText(seperated[1]);
+                    loadFragment(seperated[0]);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -156,6 +151,7 @@ LinearLayoutCompat ll_timesheet_type,ll_submitted_type;
                 String [] seperated = updated_date.split("-");
                 tv_from_date_timesheet.setText(seperated[0]);
                 tv_to_date_timesheet.setText(seperated[1]);
+                loadFragment(seperated[0]);
             }
         });
         return view;
@@ -192,11 +188,16 @@ LinearLayoutCompat ll_timesheet_type,ll_submitted_type;
 
     }
 
-    private void loadFragment() {
+    private void loadFragment(String s) {
         loadAggregatedTimesheets();
        loadNsTimesheets();
+        Bundle bundle = new Bundle();
+        bundle.putString("date",  s);
+//        AndroidUtils.showToast(s,getContext());
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+
         NonSubmittedTimesheets nonSubmittedTimesheets = new NonSubmittedTimesheets();
+        nonSubmittedTimesheets.setArguments(bundle);
         ft.replace(R.id.child_container_timesheets,nonSubmittedTimesheets);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(null);

@@ -16,6 +16,7 @@ import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.LoginActivity.FirmsDo;
 import com.digicoffer.lauditor.Matter.Models.ViewMatterModel;
 import com.digicoffer.lauditor.R;
+import com.digicoffer.lauditor.TimeSheets.Models.StatusModel;
 import com.digicoffer.lauditor.TimeSheets.Models.TSMatterModel;
 import com.digicoffer.lauditor.TimeSheets.Models.TasksModel;
 import com.digicoffer.lauditor.common_objects.TimeZonesDO;
@@ -74,6 +75,8 @@ public class CommonSpinnerAdapter<Object> extends BaseAdapter {
             data = ((TSMatterModel)listData).getMattername();
         }if (listData instanceof TasksModel){
             data = ((TasksModel)listData).getDisplayValue();
+        }if(listData instanceof StatusModel){
+            data = ((StatusModel)listData).getName();
         }
         listTextView.setText(data);
 

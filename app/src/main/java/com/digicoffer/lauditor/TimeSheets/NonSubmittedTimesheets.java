@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 
 import com.digicoffer.lauditor.Matter.Models.MatterModel;
 import com.digicoffer.lauditor.R;
+import com.digicoffer.lauditor.TimeSheets.Models.StatusModel;
 import com.digicoffer.lauditor.TimeSheets.Models.TSMatterModel;
 import com.digicoffer.lauditor.TimeSheets.Models.TasksModel;
 import com.digicoffer.lauditor.TimeSheets.Models.TimeSheetModel;
@@ -42,10 +43,12 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
     ArrayList<TimeSheetModel> timeSheetsList = new ArrayList<>();
     ArrayList<TSMatterModel> matterList = new ArrayList<>();
     ArrayList<TasksModel> tasksList = new ArrayList<>();
+    ArrayList<StatusModel> statusList = new ArrayList<>();
     String selected_matter = "";
     String selected_matter_id = "";
     String selected_matter_type = "";
     String selected_task = "";
+    String selected_status = "";
     boolean date_status = false;
     View view;
     Spinner sp_project,sp_task,sp_status,sp_date;
@@ -66,7 +69,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
         btn_save_timesheet = view.findViewById(R.id.btn_save_timesheet);
         Bundle bundle = getArguments();
         String date = bundle.getString("date");
-        AndroidUtils.showToast(date, getContext());
+//        AndroidUtils.showToast(date, getContext());
         if (date.equals("") || date.equals(null)) {
 //             date_status = false;
             callCurrentDateTimeSheetsWebservice(date, date_status);
@@ -90,7 +93,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
         try {
             progressDialog = AndroidUtils.get_progress(getActivity());
             JSONObject data = new JSONObject();
-            AndroidUtils.showToast(String.valueOf(date_status), getContext());
+//            AndroidUtils.showToast(String.valueOf(date_status), getContext());
 
             WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/user/timesheets", "TimeSheets", data.toString());
 
@@ -193,6 +196,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
 
         }
 
+
         final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) getContext(), tasksList);
         sp_task.setAdapter(spinner_adapter);
         sp_task.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -206,6 +210,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
 
             }
         });
+
     }
 
     private void loadTimesheetData(JSONObject dates, JSONObject result) throws JSONException {
@@ -258,6 +263,23 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
                    }else{
                        callTaskWebservice(selected_matter_id);
                    }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
+                StatusModel statusModel = new StatusModel("Billable");
+                StatusModel statusModel1 = new StatusModel("Non Billable");
+                statusList.add(statusModel);
+                statusList.add(statusModel1);
+                final CommonSpinnerAdapter status_adapter = new CommonSpinnerAdapter((Activity) getContext(), statusList);
+                sp_status.setAdapter(status_adapter);
+                sp_status.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                        selected_status = statusList.get(adapterView.getSelectedItemPosition()).getName();
                     }
 
                     @Override

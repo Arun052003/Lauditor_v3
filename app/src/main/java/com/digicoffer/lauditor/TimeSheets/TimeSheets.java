@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -15,15 +16,24 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.digicoffer.lauditor.Matter.EditMatterTimeline;
 import com.digicoffer.lauditor.R;
+import com.digicoffer.lauditor.TimeSheets.Models.DateModel;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common.Constants;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class TimeSheets extends Fragment {
 TextView tv_aggregated_ts,tv_my_ts,tv_ns_timesheet,tv_submitted,tv_week,tv_month;
 LinearLayoutCompat ll_timesheet_type,ll_submitted_type;
+    private static final int DIRECTION_PREVIOUS = -1;
+    private static final int DIRECTION_NEXT = 1;
+    private ArrayList<DateModel> datesList = new ArrayList<>();
+    private ArrayAdapter<DateModel> weekAdapter = new ArrayAdapter<DateModel>(getContext(), android.R.layout.simple_spinner_item, datesList);
 
     @Nullable
     @Override
@@ -212,5 +222,38 @@ LinearLayoutCompat ll_timesheet_type,ll_submitted_type;
         String endDate = format.format(calendar.getTime());
         return startDate + " - " + endDate;
     }
+    private void loadWeekDates(int direction) {
+        // Get the first date of the current week
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 
+        // Adjust the calendar object based on the direction parameter
+        if (direction == DIRECTION_PREVIOUS) {
+            calendar.add(Calendar.DAY_OF_YEAR, -7); // go back one week
+        } else if (direction == DIRECTION_NEXT) {
+            calendar.add(Calendar.DAY_OF_YEAR, 7); // go forward one week
+        }
+
+        // Create a DateFormat object to format the dates as strings
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
+        // Clear the current datesList
+        datesList.clear();
+
+        // Add the dates of the week to the datesList (Monday to Friday only)
+        for (int i = 0; i < 5; i++) {
+            Date date = calendar.getTime();
+            String dayOfWeek = dateFormat.format(date);
+//            DateModel dateModel = new DateModel()
+            if (i != 0 && i != 6) {
+                // Exclude Saturday and Sunday
+
+                DateModel dateModel = new DateModel(dayOfWeek);
+                datesList.add(dateModel);
+            }
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        // Update the spinner adapter
+        weekAdapter.notifyDataSetChanged();
+    }
 }

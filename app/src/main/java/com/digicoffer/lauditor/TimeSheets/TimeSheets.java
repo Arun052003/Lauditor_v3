@@ -49,6 +49,7 @@ LinearLayoutCompat ll_timesheet_type,ll_submitted_type;
         }else{
             ll_timesheet_type.setVisibility(View.GONE);
         }
+
         Calendar calendar = Calendar.getInstance();
         getWeekDateRange(calendar);
 // Set the calendar to the current week's Monday
@@ -72,6 +73,42 @@ LinearLayoutCompat ll_timesheet_type,ll_submitted_type;
         ImageButton iv_next_week = view.findViewById(R.id.iv_next_week);
         ImageButton iv_previous_week = view.findViewById(R.id.iv_previous_week);
         loadFragment();
+        tv_aggregated_ts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadAggregatedTimesheets();
+            }
+        });
+        tv_my_ts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadMyTimeSheets();
+            }
+        });
+        tv_submitted.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadSubmittedTimesheets();
+            }
+        });
+        tv_ns_timesheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadNsTimesheets();
+            }
+        });
+        tv_week.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadWeek();
+            }
+        });
+        tv_month.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadMonth();
+            }
+        });
         iv_next_week.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,8 +161,40 @@ LinearLayoutCompat ll_timesheet_type,ll_submitted_type;
         return view;
     }
 
-    private void loadFragment() {
+    private void loadAggregatedTimesheets() {
+        tv_aggregated_ts.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+        tv_my_ts.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
 
+    }
+    private void loadMyTimeSheets(){
+        tv_aggregated_ts.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+        tv_my_ts.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+
+    }
+    private void loadNsTimesheets(){
+        tv_ns_timesheet.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+        tv_submitted.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+
+    }
+    private  void loadWeek(){
+        tv_week.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+        tv_month.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+
+    }
+    private void loadMonth(){
+        tv_week.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+        tv_month.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+
+    }
+    private void loadSubmittedTimesheets(){
+        tv_submitted.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+        tv_ns_timesheet.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+
+    }
+
+    private void loadFragment() {
+        loadAggregatedTimesheets();
+       loadNsTimesheets();
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         NonSubmittedTimesheets nonSubmittedTimesheets = new NonSubmittedTimesheets();
         ft.replace(R.id.child_container_timesheets,nonSubmittedTimesheets);

@@ -465,7 +465,7 @@
                     >
 
                     <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btn_cancel_activity_log"
+                        android:id="@+id/btn_cancel_timesheet"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -478,7 +478,7 @@
 
                     </androidx.appcompat.widget.AppCompatButton>
                     <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btn_update_activity_log"
+                        android:id="@+id/btn_save_timesheet"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

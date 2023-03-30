@@ -11,6 +11,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:gravity="center"
+        android:visibility="gone"
         android:orientation="horizontal"
         android:padding="5dp"
         android:paddingTop="@dimen/twenty_dp"
@@ -21,7 +22,7 @@
         >
 
         <TextView
-            android:id="@+id/tv_legal_matter"
+            android:id="@+id/tv_aggregated_ts"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/button_left_green_background"
@@ -35,7 +36,7 @@
         </TextView>
 
         <TextView
-            android:id="@+id/tv_general_matter"
+            android:id="@+id/tv_my_ts"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
 
@@ -67,7 +68,7 @@
         app:layout_constraintVertical_bias="0.03">
 
         <TextView
-            android:id="@+id/tv_create_matter"
+            android:id="@+id/tv_ns_timesheet"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/button_left_green_background"
@@ -80,7 +81,7 @@
         </TextView>
 
         <TextView
-            android:id="@+id/tv_view_matter"
+            android:id="@+id/tv_submitted"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/button_right_background"
@@ -100,7 +101,6 @@
         android:layout_margin="16dp"
         app:cardCornerRadius="4dp"
         app:cardElevation="4dp"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ll_submitted_type"
@@ -263,10 +263,10 @@
             android:orientation="vertical">
 
             <FrameLayout
-                android:id="@+id/child_container"
+                android:id="@+id/child_container_timesheets"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="10dp"
+
                 android:paddingBottom="250dp"
 
                 />

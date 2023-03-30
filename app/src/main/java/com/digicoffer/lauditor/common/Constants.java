@@ -22,6 +22,7 @@ public class Constants {
     public static String FIRM_NAME ="";
     public static boolean IS_ADMIN = true;
     public static String UID ="";
+    public static String ROLE = "";
     public static String COUNT = "";
     public static String VERSION = ISPRODUCTION? "1.0.2" : "1.0.8";
     //    public static String XMPP_DOMAIN = "dev.chat.digisecitus.com";

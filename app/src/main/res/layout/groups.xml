@@ -479,7 +479,7 @@
         android:layout_margin="10dp"
         android:padding="10dp"
         app:cardCornerRadius="10dp"
-        android:visibility="gone"
+        android:visibility="visible"
         android:elevation="@dimen/Fifty_dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

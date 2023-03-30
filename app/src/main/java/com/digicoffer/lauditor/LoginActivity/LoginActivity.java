@@ -207,6 +207,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskComplet
                         Constants.UID = probiz_data.getString("uid");
                         Constants.IS_ADMIN = probiz_data.getBoolean("admin");
                         Constants.FIRM_NAME = probiz_data.getString("firm_name");
+                        Constants.ROLE = probiz_data.getString("role");
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                             save_xmpp_preference();
                         }

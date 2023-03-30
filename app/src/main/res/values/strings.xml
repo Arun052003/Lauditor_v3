@@ -89,4 +89,13 @@
     <string name="add_documents">Add Documents</string>
     <string name="phone_number">Phone Number</string>
     <string name="assign_team_member">Assign Team Member</string>
+    <string name="project">Project</string>
+    <string name="task">Task</string>
+    <string name="date">Date</string>
+    <string name="hours">Hours</string>
+    <string name="minutes">Minutes</string>
+    <string name="total_hours">Total Hours</string>
+    <string name="_45">45</string>
+    <string name="_30">30</string>
+    <string name="_15">15</string>
 </resources>

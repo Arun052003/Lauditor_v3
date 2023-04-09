@@ -32,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.minidns.record.A;
+import org.pgpainless.key.selection.key.util.And;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -69,6 +70,8 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
         btn_save_timesheet = view.findViewById(R.id.btn_save_timesheet);
         Bundle bundle = getArguments();
         String date = bundle.getString("date");
+        ArrayList<String> weekDates = bundle.getStringArrayList("weekDates");
+
 //        AndroidUtils.showToast(date, getContext());
         if (date.equals("") || date.equals(null)) {
 //             date_status = false;
@@ -77,7 +80,21 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
             callTimeSheetsWebservice(date);
         }
 
+        final CommonSpinnerAdapter status_adapter = new CommonSpinnerAdapter((Activity) getContext(), weekDates);
+        sp_date.setAdapter(status_adapter);
+        sp_date.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selected_date = weekDates.get(i);
+                AndroidUtils.showToast(selected_date,getContext());
+//                selected_status = weekDates.get(adapterView.getSelectedItemPosition()).ge;
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 //        AndroidUtils.showToast(String.valueOf(status),getContext());
 //        if (status){
 //            TextView textView = new TextView(getContext());

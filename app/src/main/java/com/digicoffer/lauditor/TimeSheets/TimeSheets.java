@@ -83,7 +83,7 @@ public class TimeSheets extends Fragment {
         // Set up the onClickListeners for the next and previous buttons
         ImageButton iv_next_week = view.findViewById(R.id.iv_next_week);
         ImageButton iv_previous_week = view.findViewById(R.id.iv_previous_week);
-        loadFragment(s);
+        loadFragment(s,weekDateInfo);
         tv_aggregated_ts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,7 +147,7 @@ public class TimeSheets extends Fragment {
                         tv_from_date_timesheet.setText(weekDateInfo.getWeekDates().get(0));
                         tv_to_date_timesheet.setText(weekDateInfo.getWeekDates().get(weekDateInfo.getWeekDates().size() - 1));
                     }
-                    loadFragment(tv_from_date_timesheet.getText().toString());
+                    loadFragment(tv_from_date_timesheet.getText().toString(),weekDateInfo);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -178,7 +178,7 @@ public class TimeSheets extends Fragment {
                     tv_from_date_timesheet.setText(weekDateInfo.getWeekDates().get(0));
                     tv_to_date_timesheet.setText(weekDateInfo.getWeekDates().get(weekDateInfo.getWeekDates().size() - 1));
                 }
-                loadFragment(tv_from_date_timesheet.getText().toString());
+                loadFragment(tv_from_date_timesheet.getText().toString(),weekDateInfo);
 
             }
         });
@@ -221,11 +221,12 @@ public class TimeSheets extends Fragment {
 
     }
 
-    private void loadFragment(String s) {
+    private void loadFragment(String s,WeekDateInfo weekDateInfo) {
         loadAggregatedTimesheets();
         loadNsTimesheets();
         Bundle bundle = new Bundle();
         bundle.putString("date", s);
+        bundle.putStringArrayList("weekDates", weekDateInfo.getWeekDates());
 //        AndroidUtils.showToast(s,getContext());
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
 

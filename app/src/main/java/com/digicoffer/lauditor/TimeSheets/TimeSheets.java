@@ -49,7 +49,7 @@ public class TimeSheets extends Fragment {
         tv_submitted = view.findViewById(R.id.tv_submitted);
         tv_week = view.findViewById(R.id.tv_week);
         tv_month = view.findViewById(R.id.tv_month);
-        AndroidUtils.showToast(Constants.ROLE, getContext());
+//        AndroidUtils.showToast(Constants.ROLE, getContext());
         if (Constants.ROLE.equals("SU")) {
             ll_timesheet_type.setVisibility(View.VISIBLE);
         } else {

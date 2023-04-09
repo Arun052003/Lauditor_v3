@@ -322,9 +322,9 @@
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
                                 android:enabled="true"
-
                                 android:fontFamily="sans-serif-condensed-medium"
-                                android:hint="@string/hours"
+                                android:hint="Hours"
+                                android:inputType="number|numberDecimal"
                                 android:padding="5dp"
                                 android:textColor="@color/Blue_text_color"
                                 android:textSize="15dp" />
@@ -368,6 +368,7 @@
                             android:background="@drawable/rectangular_white_background"
                             android:orientation="horizontal">
                             <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/bt_fifteen_minutes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/_15"
@@ -377,6 +378,7 @@
 
                             </androidx.appcompat.widget.AppCompatButton>
                             <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/bt_thirty_minutes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/_30"
@@ -384,6 +386,7 @@
                                 android:background="@drawable/rectangle_grey_background"/>
 
                             <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/bt_forty_five_minutes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/_45"

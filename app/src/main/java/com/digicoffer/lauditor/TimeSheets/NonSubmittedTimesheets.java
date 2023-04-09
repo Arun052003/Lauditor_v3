@@ -5,6 +5,9 @@ import android.app.AlertDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,7 @@ import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
 import com.digicoffer.lauditor.Matter.Models.MatterModel;
@@ -39,22 +43,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class NonSubmittedTimesheets extends Fragment implements AsyncTaskCompleteListener {
-    AlertDialog progressDialog;
-    ArrayList<TimeSheetModel> timeSheetsList = new ArrayList<>();
-    ArrayList<TSMatterModel> matterList = new ArrayList<>();
-    ArrayList<TasksModel> tasksList = new ArrayList<>();
-    ArrayList<StatusModel> statusList = new ArrayList<>();
-    String selected_matter = "";
-    String selected_matter_id = "";
-    String selected_matter_type = "";
-    String selected_task = "";
-    String selected_status = "";
-    boolean date_status = false;
-    View view;
-    Spinner sp_project,sp_task,sp_status,sp_date;
-    TextInputEditText tv_hours,tv_total_hours;
-    androidx.appcompat.widget.AppCompatButton btn_cancel_timesheet,btn_save_timesheet;
+public class NonSubmittedTimesheets extends Fragment implements AsyncTaskCompleteListener,View.OnClickListener {
+    private AlertDialog progressDialog;
+    private ArrayList<TimeSheetModel> timeSheetsList = new ArrayList<>();
+    private ArrayList<TSMatterModel> matterList = new ArrayList<>();
+    private ArrayList<TasksModel> tasksList = new ArrayList<>();
+    private ArrayList<StatusModel> statusList = new ArrayList<>();
+    private String selected_matter = "";
+    private String selected_matter_id = "";
+    private String selected_matter_type = "";
+    private String selected_task = "";
+    private String selected_status = "";
+    private boolean date_status = false;
+    private View view;
+    private String selected_date = "";
+    private Spinner sp_project,sp_task,sp_status,sp_date;
+    private TextInputEditText tv_hours,tv_total_hours;
+    private androidx.appcompat.widget.AppCompatButton btn_cancel_timesheet,btn_save_timesheet;
+    androidx.appcompat.widget.AppCompatButton bt_fifteen_minutes,bt_thirty_minutes,bt_forty_five_minutes;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -71,6 +77,38 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
         Bundle bundle = getArguments();
         String date = bundle.getString("date");
         ArrayList<String> weekDates = bundle.getStringArrayList("weekDates");
+        bt_thirty_minutes = view.findViewById(R.id.bt_thirty_minutes);
+        bt_forty_five_minutes = view.findViewById(R.id.bt_forty_five_minutes);
+        bt_fifteen_minutes = view.findViewById(R.id.bt_fifteen_minutes);
+        bt_fifteen_minutes.setOnClickListener(minutesButtonClickListener);
+        bt_thirty_minutes.setOnClickListener(minutesButtonClickListener);
+        bt_forty_five_minutes.setOnClickListener(minutesButtonClickListener);
+        tv_hours.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String hoursText = s.toString();
+                if (!hoursText.isEmpty()) {
+                    int hours = Integer.parseInt(hoursText);
+                    if (hours > 24) {
+                        tv_hours.removeTextChangedListener(this);
+                        tv_hours.setText(hoursText.substring(0, hoursText.length() - 1));
+                        tv_hours.setSelection(tv_hours.getText().length());
+                        tv_hours.addTextChangedListener(this);
+                    }
+                }
+                updateTotalTime();
+            }
+        });
+
+
 
 //        AndroidUtils.showToast(date, getContext());
         if (date.equals("") || date.equals(null)) {
@@ -85,7 +123,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
         sp_date.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String selected_date = weekDates.get(i);
+               selected_date  = weekDates.get(i);
                 AndroidUtils.showToast(selected_date,getContext());
 //                selected_status = weekDates.get(adapterView.getSelectedItemPosition()).ge;
             }
@@ -103,9 +141,54 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
 ////                OpenPopup();
 //            // Add a LinearLayout as the container
 //        }
+
         return view;
     }
+    View.OnClickListener minutesButtonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            String hoursText = tv_hours.getText().toString();
+            int hours = 0;
+            if (!hoursText.isEmpty()) {
+                hours = Integer.parseInt(hoursText);
+            }
 
+            // If hours are equal to 24, do not allow selecting minutes
+            if (hours == 24) {
+                return;
+            }
+
+            AppCompatButton button = (AppCompatButton) v;
+            deselectAllMinuteButtons();
+            button.setSelected(true);
+            updateTotalTime();
+        }
+    };
+    private void deselectAllMinuteButtons() {
+        bt_fifteen_minutes.setSelected(false);
+        bt_thirty_minutes.setSelected(false);
+        bt_forty_five_minutes.setSelected(false);
+    }
+    private void updateTotalTime() {
+//        tv_total_hours.hin
+        String hoursText = tv_hours.getText().toString();
+        int hours = 0;
+        if (!hoursText.isEmpty()) {
+            hours = Integer.parseInt(hoursText);
+        }
+
+        int minutes = 0;
+        if (bt_fifteen_minutes.isSelected()) {
+            minutes = 15;
+        } else if (bt_thirty_minutes.isSelected()) {
+            minutes = 30;
+        } else if (bt_forty_five_minutes.isSelected()) {
+            minutes = 45;
+        }
+
+        String totalTimeText = hours + "h " + minutes + "m";
+        tv_total_hours.setText(totalTimeText);
+    }
     private void callCurrentDateTimeSheetsWebservice(String date, boolean date_status) {
         try {
             progressDialog = AndroidUtils.get_progress(getActivity());

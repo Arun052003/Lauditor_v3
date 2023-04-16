@@ -16,7 +16,6 @@ import androidx.fragment.app.FragmentTransaction;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.TimeSheets.Models.DateModel;
 import com.digicoffer.lauditor.TimeSheets.Models.WeekDateInfo;
-import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common.Constants;
 
 import java.text.DateFormat;
@@ -188,13 +187,15 @@ public class TimeSheets extends Fragment {
     private void loadAggregatedTimesheets() {
         tv_aggregated_ts.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_my_ts.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
-
+        tv_ns_timesheet.setText("Team Members");
+        tv_submitted.setText("Projects");
     }
 
     private void loadMyTimeSheets() {
         tv_aggregated_ts.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_my_ts.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
-
+        tv_ns_timesheet.setText("Not Submitted");
+        tv_submitted.setText("Submitted");
     }
 
     private void loadNsTimesheets() {
@@ -222,8 +223,34 @@ public class TimeSheets extends Fragment {
     }
 
     private void loadFragment(String s,WeekDateInfo weekDateInfo) {
+
         loadAggregatedTimesheets();
         loadNsTimesheets();
+//        AndroidUtils.showAlert(tv_ns_timesheet.getText().toString(),getContext());
+        if(tv_ns_timesheet.getText().toString().equals("Not Submitted")) {
+            loadNsFragment(s,weekDateInfo);
+        }else{
+            loadTMFragment(s);
+        }
+    }
+
+    private void loadTMFragment(String s) {
+        Bundle bundle = new Bundle();
+        bundle.putString("date", s);
+//        bundle.putStringArrayList("weekDates", weekDateInfo.getWeekDates());
+
+//        AndroidUtils.showToast(s,getContext());
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        AGS_TeamMembers nonSubmittedTimesheets = new AGS_TeamMembers();
+        nonSubmittedTimesheets.setArguments(bundle);
+        ft.replace(R.id.child_container_timesheets, nonSubmittedTimesheets);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    private void loadNsFragment(String s, WeekDateInfo weekDateInfo) {
+
         Bundle bundle = new Bundle();
         bundle.putString("date", s);
         bundle.putStringArrayList("weekDates", weekDateInfo.getWeekDates());

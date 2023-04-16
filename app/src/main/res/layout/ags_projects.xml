@@ -178,6 +178,139 @@
                     android:gravity="start" />
 
             </com.google.android.material.textfield.TextInputLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/round_shadow"
+                android:elevation="4dp"
+                android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Billable"
+                        android:layout_weight="1"
+                        android:textColor="@color/Blue_text_color"
+                        android:textSize="@dimen/Fifteen_dp"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        >
+
+                    </TextView>
+                    <TextView
+                        android:id="@+id/tv_billable_hours"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="9:30"
+                        android:layout_weight="1"
+                        android:textColor="@color/green_count_color"
+                        android:textSize="@dimen/twenty_dp"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        >
+
+                    </TextView>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Hours"
+                        android:layout_weight="1"
+                        android:textColor="@color/green_count_color"
+                        android:textSize="@dimen/twenty_dp"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        >
+
+                    </TextView>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Billable"
+                        android:layout_weight="1"
+                        android:textColor="@color/Blue_text_color"
+                        android:textSize="@dimen/Fifteen_dp"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        >
+
+                    </TextView>
+                    <TextView
+                        android:id="@+id/tv_non_billable_hours"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="9:30"
+                        android:layout_weight="1"
+                        android:textColor="@color/green_count_color"
+                        android:textSize="@dimen/twenty_dp"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        >
+
+                    </TextView>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Hours"
+                        android:layout_weight="1"
+                        android:textColor="@color/green_count_color"
+                        android:textSize="@dimen/twenty_dp"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        >
+
+                    </TextView>
+                </LinearLayout>
+            </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:background="@color/black"
+                    android:layout_height="2dp">
+
+                </View>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Total Hours"
+                    android:layout_weight="1"
+                    android:textColor="@color/Blue_text_color"
+                    android:textSize="@dimen/Fifteen_dp"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    >
+
+                </TextView>
+                <TextView
+                    android:id="@+id/tv_total_project_hours"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="20:30 Hours"
+                    android:layout_weight="1"
+                    android:textColor="@color/green_count_color"
+                    android:textSize="@dimen/twenty_dp"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    >
+
+                </TextView>
+            </LinearLayout>
+            </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_projects"
                 android:layout_width="match_parent"

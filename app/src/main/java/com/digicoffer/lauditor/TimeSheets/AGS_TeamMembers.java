@@ -124,9 +124,9 @@ public class AGS_TeamMembers extends Fragment implements AsyncTaskCompleteListen
 
     private void loadRecyclerview() {
 //        AndroidUtils.showAlert(teamList.toString(),getContext());
-
+String status = "Team Members";
         rv_time_sheets.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        TeamMembersTSAdapter teamMembersTSAdapter = new TeamMembersTSAdapter(teamList);
+        TeamMembersTSAdapter teamMembersTSAdapter = new TeamMembersTSAdapter(teamList,status);
         rv_time_sheets.setAdapter(teamMembersTSAdapter);
         rv_time_sheets.setHasFixedSize(true);
         et_search_matter.addTextChangedListener(new TextWatcher() {

@@ -22,9 +22,11 @@ import java.util.ArrayList;
 public class TeamMembersTSAdapter extends RecyclerView.Adapter<TeamMembersTSAdapter.MyviewHolder> implements Filterable {
     ArrayList<TMModel> teamList = new ArrayList<>();
     ArrayList<TMModel> itemsList = new ArrayList<>();
-    public TeamMembersTSAdapter(ArrayList<TMModel> teamList) {
+    String status;
+    public TeamMembersTSAdapter(ArrayList<TMModel> teamList,String sStatus) {
         this.teamList = teamList;
         this.itemsList = teamList;
+        this.status = sStatus;
     }
 
     @NonNull

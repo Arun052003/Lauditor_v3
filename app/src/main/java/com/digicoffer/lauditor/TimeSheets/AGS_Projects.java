@@ -13,9 +13,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.R;
+import com.digicoffer.lauditor.TimeSheets.Adapters.ProjectAdapter;
 import com.digicoffer.lauditor.TimeSheets.Models.ProjectTMModel;
 import com.digicoffer.lauditor.TimeSheets.Models.ProjectsModel;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
@@ -176,6 +178,13 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
 
             }
         });
+            loadRecyclerview();
+    }
 
+    private void loadRecyclerview() {
+        rv_projects.setLayoutManager(new GridLayoutManager(getContext(),1));
+        ProjectAdapter projectAdapter = new ProjectAdapter(projectsList,projectTmList,getContext());
+        rv_projects.setAdapter(projectAdapter);
+        rv_projects.setHasFixedSize(true);
     }
 }

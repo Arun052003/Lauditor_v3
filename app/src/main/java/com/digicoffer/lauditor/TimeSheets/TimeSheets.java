@@ -227,9 +227,9 @@ public class TimeSheets extends Fragment {
         Bundle bundle = new Bundle();
         bundle.putString("date", s);
         bundle.putStringArrayList("weekDates", weekDateInfo.getWeekDates());
+
 //        AndroidUtils.showToast(s,getContext());
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-
         NonSubmittedTimesheets nonSubmittedTimesheets = new NonSubmittedTimesheets();
         nonSubmittedTimesheets.setArguments(bundle);
         ft.replace(R.id.child_container_timesheets, nonSubmittedTimesheets);

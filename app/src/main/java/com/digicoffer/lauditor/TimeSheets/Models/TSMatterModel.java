@@ -1,9 +1,20 @@
 package com.digicoffer.lauditor.TimeSheets.Models;
 
+import org.json.JSONArray;
+
 public class TSMatterModel {
     String Mattername;
     String Matterid;
     String Matter_type;
+    JSONArray Tasks;
+
+    public JSONArray getTasks() {
+        return Tasks;
+    }
+
+    public void setTasks(JSONArray tasks) {
+        Tasks = tasks;
+    }
 
     public String getMatter_type() {
         return Matter_type;

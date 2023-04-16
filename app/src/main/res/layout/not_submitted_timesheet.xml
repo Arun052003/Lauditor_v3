@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@color/Blue_text_color"
     android:backgroundTint="@color/Blue_text_color"
     tools:context=".MainActivity">
@@ -530,8 +530,8 @@
                     android:id="@+id/rv_non_submitted_timesheets"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
                     android:orientation="vertical"
+                    android:background="@color/white"
                     app:layout_constraintBottom_toTopOf="@id/cv_details_activity_log"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"

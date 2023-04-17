@@ -29,6 +29,7 @@ public class TimeSheets extends Fragment {
     TextView tv_aggregated_ts, tv_my_ts, tv_ns_timesheet, tv_submitted, tv_week, tv_month;
     LinearLayoutCompat ll_timesheet_type, ll_submitted_type;
     private static final int DIRECTION_PREVIOUS = -1;
+    String s = "";
     private static final int DIRECTION_NEXT = 1;
     private ArrayList<DateModel> datesList = new ArrayList<>();
     //    private ArrayAdapter<DateModel> weekAdapter = new ArrayAdapter<DateModel>(getContext(), android.R.layout.simple_spinner_item, datesList);
@@ -78,7 +79,7 @@ public class TimeSheets extends Fragment {
             tv_from_date_timesheet.setText(weekDateInfo.getWeekDates().get(0));
             tv_to_date_timesheet.setText(weekDateInfo.getWeekDates().get(weekDateInfo.getWeekDates().size() - 1));
         }
-        String s = "";
+
         // Set up the onClickListeners for the next and previous buttons
         ImageButton iv_next_week = view.findViewById(R.id.iv_next_week);
         ImageButton iv_previous_week = view.findViewById(R.id.iv_previous_week);
@@ -201,7 +202,7 @@ public class TimeSheets extends Fragment {
     private void loadNsTimesheets() {
         tv_ns_timesheet.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_submitted.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
-
+//        loadFragment();
     }
 
     private void loadWeek() {
@@ -219,7 +220,31 @@ public class TimeSheets extends Fragment {
     private void loadSubmittedTimesheets() {
         tv_submitted.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         tv_ns_timesheet.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+        loadSubmittedFragment(s,weekDateInfo);
+    }
 
+    private void loadSubmittedFragment(String s,WeekDateInfo weekDateInfo) {
+        if(tv_ns_timesheet.getText().toString().equals("Submitted")) {
+            loadNsFragment(s,weekDateInfo);
+        }else{
+           loadProjectFragment(s);
+        }
+    }
+
+    private void loadProjectFragment(String s) {
+
+        Bundle bundle = new Bundle();
+        bundle.putString("date", s);
+//        bundle.putStringArrayList("weekDates", weekDateInfo.getWeekDates());
+
+//        AndroidUtils.showToast(s,getContext());
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        AGS_Projects nonSubmittedTimesheets = new AGS_Projects();
+        nonSubmittedTimesheets.setArguments(bundle);
+        ft.replace(R.id.child_container_timesheets, nonSubmittedTimesheets);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     private void loadFragment(String s,WeekDateInfo weekDateInfo) {
@@ -232,6 +257,7 @@ public class TimeSheets extends Fragment {
         }else{
             loadTMFragment(s);
         }
+
     }
 
     private void loadTMFragment(String s) {

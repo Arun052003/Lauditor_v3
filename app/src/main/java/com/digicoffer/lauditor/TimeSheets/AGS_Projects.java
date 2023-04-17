@@ -104,17 +104,21 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
 
                 if (httpResult.getRequestType().equals("Projects")) {
                     JSONObject jsonObject = result.getJSONObject("timesheets");
-                    JSONArray jsonArray  = jsonObject.getJSONArray("data");
                     JSONObject grandtotal = jsonObject.getJSONObject("grandTotal");
-                    loadProjects(jsonArray,grandtotal);
+                    tv_billable_hours.setText(grandtotal.getString("billable"));
+                    tv_non_billable_hours.setText(grandtotal.getString("nonbillable"));
+                    tv_total_project_hours.setText(grandtotal.getString("total"));
+                    JSONArray jsonArray = jsonObject.getJSONArray("data");
+            loadProjects(jsonArray);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
         }
     }
 
-    private void loadProjects(JSONArray jsonArray, JSONObject grandtotal) throws JSONException {
+    private void loadProjects(JSONArray jsonArray) throws JSONException {
         for (int i=0;i<jsonArray.length();i++){
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             ProjectsModel projectsModel = new ProjectsModel();
@@ -125,13 +129,11 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
             projectsModel.setTeamMembers(jsonObject.getJSONArray("teamMembers"));
             projectsList.add(projectsModel);
         }
-        loadProjectsRecyclerview(grandtotal);
+        loadProjectsRecyclerview();
     }
 
-    private void loadProjectsRecyclerview(JSONObject grandtotal) throws JSONException {
-        tv_billable_hours.setText(grandtotal.getString("billable"));
-        tv_non_billable_hours.setText(grandtotal.getString("nonbillable"));
-        tv_total_project_hours.setText(grandtotal.getString("total"));
+    private void loadProjectsRecyclerview() throws JSONException {
+
         final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) getContext(), projectsList);
         sp_ags_project.setAdapter(spinner_adapter);
         sp_ags_project.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -139,24 +141,24 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                projectTmList.clear();
                 selected_project = projectsList.get(adapterView.getSelectedItemPosition()).getProjectName();
-               try {
-                   for (int i = 0; i < projectsList.size(); i++) {
-
-                       for (int j = 0; j < projectsList.get(i).getTeamMembers().length(); j++) {
-                           if (selected_project.equals(projectsList.get(i).getProjectName())) {
-                               JSONObject jsonObject = projectsList.get(i).getTeamMembers().getJSONObject(i);
-                               ProjectTMModel projectTMModel = new ProjectTMModel();
-                               projectTMModel.setBillableHours(jsonObject.getString("billableHours"));
-                               projectTMModel.setName(jsonObject.getString("name"));
-                               projectTMModel.setNonBillablehours(jsonObject.getString("nonBillablehours"));
-                               projectTMModel.setTotal(jsonObject.getString("total"));
-                               projectTmList.add(projectTMModel);
-                           }
-                       }
-                   }
-               } catch (JSONException e) {
-                   e.printStackTrace();
-               }
+//               try {
+//                   for (int i = 0; i < projectsList.size(); i++) {
+//                       if (selected_project.equals(projectsList.get(i).getProjectName())) {
+//                       for (int j = 0; j < projectsList.get(i).getTeamMembers().length(); j++) {
+//
+//                               JSONObject jsonObject = projectsList.get(i).getTeamMembers().getJSONObject(i);
+//                               ProjectTMModel projectTMModel = new ProjectTMModel();
+//                               projectTMModel.setBillableHours(jsonObject.getString("billableHours"));
+//                               projectTMModel.setName(jsonObject.getString("name"));
+//                               projectTMModel.setNonBillablehours(jsonObject.getString("nonBillablehours"));
+//                               projectTMModel.setTotal(jsonObject.getString("total"));
+//                               projectTmList.add(projectTMModel);
+//                           }
+//                       }
+//                   }
+//               } catch (JSONException e) {
+//                   e.printStackTrace();
+//               }
             }
 
             @Override
@@ -164,7 +166,7 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
 
             }
         });
-
+//        AndroidUtils.showAlert(projectTmList.toString(),getContext());
         final CommonSpinnerAdapter status_adapter = new CommonSpinnerAdapter((Activity) getContext(), projectTmList);
         sp_ags_tm.setAdapter(status_adapter);
         sp_ags_tm.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -178,6 +180,7 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
 
             }
         });
+
             loadRecyclerview();
     }
 

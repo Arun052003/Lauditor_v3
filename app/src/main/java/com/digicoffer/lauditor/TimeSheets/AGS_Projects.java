@@ -127,38 +127,46 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
             projectsModel.setClientNames(jsonObject.getJSONArray("clientNames"));
             projectsModel.setMatterId(jsonObject.getString("matterId"));
             projectsModel.setTeamMembers(jsonObject.getJSONArray("teamMembers"));
+//            for (int j = 0; j < projectsModel.getTeamMembers().length(); j++) {
+//                JSONObject jsonObject1 = projectsModel.getTeamMembers().getJSONObject(j);
+//                ProjectTMModel projectTMModel = new ProjectTMModel();
+//                projectTMModel.setBillableHours(jsonObject1.getString("billableHours"));
+//                projectTMModel.setName(jsonObject1.getString("name"));
+//                projectTMModel.setNonBillablehours(jsonObject1.getString("nonBillablehours"));
+//                projectTMModel.setTotal(jsonObject1.getString("total"));
+//                projectTmList.add(projectTMModel);
+//            }
             projectsList.add(projectsModel);
         }
         loadProjectsRecyclerview();
     }
 
     private void loadProjectsRecyclerview() throws JSONException {
-
-        final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) getContext(), projectsList);
-        sp_ags_project.setAdapter(spinner_adapter);
-        sp_ags_project.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-               projectTmList.clear();
-                selected_project = projectsList.get(adapterView.getSelectedItemPosition()).getProjectName();
-//               try {
+//        try {
 //                   for (int i = 0; i < projectsList.size(); i++) {
 //                       if (selected_project.equals(projectsList.get(i).getProjectName())) {
 //                       for (int j = 0; j < projectsList.get(i).getTeamMembers().length(); j++) {
 //
 //                               JSONObject jsonObject = projectsList.get(i).getTeamMembers().getJSONObject(i);
-//                               ProjectTMModel projectTMModel = new ProjectTMModel();
-//                               projectTMModel.setBillableHours(jsonObject.getString("billableHours"));
-//                               projectTMModel.setName(jsonObject.getString("name"));
-//                               projectTMModel.setNonBillablehours(jsonObject.getString("nonBillablehours"));
-//                               projectTMModel.setTotal(jsonObject.getString("total"));
-//                               projectTmList.add(projectTMModel);
+//
+//
 //                           }
 //                       }
 //                   }
 //               } catch (JSONException e) {
 //                   e.printStackTrace();
 //               }
+//        for(int i=0;i<projectsList.size();i++)
+
+//        AndroidUtils.showAlert(projectTmList.toString(),getContext());
+        final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) getContext(), projectsList);
+        sp_ags_project.setAdapter(spinner_adapter);
+        sp_ags_project.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+//               projectTmList.clear();
+                selected_project = projectsList.get(adapterView.getSelectedItemPosition()).getProjectName();
+//
             }
 
             @Override
@@ -166,6 +174,7 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
 
             }
         });
+
 //        AndroidUtils.showAlert(projectTmList.toString(),getContext());
         final CommonSpinnerAdapter status_adapter = new CommonSpinnerAdapter((Activity) getContext(), projectTmList);
         sp_ags_tm.setAdapter(status_adapter);
@@ -189,5 +198,19 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
         ProjectAdapter projectAdapter = new ProjectAdapter(projectsList,projectTmList,getContext());
         rv_projects.setAdapter(projectAdapter);
         rv_projects.setHasFixedSize(true);
+        rv_projects.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+                int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+
+                if (lastVisibleItemPosition == projectAdapter.getItemCount() - 1) {
+                    projectAdapter.loadMoreItems();
+                }
+            }
+        });
     }
+
 }

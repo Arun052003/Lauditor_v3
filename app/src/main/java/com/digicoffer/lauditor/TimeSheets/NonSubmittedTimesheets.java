@@ -380,7 +380,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
                     tasksList.clear();
                     loadTasks(tasks);
                 }else if (httpResult.getRequestType().equals("SAVE TIMESHEETS")){
-                    AndroidUtils.showToast(result.getString("msg"),getContext());
+//                    AndroidUtils.showToast(result.getString("msg"),getContext());
                     tv_hours.setText("");
                     tv_total_hours.setText("");
 

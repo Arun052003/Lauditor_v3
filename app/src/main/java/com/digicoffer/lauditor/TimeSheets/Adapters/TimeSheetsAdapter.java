@@ -45,7 +45,7 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
     public void onBindViewHolder(@NonNull TimeSheetsAdapter.MyViewHolder holder, int position) {
             WeekModel weekModel = weeksList.get(position);
             holder.tv_date.setText(weekModel.getValue());
-        AndroidUtils.showAlert(eventsList.toString(),context);
+//        AndroidUtils.showAlert(eventsList.toString(),context);
         holder.rv_time_sheets.setLayoutManager(new GridLayoutManager(context,1));
         WeeklyTSAdapter weeklyTSAdapter= new WeeklyTSAdapter(eventsList);
         holder.rv_time_sheets.setAdapter(weeklyTSAdapter);

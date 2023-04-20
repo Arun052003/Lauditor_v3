@@ -45,6 +45,7 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
     private TextView tv_billable_hours,tv_non_billable_hours,tv_total_project_hours;
     private AlertDialog progress_dialog;
     private ArrayList<ProjectsModel> projectsList = new ArrayList<>();
+    private ArrayList<ProjectsModel> updated_projectList = new ArrayList<>();
     private String selected_project;
     private ArrayList<ProjectTMModel> projectTmList = new ArrayList<>();
     private String selected_tm;
@@ -57,7 +58,7 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
         date = bundle.getString("date");
         sp_ags_project = view.findViewById(R.id.sp_ags_project);
         sp_ags_tm = view.findViewById(R.id.sp_ags_tm);
-        et_search_matter = view.findViewById(R.id.et_search_matter);
+//        et_search_matter = view.findViewById(R.id.et_search_matter);
         rv_projects = view.findViewById(R.id.rv_projects);
         tv_billable_hours = view.findViewById(R.id.tv_billable_hours);
         tv_non_billable_hours = view.findViewById(R.id.tv_non_billable_hours);
@@ -127,75 +128,78 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
             projectsModel.setClientNames(jsonObject.getJSONArray("clientNames"));
             projectsModel.setMatterId(jsonObject.getString("matterId"));
             projectsModel.setTeamMembers(jsonObject.getJSONArray("teamMembers"));
-//            for (int j = 0; j < projectsModel.getTeamMembers().length(); j++) {
-//                JSONObject jsonObject1 = projectsModel.getTeamMembers().getJSONObject(j);
-//                ProjectTMModel projectTMModel = new ProjectTMModel();
-//                projectTMModel.setBillableHours(jsonObject1.getString("billableHours"));
-//                projectTMModel.setName(jsonObject1.getString("name"));
-//                projectTMModel.setNonBillablehours(jsonObject1.getString("nonBillablehours"));
-//                projectTMModel.setTotal(jsonObject1.getString("total"));
-//                projectTmList.add(projectTMModel);
-//            }
             projectsList.add(projectsModel);
         }
         loadProjectsRecyclerview();
     }
 
     private void loadProjectsRecyclerview() throws JSONException {
-//        try {
-//                   for (int i = 0; i < projectsList.size(); i++) {
-//                       if (selected_project.equals(projectsList.get(i).getProjectName())) {
-//                       for (int j = 0; j < projectsList.get(i).getTeamMembers().length(); j++) {
-//
-//                               JSONObject jsonObject = projectsList.get(i).getTeamMembers().getJSONObject(i);
-//
-//
-//                           }
-//                       }
-//                   }
-//               } catch (JSONException e) {
-//                   e.printStackTrace();
-//               }
-//        for(int i=0;i<projectsList.size();i++)
 
-//        AndroidUtils.showAlert(projectTmList.toString(),getContext());
         final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) getContext(), projectsList);
         sp_ags_project.setAdapter(spinner_adapter);
         sp_ags_project.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-//               projectTmList.clear();
-                selected_project = projectsList.get(adapterView.getSelectedItemPosition()).getProjectName();
+               projectTmList.clear();
+               updated_projectList.clear();
+                selected_project = projectsList.get(adapterView.getSelectedItemPosition()).getMatterId();
+                try {
+
+                    for (int i = 0; i < projectsList.size(); i++) {
+                        if (projectsList.get(i).getMatterId().equals(selected_project)) {
+                            for(int j=0;j<projectsList.get(i).getTeamMembers().length();j++) {
+                                JSONObject jsonObject = projectsList.get(i).getTeamMembers().getJSONObject(j);
+                                ProjectTMModel projectTMModel = new ProjectTMModel();
+                                projectTMModel.setBillableHours(jsonObject.getString("billableHours"));
+                                projectTMModel.setName(jsonObject.getString("name"));
+                                projectTMModel.setNonBillablehours(jsonObject.getString("nonBillablehours"));
+                                projectTMModel.setTotal(jsonObject.getString("total"));
+                                projectTmList.add(projectTMModel);
+                            }
+                        }
+                    }
+                    for (int i = 0; i < projectsList.size(); i++) {
+                        if (projectsList.get(i).getMatterId().equals(selected_project)) {
+                            ProjectsModel projectsModel = projectsList.get(i);
+                            updated_projectList.add(projectsModel);
+                        }
+                    }
+                    final CommonSpinnerAdapter status_adapter = new CommonSpinnerAdapter((Activity) getContext(), projectTmList);
+                    sp_ags_tm.setAdapter(status_adapter);
+                    sp_ags_tm.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                            selected_tm = projectTmList.get(adapterView.getSelectedItemPosition()).getName();
+                          AndroidUtils.showToast(selected_project,getContext());
+                            loadRecyclerview();
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+
+                        }
+                    });
+//                    AndroidUtils.showAlert(updated_projectList.toArray().toString(),getContext());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 //
-            }
+////        AndroidUtils.showAlert(projectTmList.toString(),getContext());
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
 
-            }
-        });
 
-//        AndroidUtils.showAlert(projectTmList.toString(),getContext());
-        final CommonSpinnerAdapter status_adapter = new CommonSpinnerAdapter((Activity) getContext(), projectTmList);
-        sp_ags_tm.setAdapter(status_adapter);
-        sp_ags_tm.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                selected_tm = projectTmList.get(adapterView.getSelectedItemPosition()).getName();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-            loadRecyclerview();
     }
 
     private void loadRecyclerview() {
         rv_projects.setLayoutManager(new GridLayoutManager(getContext(),1));
-        ProjectAdapter projectAdapter = new ProjectAdapter(projectsList,projectTmList,getContext());
+        ProjectAdapter projectAdapter = new ProjectAdapter(updated_projectList,projectTmList,getContext(),selected_project);
         rv_projects.setAdapter(projectAdapter);
         rv_projects.setHasFixedSize(true);
         rv_projects.addOnScrollListener(new RecyclerView.OnScrollListener() {

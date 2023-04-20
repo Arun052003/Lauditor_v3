@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/round_shadow"
-    android:elevation="4dp"
+android:elevation="4dp"
     android:padding="5dp"
     android:layout_margin="5dp"
     tools:context=".MainActivity">
@@ -63,8 +63,8 @@
         android:padding="5dp"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
-        android:background="@drawable/round_shadow"
-        android:elevation="4dp"
+        android:background="@color/white"
+
         android:orientation="vertical"
       />
 

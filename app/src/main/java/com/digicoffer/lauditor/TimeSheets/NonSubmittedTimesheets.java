@@ -142,7 +142,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
 
 
 //        AndroidUtils.showToast(date, getContext());
-        if (date.equals("") || date.equals(null)) {
+        if (date.equals("") || date==null) {
 //             date_status = false;
             callCurrentDateTimeSheetsWebservice(date, date_status);
         } else {

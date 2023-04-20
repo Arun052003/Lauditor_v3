@@ -35,8 +35,8 @@ public class TimeSheets extends Fragment {
     //    private ArrayAdapter<DateModel> weekAdapter = new ArrayAdapter<DateModel>(getContext(), android.R.layout.simple_spinner_item, datesList);
     Calendar calendar = Calendar.getInstance();
     WeekDateInfo weekDateInfo;
-    private static String main_button_status = "Aggregated";
-    private static String non_main_button_status = "TM";
+    private static String main_button_status ;
+    private static String non_main_button_status ;
     //    getWeekDateRange(calendar);
     @Nullable
     @Override
@@ -50,41 +50,29 @@ public class TimeSheets extends Fragment {
         tv_submitted = view.findViewById(R.id.tv_submitted);
         tv_week = view.findViewById(R.id.tv_week);
         tv_month = view.findViewById(R.id.tv_month);
-//        AndroidUtils.showToast(Constants.ROLE, getContext());
-        if (Constants.ROLE.equals("SU")) {
-            ll_timesheet_type.setVisibility(View.VISIBLE);
-        } else {
-            ll_timesheet_type.setVisibility(View.GONE);
-        }
 
-
-// Set the calendar to the current week's Monday
-//        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-
-        // Calculate the first and last dates of the current week
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-//         firstDate = dateFormat.format(calendar.getTime());
-//        calendar.add(Calendar.DATE, 4);
-//       lastDate = dateFormat.format(calendar.getTime());
-
-        // Set the TextView
-        // to display the first and last dates
         weekDateInfo = getWeekDateRange(calendar);
+
         TextView tv_from_date_timesheet = view.findViewById(R.id.tv_from_date_timesheet);
         TextView tv_to_date_timesheet = view.findViewById(R.id.tv_to_date_timesheet);
-//        String updated_date = getWeekDateRange(calendar);
-//        String [] seperated = updated_date.split("-");
-//        tv_from_date_timesheet.setText(seperated[0]);
-//        tv_to_date_timesheet.setText(seperated[1]);
+
         if (weekDateInfo != null && weekDateInfo.getWeekDates() != null && !weekDateInfo.getWeekDates().isEmpty()) {
             tv_from_date_timesheet.setText(weekDateInfo.getWeekDates().get(0));
             tv_to_date_timesheet.setText(weekDateInfo.getWeekDates().get(weekDateInfo.getWeekDates().size() - 1));
         }
 
-        // Set up the onClickListeners for the next and previous buttons
+        if (Constants.ROLE.equals("SU")) {
+            main_button_status = "Aggregated";
+            non_main_button_status = "TM";
+            ll_timesheet_type.setVisibility(View.VISIBLE);
+            loadFragment(s,weekDateInfo);
+        } else {
+            ll_timesheet_type.setVisibility(View.GONE);
+            loadFragment(s,weekDateInfo);
+        }
         ImageButton iv_next_week = view.findViewById(R.id.iv_next_week);
         ImageButton iv_previous_week = view.findViewById(R.id.iv_previous_week);
-        loadFragment(s,weekDateInfo);
+
         tv_aggregated_ts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,32 +128,13 @@ public class TimeSheets extends Fragment {
             @Override
             public void onClick(View view) {
                 try {
-//                Calendar calendar = Calendar.getInstance();
-                    // Increment the Calendar by one week
-
-//                    calendar.add(Calendar.DATE, 7);
 //
-//
-//                    // Update the TextView to display the new week's dates
-//                    String firstDate_new = dateFormat.format(calendar.getTime());
-//                    calendar.add(Calendar.DAY_OF_WEEK, 4);
-//                    String lastDate_new = dateFormat.format(calendar.getTime());
-//                    tv_from_date_timesheet.setText(firstDate_new);
-//                    tv_to_date_timesheet.setText(lastDate_new);
                     calendar.add(Calendar.WEEK_OF_YEAR, 1);
-//                    String updated_date = getWeekDateRange(calendar);
-//                    String [] seperated = updated_date.split("-");
-//
                     weekDateInfo = getWeekDateRange(calendar);
-//                    tv_from_date_timesheet.setText(seperated[0]);
-//                    tv_to_date_timesheet.setText(seperated[1]);
                     if (weekDateInfo != null && weekDateInfo.getWeekDates() != null && !weekDateInfo.getWeekDates().isEmpty()) {
                         tv_from_date_timesheet.setText(weekDateInfo.getWeekDates().get(0));
                         tv_to_date_timesheet.setText(weekDateInfo.getWeekDates().get(weekDateInfo.getWeekDates().size() - 1));
                     }
-//                    if (tv_aggregated_ts.getText().equals("Aggregated Timesheets")){
-//                        if (tv_ns_timesheet.getText().eq)
-//                    }
                     loadFragment(tv_from_date_timesheet.getText().toString(),weekDateInfo);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -176,22 +145,7 @@ public class TimeSheets extends Fragment {
         iv_previous_week.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Calendar calendar = Calendar.getInstance();
-                // Decrement the Calendar by one week
-//                calendar.add(Calendar.DAY_OF_WEEK, -7);
-//
-//                // Update the TextView to display the new week's dates
-//                String firstDate_new = dateFormat.format(calendar.getTime());
-//                calendar.add(Calendar.DAY_OF_WEEK, 4);
-//                String lastDate_new = dateFormat.format(calendar.getTime());
-//                tv_from_date_timesheet.setText(firstDate_new);
-//                tv_to_date_timesheet.setText(lastDate_new);
                 calendar.add(Calendar.WEEK_OF_YEAR, -1);
-//                String updated_date = getWeekDateRange(calendar);
-//                String [] seperated = updated_date.split("-");
-//                tv_from_date_timesheet.setText(seperated[0]);
-//                tv_to_date_timesheet.setText(seperated[1]);
-//                loadFragment(seperated[0]);
                 weekDateInfo = getWeekDateRange(calendar);
                 if (weekDateInfo != null && weekDateInfo.getWeekDates() != null && !weekDateInfo.getWeekDates().isEmpty()) {
                     tv_from_date_timesheet.setText(weekDateInfo.getWeekDates().get(0));
@@ -209,12 +163,10 @@ public class TimeSheets extends Fragment {
         tv_my_ts.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
         tv_ns_timesheet.setText("Team Members");
         tv_submitted.setText("Projects");
-//        loadNsTimesheets();
-//        AndroidUtils.showAlert(tv_ns_timesheet.getText().toString(),getContext());
         if(tv_ns_timesheet.getText().toString().equals("Not Submitted")) {
             loadNsFragment(s,weekDateInfo);
         }else{
-            if (non_main_button_status == "TM") {
+            if (non_main_button_status!=null&&non_main_button_status == "TM") {
                 loadTMFragment(s);
             }else{
                 loadProjectFragment(s,weekDateInfo);
@@ -269,7 +221,7 @@ public class TimeSheets extends Fragment {
     }
 
     private void loadFragment(String s,WeekDateInfo weekDateInfo) {
-        if (main_button_status.equals("Aggregated")) {
+        if (main_button_status!=null&&main_button_status.equals("Aggregated")) {
             loadAggregatedTimesheets(s, weekDateInfo);
         }else{
             loadMyTimeSheets();

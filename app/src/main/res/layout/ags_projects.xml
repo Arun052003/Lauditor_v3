@@ -156,6 +156,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
+                    android:layout_marginTop="5dp"
                     android:hint="Search Project"
                     android:textColorHint="@color/black"
                     android:visibility="gone"
@@ -179,6 +180,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
+                    android:layout_marginTop="15dp"
                     android:background="@drawable/round_shadow"
                     android:elevation="4dp"
                     android:orientation="vertical"
@@ -213,7 +215,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:fontFamily="sans-serif-condensed-medium"
-                                android:text="9:30"
+                                android:text="00:00"
                                 android:textColor="@color/green_count_color"
                                 android:textSize="@dimen/twenty_dp">
 
@@ -254,7 +256,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:fontFamily="sans-serif-condensed-medium"
-                                android:text="9:30"
+                                android:text="00:00"
                                 android:textColor="@color/green_count_color"
                                 android:textSize="@dimen/twenty_dp">
 
@@ -303,7 +305,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:fontFamily="sans-serif-condensed-medium"
-                            android:text="20:30 Hours"
+                            android:text="00:00 Hours"
                             android:textColor="@color/green_count_color"
                             android:textSize="@dimen/twenty_dp">
 
@@ -320,8 +322,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/round_shadow"
-            android:elevation="4dp"
+            android:background="@color/white"
+
             android:padding="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"

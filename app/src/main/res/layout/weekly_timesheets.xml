@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_margin="10dp"
-    android:background="@drawable/round_shadow"
-    android:elevation="4dp"
+    android:background="@color/white"
     android:layout_marginBottom="5dp"
     android:layout_height="wrap_content">
     <TextView
@@ -128,9 +127,21 @@
         android:layout_width="match_parent"
         android:visibility="gone"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_weight="0"
         >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:background="@color/black">
+
+        </View>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
         <TextView
 
             android:layout_width="match_parent"
@@ -157,6 +168,14 @@
             android:text="Date"
             android:textSize="@dimen/twenty_dp"
             android:textColor="@color/green_count_color"/>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_weight="1"
+            android:background="@color/black">
 
+        </View>
     </LinearLayout>
+
 </androidx.appcompat.widget.LinearLayoutCompat>

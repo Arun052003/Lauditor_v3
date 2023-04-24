@@ -141,7 +141,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
 
 
 
-        AndroidUtils.showAlert(date, getContext());
+//        AndroidUtils.showAlert(date, getContext());
         if (date.isEmpty()) {
 //             date_status = false;
             callCurrentDateTimeSheetsWebservice(date, date_status);
@@ -552,7 +552,11 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
         TimeSheetsAdapter timeSheetsAdapter = new TimeSheetsAdapter(weeksList,eventsList,getContext());
         rv_non_submitted_timesheets.setAdapter(timeSheetsAdapter);
         rv_non_submitted_timesheets.setHasFixedSize(true);
-
+        if (timeSheetsAdapter != null && timeSheetsAdapter.getItemCount() > 0) {
+            int lastPosition = timeSheetsAdapter.getItemCount() - 1;
+            rv_non_submitted_timesheets.smoothScrollToPosition(lastPosition);
+        }
+        timeSheetsAdapter.notifyDataSetChanged();
     }
 
     private void callTaskWebservice(String selected_matter_type) {

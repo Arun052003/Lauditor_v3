@@ -56,6 +56,13 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
         WeekModel weekModel = weeksList.get(position);
 //        AndroidUtils.showAlert(String.valueOf(weeksList.size()), context);
         try {
+            monday.clear();
+            tuesday.clear();
+            wednessday.clear();
+            thursday.clear();
+            friday.clear();
+            saturday.clear();
+            sunday.clear();
             for (int e = 0; e < eventsList.size(); e++) {
                 EventsModel eventsModel = eventsList.get(e);
 //                for (int i = 0; i < eventsModel.getMon().length(); i++) {
@@ -75,7 +82,7 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 }
                 taskModel.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel.setTask_matter_id(eventsModel.getMatter_id());
-                if (!(taskModel.getTaskid() == null)) {
+                if (!(taskModel.getHours().equals("0")&&taskModel.getMinutes().equals("0"))) {
                     monday.add(taskModel);
                 }
 
@@ -96,7 +103,7 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 }
                 taskModel_tue.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel_tue.setTask_matter_id(eventsModel.getMatter_id());
-                if ( !taskModel_tue.getHours().equals("0")&&!taskModel.getMinutes().equals("0")) {
+                if (!(taskModel_tue.getHours().equals("0")&&taskModel_tue.getMinutes().equals("0"))) {
                     tuesday.add(taskModel_tue);
                 }
 
@@ -117,7 +124,7 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 }
                 taskModel_wed.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel_wed.setTask_matter_id(eventsModel.getMatter_id());
-                if (!(taskModel_wed.getTaskid() == null)) {
+                if (!(taskModel_wed.getHours().equals("0")&&taskModel_wed.getMinutes().equals("0"))) {
                     wednessday.add(taskModel_wed);
                 }
 
@@ -137,7 +144,7 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 }
                 taskModel_thu.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel_thu.setTask_matter_id(eventsModel.getMatter_id());
-                if (!(taskModel_thu.getTaskid() == null)) {
+                if (!(taskModel_thu.getHours().equals("0")&&taskModel_thu.getMinutes().equals("0"))) {
                     thursday.add(taskModel_thu);
                 }
 
@@ -159,7 +166,7 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 }
                 taskModel_fri.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel_fri.setTask_matter_id(eventsModel.getMatter_id());
-                if (!(taskModel_fri.getTaskid() == null)) {
+                if (!(taskModel_fri.getHours().equals("0")&&taskModel_fri.getMinutes().equals("0"))) {
                     friday.add(taskModel_fri);
                 }
 
@@ -181,7 +188,7 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 }
                 taskModel_sat.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel_sat.setTask_matter_id(eventsModel.getMatter_id());
-                if (!(taskModel_sat.getTaskid() == null)) {
+                if (!(taskModel_sat.getHours().equals("0")&&taskModel_sat.getMinutes().equals("0"))) {
                     saturday.add(taskModel_sat);
                 }
 //                }
@@ -201,7 +208,7 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 }
                 taskModel_sun.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel_sun.setTask_matter_id(eventsModel.getMatter_id());
-                if (!(taskModel_sun.getTaskid() == null)) {
+                if (!(taskModel_sun.getHours().equals("0")&&taskModel_sun.getMinutes().equals("0"))) {
                     sunday.add(taskModel_sun);
                 }
             }
@@ -312,6 +319,11 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
         WeeklyTSAdapter weeklyTSAdapter = new WeeklyTSAdapter(list);
         holder.rv_time_sheets.setAdapter(weeklyTSAdapter);
         holder.rv_time_sheets.setHasFixedSize(true);
+        if (weeklyTSAdapter != null && weeklyTSAdapter.getItemCount() > 0) {
+            int lastPosition = weeklyTSAdapter.getItemCount() - 1;
+            holder.rv_time_sheets.smoothScrollToPosition(lastPosition);
+        }
+        weeklyTSAdapter.notifyDataSetChanged();
     }
 
     @Override

@@ -527,15 +527,28 @@
                         android:gravity="start" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:layout_margin="3dp">
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
 
+        android:background="@color/Blue_text_color"
+        android:backgroundTint="@color/Blue_text_color"
+        tools:context=".MainActivity">
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_non_submitted_timesheets"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical"
 
                     android:background="@color/white"
                      />
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>
             </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.cardview.widget.CardView>
 

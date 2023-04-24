@@ -141,11 +141,13 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
 
 
 
-//        AndroidUtils.showToast(date, getContext());
-        if (date.equals("") || date==null) {
+        AndroidUtils.showAlert(date, getContext());
+        if (date.isEmpty()) {
 //             date_status = false;
             callCurrentDateTimeSheetsWebservice(date, date_status);
-        } else {
+        } else if(date==null){
+            callCurrentDateTimeSheetsWebservice(date, date_status);
+        }else {
             callTimeSheetsWebservice(date);
         }
 
@@ -442,11 +444,11 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
             matterList.add(matterModel);
 //
         }
-
+//            AndroidUtils.showAlert(result.getString("timesheetList").toString(),getContext());
         timeSheetsList.add(timeSheetModel);
         for (int j=0;j<matterList.size();j++){
                 for (int m=0;m<matterList.get(j).getTasks().length();m++){
-                    JSONObject jsonObject = matterList.get(m).getTasks().getJSONObject(m);
+                    JSONObject jsonObject = matterList.get(j).getTasks().getJSONObject(m);
                     EventsModel eventsModel = new EventsModel();
                     if (jsonObject.has("billing")) {
                         eventsModel.setBilling(jsonObject.getString("billing"));
@@ -460,8 +462,8 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
                     eventsModel.setFri(jsonObject.getJSONObject("Fri"));
                     eventsModel.setSat(jsonObject.getJSONObject("Sat"));
                     eventsModel.setSun(jsonObject.getJSONObject("Sun"));
-                    eventsModel.setMatter_id(matterList.get(m).getMatterid());
-                    eventsModel.setMatter_name(matterList.get(m).getMattername());
+                    eventsModel.setMatter_id(matterList.get(j).getMatterid());
+                    eventsModel.setMatter_name(matterList.get(j).getMattername());
 
                     eventsList.add(eventsModel);
                 }

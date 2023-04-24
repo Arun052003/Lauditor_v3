@@ -31,12 +31,13 @@ public class WeeklyTSAdapter extends RecyclerView.Adapter<WeeklyTSAdapter.MyView
     @Override
     public void onBindViewHolder(@NonNull WeeklyTSAdapter.MyViewHolder holder, int position) {
         TaskModel eventsModel = eventsList.get(position);
-        holder.tv_matter_task_name.setText(eventsModel.getTask_name());
-        holder.tv_matter_name.setText(eventsModel.getTask_matter_name());
-        holder.tv_matter_hours.setText(eventsModel.getHours());
-        holder.tv_matter_minutes.setText(eventsModel.getMinutes());
-        holder.tv_matter_billable.setText(eventsModel.getTask_billing());
-
+        if (!(eventsModel.getTaskid()==null)) {
+            holder.tv_matter_task_name.setText(eventsModel.getTask_name());
+            holder.tv_matter_name.setText(eventsModel.getTask_matter_name());
+            holder.tv_matter_hours.setText(eventsModel.getHours());
+            holder.tv_matter_minutes.setText(eventsModel.getMinutes());
+            holder.tv_matter_billable.setText(eventsModel.getTask_billing());
+        }
     }
 
     @Override

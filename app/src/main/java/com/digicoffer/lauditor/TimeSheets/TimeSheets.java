@@ -85,7 +85,7 @@ public class TimeSheets extends Fragment {
             @Override
             public void onClick(View v) {
                 main_button_status = "MyTS";
-                loadMyTimeSheets();
+                loadMyTimeSheets(s, weekDateInfo);
             }
         });
         tv_submitted.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +109,7 @@ public class TimeSheets extends Fragment {
                 }else{
                     non_main_button_status = "NS";
                 }
-                loadNsTimesheets();
+                loadNsTimesheets(s, weekDateInfo);
             }
         });
         tv_week.setOnClickListener(new View.OnClickListener() {
@@ -174,21 +174,21 @@ public class TimeSheets extends Fragment {
         }
     }
 
-    private void loadMyTimeSheets() {
+    private void loadMyTimeSheets(String s, WeekDateInfo weekDateInfo) {
         tv_aggregated_ts.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_my_ts.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         tv_ns_timesheet.setText("Not Submitted");
         tv_submitted.setText("Submitted");
-        loadNsTimesheets();
+        loadNsTimesheets(s,weekDateInfo);
 //        if (non_main_button_status)
     }
 
-    private void loadNsTimesheets() {
+    private void loadNsTimesheets(String s, WeekDateInfo weekDateInfo) {
         tv_ns_timesheet.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_submitted.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
 //        loadFragment();
         if(tv_ns_timesheet.getText().toString().equals("Not Submitted")) {
-            loadNsFragment(s,weekDateInfo);
+            loadNsFragment(s, weekDateInfo);
         }else{
             loadTMFragment(s);
         }
@@ -224,7 +224,7 @@ public class TimeSheets extends Fragment {
         if (main_button_status!=null&&main_button_status.equals("Aggregated")) {
             loadAggregatedTimesheets(s, weekDateInfo);
         }else{
-            loadMyTimeSheets();
+            loadMyTimeSheets(s,weekDateInfo);
         }
 
 

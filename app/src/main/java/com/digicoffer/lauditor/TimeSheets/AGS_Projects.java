@@ -170,7 +170,7 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
                         @Override
                         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                             selected_tm = projectTmList.get(adapterView.getSelectedItemPosition()).getName();
-                          AndroidUtils.showToast(selected_project,getContext());
+//                          AndroidUtils.showToast(selected_project,getContext());
                             loadRecyclerview();
                         }
 

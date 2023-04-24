@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.TimeSheets.Models.DateModel;
 import com.digicoffer.lauditor.TimeSheets.Models.WeekDateInfo;
+import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common.Constants;
 
 import java.text.DateFormat;
@@ -98,7 +99,7 @@ public class TimeSheets extends Fragment {
                     non_main_button_status = "Submitted";
 
                 }
-               loadSubmittedTimesheets();
+               loadSubmittedTimesheets(s,weekDateInfo);
             }
         });
         tv_ns_timesheet.setOnClickListener(new View.OnClickListener() {
@@ -179,7 +180,11 @@ public class TimeSheets extends Fragment {
         tv_my_ts.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         tv_ns_timesheet.setText("Not Submitted");
         tv_submitted.setText("Submitted");
+        if (non_main_button_status.equals("NS")){
         loadNsTimesheets(s,weekDateInfo);
+        }else {
+            loadSubmittedTimesheets(s, weekDateInfo);
+        }
 //        if (non_main_button_status)
     }
 
@@ -206,14 +211,26 @@ public class TimeSheets extends Fragment {
 
     }
 
-    private void loadSubmittedTimesheets() {
+    private void loadSubmittedTimesheets(String s, WeekDateInfo weekDateInfo) {
         tv_submitted.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         tv_ns_timesheet.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
-        loadSubmittedFragment(s,weekDateInfo);
+        loadSubmittedFragment(s, weekDateInfo);
     }
 
     private void loadSubmittedFragment(String s,WeekDateInfo weekDateInfo) {
         if(tv_submitted.getText().toString().equals("Submitted")) {
+            Bundle bundle = new Bundle();
+            bundle.putString("date", s);
+            AndroidUtils.showToast(s,getContext());
+            bundle.putStringArrayList("weekDates", weekDateInfo.getWeekDates());
+//        AndroidUtils.showToast(s,getContext());
+            FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+            SubmittedTimeSheets nonSubmittedTimesheets = new SubmittedTimeSheets();
+            nonSubmittedTimesheets.setArguments(bundle);
+            ft.replace(R.id.child_container_timesheets, nonSubmittedTimesheets);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.addToBackStack(null);
+            ft.commit();
 //            loadSubmittedFragment(s,weekDateInfo);
         }else{
             loadProjectFragment(s,weekDateInfo);
@@ -260,6 +277,7 @@ public class TimeSheets extends Fragment {
         ft.addToBackStack(null);
         ft.commit();
     }
+
     private void loadProjectFragment(String s,WeekDateInfo weekDateInfo){
         Bundle bundle = new Bundle();
         bundle.putString("date", s);

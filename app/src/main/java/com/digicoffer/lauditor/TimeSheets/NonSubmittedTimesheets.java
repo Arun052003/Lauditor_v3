@@ -99,7 +99,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
          date = bundle.getString("date");
         ArrayList<String> weekDates = bundle.getStringArrayList("weekDates");
         current_date = weekDates.get(0);
-        AndroidUtils.showAlert(current_date,getContext());
+//        AndroidUtils.showAlert(current_date,getContext());
         bt_thirty_minutes = view.findViewById(R.id.bt_thirty_minutes);
         bt_forty_five_minutes = view.findViewById(R.id.bt_forty_five_minutes);
         bt_fifteen_minutes = view.findViewById(R.id.bt_fifteen_minutes);
@@ -371,17 +371,17 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
         dialog.show();
     }
 
-    private void callTimeSheetsWebservice(String date) {
-        try {
-            clearList();
-            progressDialog = AndroidUtils.get_progress(getActivity());
-            JSONObject data = new JSONObject();
+            private void callTimeSheetsWebservice(String date) {
+                try {
+                    clearList();
+                    progressDialog = AndroidUtils.get_progress(getActivity());
+                    JSONObject data = new JSONObject();
 //            AndroidUtils.showToast(String.valueOf(date_status),getContext());
-            SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
-            SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-            Date new_date = inputFormat.parse(date);
-            String outputDate = outputFormat.format(new_date);
-            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/user/timesheets/" + outputDate, "TimeSheets", data.toString());
+                    SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+                    SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+                    Date new_date = inputFormat.parse(date);
+                    String outputDate = outputFormat.format(new_date);
+                    WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/user/timesheets/" + outputDate, "TimeSheets", data.toString());
 
 
         } catch (Exception e) {

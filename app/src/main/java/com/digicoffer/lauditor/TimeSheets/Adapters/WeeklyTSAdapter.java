@@ -10,13 +10,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.TimeSheets.Models.EventsModel;
+import com.digicoffer.lauditor.TimeSheets.Models.TaskModel;
 
 import java.util.ArrayList;
 import java.util.zip.Inflater;
 
 public class WeeklyTSAdapter extends RecyclerView.Adapter<WeeklyTSAdapter.MyViewHolder> {
-    ArrayList<EventsModel>eventsList = new ArrayList<>();
-    public WeeklyTSAdapter(ArrayList<EventsModel>eventsModels) {
+    ArrayList<TaskModel>eventsList = new ArrayList<>();
+    public WeeklyTSAdapter(ArrayList<TaskModel>eventsModels) {
     this.eventsList = eventsModels;
     }
 
@@ -29,8 +30,12 @@ public class WeeklyTSAdapter extends RecyclerView.Adapter<WeeklyTSAdapter.MyView
 
     @Override
     public void onBindViewHolder(@NonNull WeeklyTSAdapter.MyViewHolder holder, int position) {
-        EventsModel eventsModel = eventsList.get(position);
-        holder.tv_matter_task_name.setText(eventsModel.getTaskName());
+        TaskModel eventsModel = eventsList.get(position);
+        holder.tv_matter_task_name.setText(eventsModel.getTask_name());
+        holder.tv_matter_name.setText(eventsModel.getTask_matter_name());
+        holder.tv_matter_hours.setText(eventsModel.getHours());
+        holder.tv_matter_minutes.setText(eventsModel.getMinutes());
+        holder.tv_matter_billable.setText(eventsModel.getTask_billing());
 
     }
 

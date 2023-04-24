@@ -186,11 +186,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
         }
 
 //        AndroidUtils.showAlert(weeksList.toString(),getContext());
-        try {
-            loadTimesheetsRecyclerview();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
 
 //        AndroidUtils.showToast(String.valueOf(status),getContext());
 //        if (status){
@@ -452,19 +448,25 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
                 for (int m=0;m<matterList.get(j).getTasks().length();m++){
                     JSONObject jsonObject = matterList.get(m).getTasks().getJSONObject(m);
                     EventsModel eventsModel = new EventsModel();
-                    eventsModel.setBilling(jsonObject.getString("billing"));
+                    if (jsonObject.has("billing")) {
+                        eventsModel.setBilling(jsonObject.getString("billing"));
+                    }
                     eventsModel.setTaskName(jsonObject.getString("taskName"));
                     eventsModel.setTotal(jsonObject.getString("total"));
-                    eventsModel.setMon(jsonObject.getString("Mon"));
-                    eventsModel.setTue(jsonObject.getString("Tue"));
-                    eventsModel.setWed(jsonObject.getString("Wed"));
-                    eventsModel.setThu(jsonObject.getString("Thu"));
-                    eventsModel.setFri(jsonObject.getString("Fri"));
-                    eventsModel.setSat(jsonObject.getString("Sat"));
-                    eventsModel.setSun(jsonObject.getString("Sun"));
+                    eventsModel.setMon(jsonObject.getJSONObject("Mon"));
+                    eventsModel.setTue(jsonObject.getJSONObject("Tue"));
+                    eventsModel.setWed(jsonObject.getJSONObject("Wed"));
+                    eventsModel.setThu(jsonObject.getJSONObject("Thu"));
+                    eventsModel.setFri(jsonObject.getJSONObject("Fri"));
+                    eventsModel.setSat(jsonObject.getJSONObject("Sat"));
+                    eventsModel.setSun(jsonObject.getJSONObject("Sun"));
+                    eventsModel.setMatter_id(matterList.get(m).getMatterid());
+                    eventsModel.setMatter_name(matterList.get(m).getMattername());
+
                     eventsList.add(eventsModel);
                 }
             }
+
         for (int i = 0; i < timeSheetsList.size(); i++) {
 //            AndroidUtils.showToast(String.valueOf(timeSheetsList.get(i).isFrozen()),getContext());
             if (timeSheetsList.get(i).isFrozen()) {
@@ -535,7 +537,11 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
             }
         }
 
-
+        try {
+            loadTimesheetsRecyclerview();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadTimesheetsRecyclerview() {

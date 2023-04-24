@@ -63,6 +63,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
     private String selected_matter = "";
     private String selected_matter_id = "";
     private String selected_matter_type = "";
+    String current_date = "";
     private boolean isMatterTypeExists = false;
     private String selected_task = "";
     private String selected_status = "";
@@ -73,7 +74,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
     private TextInputEditText tv_hours,tv_total_hours;
     private RecyclerView rv_non_submitted_timesheets;
     private androidx.appcompat.widget.AppCompatButton btn_cancel_timesheet,btn_save_timesheet;
-    androidx.appcompat.widget.AppCompatButton bt_fifteen_minutes,bt_thirty_minutes,bt_forty_five_minutes;
+    androidx.appcompat.widget.AppCompatButton btn_submit_timesheet,bt_fifteen_minutes,bt_thirty_minutes,bt_forty_five_minutes;
     private String hoursString;
     private String minutesString;
     String date = "";
@@ -92,10 +93,13 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
         tv_hours =view.findViewById(R.id.tv_hours);
         tv_total_hours = view.findViewById(R.id.tv_total_hours);
         btn_cancel_timesheet = view.findViewById(R.id.btn_cancel_timesheet);
+        btn_submit_timesheet = view.findViewById(R.id.btn_submit_timesheet);
         btn_save_timesheet = view.findViewById(R.id.btn_save_timesheet);
         Bundle bundle = getArguments();
          date = bundle.getString("date");
         ArrayList<String> weekDates = bundle.getStringArrayList("weekDates");
+        current_date = weekDates.get(0);
+        AndroidUtils.showAlert(current_date,getContext());
         bt_thirty_minutes = view.findViewById(R.id.bt_thirty_minutes);
         bt_forty_five_minutes = view.findViewById(R.id.bt_forty_five_minutes);
         bt_fifteen_minutes = view.findViewById(R.id.bt_fifteen_minutes);
@@ -154,7 +158,12 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
         }else {
             callTimeSheetsWebservice(date);
         }
-
+        btn_submit_timesheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callSubmitTimeSheetWebService();
+            }
+        });
         final CommonSpinnerAdapter status_adapter = new CommonSpinnerAdapter((Activity) getContext(), weekDates);
         sp_date.setAdapter(status_adapter);
         sp_date.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -205,6 +214,25 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
 
 
         return view;
+    }
+
+    private void callSubmitTimeSheetWebService() {
+        try {
+
+
+        progressDialog = AndroidUtils.get_progress(getActivity());
+        JSONObject postdata = new JSONObject();
+            SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+            Date new_date = inputFormat.parse(date);
+            String outputDate = outputFormat.format(new_date);
+        WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.POST,"v3/user/timesheets/freeze/"+outputDate,"Submit TimeSheet",postdata.toString());
+        } catch (Exception e) {
+            if (progressDialog.isShowing()&&progressDialog!=null){
+                AndroidUtils.dismiss_dialog(progressDialog);
+            }
+        }
+
     }
 
     private void callSaveTimeSheetWebservice() {
@@ -398,6 +426,13 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
 //                    AndroidUtils.showToast(result.getString("msg"),getContext());
                     tv_hours.setText("");
                     tv_total_hours.setText("");
+                    if (date.isEmpty()){
+                        callCurrentDateTimeSheetsWebservice(date,date_status);
+                    }else {
+                        callTimeSheetsWebservice(date);
+                    }
+                }else if(httpResult.getRequestType().equals("Submit TimeSheet")){
+                    AndroidUtils.showToast(result.getString("msg"),getContext());
                     if (date.isEmpty()){
                         callCurrentDateTimeSheetsWebservice(date,date_status);
                     }else {

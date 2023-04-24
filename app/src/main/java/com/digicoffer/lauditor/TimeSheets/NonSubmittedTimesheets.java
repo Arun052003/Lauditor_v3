@@ -76,12 +76,14 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
     androidx.appcompat.widget.AppCompatButton bt_fifteen_minutes,bt_thirty_minutes,bt_forty_five_minutes;
     private String hoursString;
     private String minutesString;
+    String date = "";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.not_submitted_timesheet, container, false);
 //        if()
+
         sp_project = view.findViewById(R.id.sp_project);
         sp_task = view.findViewById(R.id.sp_task);
         sp_status = view.findViewById(R.id.sp_status);
@@ -92,7 +94,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
         btn_cancel_timesheet = view.findViewById(R.id.btn_cancel_timesheet);
         btn_save_timesheet = view.findViewById(R.id.btn_save_timesheet);
         Bundle bundle = getArguments();
-        String date = bundle.getString("date");
+         date = bundle.getString("date");
         ArrayList<String> weekDates = bundle.getStringArrayList("weekDates");
         bt_thirty_minutes = view.findViewById(R.id.bt_thirty_minutes);
         bt_forty_five_minutes = view.findViewById(R.id.bt_forty_five_minutes);
@@ -291,6 +293,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
     }
     private void callCurrentDateTimeSheetsWebservice(String date, boolean date_status) {
         try {
+            clearList();
             progressDialog = AndroidUtils.get_progress(getActivity());
             JSONObject data = new JSONObject();
 //            AndroidUtils.showToast(String.valueOf(date_status), getContext());
@@ -301,6 +304,17 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void clearList() {
+        timeSheetsList.clear();
+        weektotalList.clear();
+        eventsList.clear();
+        matterList.clear();
+        statusList.clear();
+        tasksList.clear();
+
+//        weeksList.clear();
     }
 
     private void disableAllViews(View view) {
@@ -331,6 +345,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
 
     private void callTimeSheetsWebservice(String date) {
         try {
+            clearList();
             progressDialog = AndroidUtils.get_progress(getActivity());
             JSONObject data = new JSONObject();
 //            AndroidUtils.showToast(String.valueOf(date_status),getContext());
@@ -383,7 +398,11 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
 //                    AndroidUtils.showToast(result.getString("msg"),getContext());
                     tv_hours.setText("");
                     tv_total_hours.setText("");
-
+                    if (date.isEmpty()){
+                        callCurrentDateTimeSheetsWebservice(date,date_status);
+                    }else {
+                        callTimeSheetsWebservice(date);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

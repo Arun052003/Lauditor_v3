@@ -30,6 +30,7 @@ import com.digicoffer.lauditor.TimeSheets.Models.TSMatterModel;
 import com.digicoffer.lauditor.TimeSheets.Models.TasksModel;
 import com.digicoffer.lauditor.TimeSheets.Models.TimeSheetModel;
 import com.digicoffer.lauditor.TimeSheets.Models.WeekModel;
+import com.digicoffer.lauditor.TimeSheets.Models.WeekTotalModel;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.digicoffer.lauditor.Webservice.WebServiceHelper;
@@ -57,6 +58,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
     private ArrayList<TasksModel> tasksList = new ArrayList<>();
     private ArrayList<EventsModel>eventsList = new ArrayList<>();
     private ArrayList<StatusModel> statusList = new ArrayList<>();
+    private ArrayList<WeekTotalModel> weektotalList = new ArrayList<>();
     private ArrayList<WeekModel> weeksList = new ArrayList<>();
     private String selected_matter = "";
     private String selected_matter_id = "";
@@ -431,7 +433,18 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
         timeSheetModel.setNextWeek(dates.getString("nextWeek"));
         timeSheetModel.setPrevWeek(dates.getString("prevWeek"));
         JSONObject timesheets = result.getJSONObject("timesheetList");
+
         JSONArray matters = timesheets.getJSONArray("matters");
+        JSONObject weektotal = timesheets.getJSONObject("weekTotal");
+        WeekTotalModel weekModel = new WeekTotalModel();
+        weekModel.setMon(weektotal.getString("Mon"));
+        weekModel.setTue(weektotal.getString("Tue"));
+        weekModel.setWed(weektotal.getString("Wed"));
+        weekModel.setThu(weektotal.getString("Thu"));
+        weekModel.setFri(weektotal.getString("Fri"));
+        weekModel.setSat(weektotal.getString("Sat"));
+        weekModel.setSun(weektotal.getString("Sun"));
+        weektotalList.add(weekModel);
         for (int i=0;i<matters.length();i++){
             JSONObject jsonObject = matters.getJSONObject(i);
             TSMatterModel matterModel  = new TSMatterModel();
@@ -468,6 +481,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
                     eventsList.add(eventsModel);
                 }
             }
+
 
         for (int i = 0; i < timeSheetsList.size(); i++) {
 //            AndroidUtils.showToast(String.valueOf(timeSheetsList.get(i).isFrozen()),getContext());
@@ -549,7 +563,7 @@ public class NonSubmittedTimesheets extends Fragment implements AsyncTaskComplet
     private void loadTimesheetsRecyclerview() {
 //        AndroidUtils.showAlert(weeksList.toString(),getContext());
         rv_non_submitted_timesheets.setLayoutManager(new GridLayoutManager(getContext(),1));
-        TimeSheetsAdapter timeSheetsAdapter = new TimeSheetsAdapter(weeksList,eventsList,getContext());
+        TimeSheetsAdapter timeSheetsAdapter = new TimeSheetsAdapter(weeksList,eventsList,weektotalList,getContext());
         rv_non_submitted_timesheets.setAdapter(timeSheetsAdapter);
         rv_non_submitted_timesheets.setHasFixedSize(true);
         if (timeSheetsAdapter != null && timeSheetsAdapter.getItemCount() > 0) {

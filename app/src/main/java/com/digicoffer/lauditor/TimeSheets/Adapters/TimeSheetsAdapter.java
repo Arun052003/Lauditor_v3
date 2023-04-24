@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.TimeSheets.Models.EventsModel;
-import com.digicoffer.lauditor.TimeSheets.Models.TSMatterModel;
 import com.digicoffer.lauditor.TimeSheets.Models.TaskModel;
 import com.digicoffer.lauditor.TimeSheets.Models.WeekModel;
+import com.digicoffer.lauditor.TimeSheets.Models.WeekTotalModel;
 import com.digicoffer.lauditor.common.AndroidUtils;
 
 import org.json.JSONException;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.MyViewHolder> {
     ArrayList<WeekModel> weeksList = new ArrayList<>();
     ArrayList<EventsModel> eventsList = new ArrayList<>();
-    ArrayList<TSMatterModel> matterList = new ArrayList<>();
+    ArrayList<WeekTotalModel> weekTotalList = new ArrayList<>();
     ArrayList<TaskModel> monday = new ArrayList<>();
     ArrayList<TaskModel> tuesday = new ArrayList<>();
     ArrayList<TaskModel> wednessday = new ArrayList<>();
@@ -36,9 +36,10 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
 
     Context context;
 
-    public TimeSheetsAdapter(ArrayList<WeekModel> weeksList, ArrayList<EventsModel> eventsModels, Context cContext) {
+    public TimeSheetsAdapter(ArrayList<WeekModel> weeksList, ArrayList<EventsModel> eventsModels, ArrayList<WeekTotalModel> weektotalList, Context cContext) {
         this.weeksList = weeksList;
         this.eventsList = eventsModels;
+        this.weekTotalList = weektotalList;
         this.context = cContext;
     }
 
@@ -77,12 +78,12 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 taskModel.setHours(eventsModel.getMon().getString("hours"));
 
                 taskModel.setTask_name(eventsModel.getTaskName());
-                if ( !(eventsModel.getBilling() == null)) {
+                if (!(eventsModel.getBilling() == null)) {
                     taskModel.setTask_billing(eventsModel.getBilling());
                 }
                 taskModel.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel.setTask_matter_id(eventsModel.getMatter_id());
-                if (!(taskModel.getHours().equals("0")&&taskModel.getMinutes().equals("0"))) {
+                if (!(taskModel.getHours().equals("0") && taskModel.getMinutes().equals("0"))) {
                     monday.add(taskModel);
                 }
 
@@ -98,12 +99,12 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 taskModel_tue.setHours(eventsModel.getTue().getString("hours"));
 
                 taskModel_tue.setTask_name(eventsModel.getTaskName());
-                if ( !(eventsModel.getBilling() == null)) {
+                if (!(eventsModel.getBilling() == null)) {
                     taskModel_tue.setTask_billing(eventsModel.getBilling());
                 }
                 taskModel_tue.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel_tue.setTask_matter_id(eventsModel.getMatter_id());
-                if (!(taskModel_tue.getHours().equals("0")&&taskModel_tue.getMinutes().equals("0"))) {
+                if (!(taskModel_tue.getHours().equals("0") && taskModel_tue.getMinutes().equals("0"))) {
                     tuesday.add(taskModel_tue);
                 }
 
@@ -119,12 +120,12 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 taskModel_wed.setHours(eventsModel.getWed().getString("hours"));
 
                 taskModel_wed.setTask_name(eventsModel.getTaskName());
-                if ( !(eventsModel.getBilling() == null)) {
+                if (!(eventsModel.getBilling() == null)) {
                     taskModel_wed.setTask_billing(eventsModel.getBilling());
                 }
                 taskModel_wed.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel_wed.setTask_matter_id(eventsModel.getMatter_id());
-                if (!(taskModel_wed.getHours().equals("0")&&taskModel_wed.getMinutes().equals("0"))) {
+                if (!(taskModel_wed.getHours().equals("0") && taskModel_wed.getMinutes().equals("0"))) {
                     wednessday.add(taskModel_wed);
                 }
 
@@ -139,12 +140,12 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 taskModel_thu.setHours(eventsModel.getThu().getString("hours"));
 
                 taskModel_thu.setTask_name(eventsModel.getTaskName());
-                if ( !(eventsModel.getBilling() == null)) {
+                if (!(eventsModel.getBilling() == null)) {
                     taskModel_thu.setTask_billing(eventsModel.getBilling());
                 }
                 taskModel_thu.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel_thu.setTask_matter_id(eventsModel.getMatter_id());
-                if (!(taskModel_thu.getHours().equals("0")&&taskModel_thu.getMinutes().equals("0"))) {
+                if (!(taskModel_thu.getHours().equals("0") && taskModel_thu.getMinutes().equals("0"))) {
                     thursday.add(taskModel_thu);
                 }
 
@@ -166,7 +167,7 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 }
                 taskModel_fri.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel_fri.setTask_matter_id(eventsModel.getMatter_id());
-                if (!(taskModel_fri.getHours().equals("0")&&taskModel_fri.getMinutes().equals("0"))) {
+                if (!(taskModel_fri.getHours().equals("0") && taskModel_fri.getMinutes().equals("0"))) {
                     friday.add(taskModel_fri);
                 }
 
@@ -183,12 +184,12 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 taskModel_sat.setMinutes(eventsModel.getSat().getString("minutes"));
                 taskModel_sat.setHours(eventsModel.getSat().getString("hours"));
                 taskModel_sat.setTask_name(eventsModel.getTaskName());
-                if ( !(eventsModel.getBilling() == null)) {
+                if (!(eventsModel.getBilling() == null)) {
                     taskModel_sat.setTask_billing(eventsModel.getBilling());
                 }
                 taskModel_sat.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel_sat.setTask_matter_id(eventsModel.getMatter_id());
-                if (!(taskModel_sat.getHours().equals("0")&&taskModel_sat.getMinutes().equals("0"))) {
+                if (!(taskModel_sat.getHours().equals("0") && taskModel_sat.getMinutes().equals("0"))) {
                     saturday.add(taskModel_sat);
                 }
 //                }
@@ -203,12 +204,12 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
                 taskModel_sun.setMinutes(eventsModel.getSun().getString("minutes"));
                 taskModel_sun.setHours(eventsModel.getSun().getString("hours"));
                 taskModel_sun.setTask_name(eventsModel.getTaskName());
-                if ( !(eventsModel.getBilling() == null)) {
+                if (!(eventsModel.getBilling() == null)) {
                     taskModel_sun.setTask_billing(eventsModel.getBilling());
                 }
                 taskModel_sun.setTask_matter_name(eventsModel.getMatter_name());
                 taskModel_sun.setTask_matter_id(eventsModel.getMatter_id());
-                if (!(taskModel_sun.getHours().equals("0")&&taskModel_sun.getMinutes().equals("0"))) {
+                if (!(taskModel_sun.getHours().equals("0") && taskModel_sun.getMinutes().equals("0"))) {
                     sunday.add(taskModel_sun);
                 }
             }
@@ -218,21 +219,36 @@ public class TimeSheetsAdapter extends RecyclerView.Adapter<TimeSheetsAdapter.My
             e.printStackTrace();
         }
 
-//            for (int i=0;i<eventsList.size();i++){
-//                EventsModel eventsModel = eventsList.get(i);
-//                JSONObject
-//            }
 
         holder.tv_date.setText(weekModel.getValue());
 //        holder.tv_total_hours.setText();
         String inputString = weekModel.getValue();
         String[] parts = inputString.split(" "); // Split the string by whitespace
         String dayOfWeek = parts[0];
+        for (int i = 0; i < weekTotalList.size(); i++) {
+            if (dayOfWeek.equals("Mon")) {
+                holder.tv_total_hours.setText(weekTotalList.get(i).getMon());
+            } else if (dayOfWeek.equals("Tue")) {
+                holder.tv_total_hours.setText(weekTotalList.get(i).getTue());
+            } else if (dayOfWeek.equals("Wed")) {
+                holder.tv_total_hours.setText(weekTotalList.get(i).getWed());
+            } else if (dayOfWeek.equals("Thu")) {
+                holder.tv_total_hours.setText(weekTotalList.get(i).getThu());
+            } else if (dayOfWeek.equals("Fri")) {
+                holder.tv_total_hours.setText(weekTotalList.get(i).getFri());
+            } else if (dayOfWeek.equals("Sat")) {
+                holder.tv_total_hours.setText(weekTotalList.get(i).getSat());
+            } else if (dayOfWeek.equals("Sun")) {
+                holder.tv_total_hours.setText(weekTotalList.get(i).getSun());
+            }
+        }
+
 //            for ()
         if (dayOfWeek.equals("Mon")) {
 //        AndroidUtils.showAlert(eventsList.toString(),context);
             try {
                 if (monday.size() != 0)
+
                     loadRecyclerview(holder, monday);
             } catch (Exception e) {
                 AndroidUtils.showAlert(e.getMessage(), context);

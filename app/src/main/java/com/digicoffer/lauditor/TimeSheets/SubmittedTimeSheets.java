@@ -59,7 +59,7 @@ public class SubmittedTimeSheets extends Fragment implements AsyncTaskCompleteLi
         ArrayList<String> weekDates = bundle.getStringArrayList("weekDates");
         current_date = weekDates.get(0);
         rv_submitted_timesheets = view.findViewById(R.id.rv_submitted_timesheets);
-        AndroidUtils.showAlert(date,getContext());
+//        AndroidUtils.showAlert(date,getContext());
         if (date.isEmpty()) {
 //             date_status = false;
             callCurrentDateTimeSheetsWebservice(date);

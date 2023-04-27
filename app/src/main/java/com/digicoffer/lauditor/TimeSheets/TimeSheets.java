@@ -36,8 +36,8 @@ public class TimeSheets extends Fragment {
     //    private ArrayAdapter<DateModel> weekAdapter = new ArrayAdapter<DateModel>(getContext(), android.R.layout.simple_spinner_item, datesList);
     Calendar calendar = Calendar.getInstance();
     WeekDateInfo weekDateInfo;
-    private static String main_button_status ;
-    private static String non_main_button_status ;
+    private static String main_button_status = "";
+    private static String non_main_button_status="" ;
     //    getWeekDateRange(calendar);
     @Nullable
     @Override
@@ -69,6 +69,8 @@ public class TimeSheets extends Fragment {
             loadFragment(s,weekDateInfo);
         } else {
             ll_timesheet_type.setVisibility(View.GONE);
+//            main_button_status = "MyTimeSheets";
+            non_main_button_status = "NS";
             loadFragment(s,weekDateInfo);
         }
         ImageButton iv_next_week = view.findViewById(R.id.iv_next_week);

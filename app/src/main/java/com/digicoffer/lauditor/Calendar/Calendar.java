@@ -33,23 +33,37 @@ public class Calendar extends Fragment implements AsyncTaskCompleteListener,View
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ll_view_type= view.findViewById(R.id.ll_view_type);
         tv_create_event = view.findViewById(R.id.tv_create_event);
-        tv_view_calendar = view.findViewById(R.id.tv_create_event);
+        tv_view_calendar = view.findViewById(R.id.tv_view_calendar);
         tv_day_view = view.findViewById(R.id.tv_day_view);
         tv_month_view = view.findViewById(R.id.tv_month_view);
         loadView();
+        tv_view_calendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadView();
+            }
+        });
+        tv_create_event.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadCreateEvent();
+            }
+        });
         tv_view_calendar.setOnClickListener(this);
+        tv_create_event.setOnClickListener(this);
         super.onViewCreated(view, savedInstanceState);
     }
 
     private void loadView() {
         tv_view_calendar.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         tv_create_event.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
-        ll_view_type.setVisibility(View.VISIBLE);
+
 
     }
     private void loadCreateEvent(){
-        tv_create_event.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_view_calendar.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+        tv_create_event.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+
     }
 
     @Override
@@ -60,7 +74,6 @@ public class Calendar extends Fragment implements AsyncTaskCompleteListener,View
                 break;
             case R.id.tv_create_event:
                 loadCreateEvent();
-
                 break;
         }
     }

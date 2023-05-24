@@ -11,8 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.digicoffer.lauditor.R;
+import com.digicoffer.lauditor.TimeSheets.NonSubmittedTimesheets;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.tuyenmonkey.mkloader.model.Line;
@@ -25,8 +27,7 @@ public class Calendar extends Fragment implements AsyncTaskCompleteListener,View
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
      View view = inflater.inflate(R.layout.calendar,container,false);
-
-        return view;
+     return view;
     }
 
     @Override
@@ -57,7 +58,12 @@ public class Calendar extends Fragment implements AsyncTaskCompleteListener,View
     private void loadView() {
         tv_view_calendar.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         tv_create_event.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
-
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        CreateEvent nonSubmittedTimesheets = new CreateEvent();
+        ft.replace(R.id.child_container_timesheets, nonSubmittedTimesheets);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.addToBackStack(null);
+        ft.commit();
 
     }
     private void loadCreateEvent(){

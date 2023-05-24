@@ -61,7 +61,7 @@
         </LinearLayout>
 
         <RelativeLayout
-            android:id="@+id/spinnerLayout"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="3dp"
@@ -94,6 +94,134 @@
                 android:src="@drawable/down_arrow" />
 
         </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        android:text="@string/matter_name"
+                        android:textColor="@color/Blue_text_color"
+                        android:textSize="@dimen/Fifteen_dp">
+
+                    </TextView>
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="10dp"
+                        android:src="@drawable/asterisk_icon">
+
+                    </ImageView>
+
+                </LinearLayout>
+
+                <RelativeLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="3dp"
+                    android:gravity="center"
+                    android:layout_alignParentTop="true"
+                    android:layout_weight=".28"
+                    android:background="@drawable/rectangle_grey_background"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/sp_matter_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        android:gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:spinnerMode="dropdown"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:src="@drawable/down_arrow" />
+
+                </RelativeLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        android:text="@string/task"
+                        android:textColor="@color/Blue_text_color"
+                        android:textSize="@dimen/Fifteen_dp">
+
+                    </TextView>
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="10dp"
+                        android:src="@drawable/asterisk_icon">
+
+                    </ImageView>
+
+                </LinearLayout>
+
+                <RelativeLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="3dp"
+                    android:gravity="center"
+                    android:layout_alignParentTop="true"
+                    android:layout_weight=".28"
+                    android:background="@drawable/rectangle_grey_background"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/sp_task"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        android:gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:spinnerMode="dropdown"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:src="@drawable/down_arrow" />
+
+                </RelativeLayout>
+            </LinearLayout>
         </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.cardview.widget.CardView>
@@ -128,7 +256,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-condensed-medium"
-                        android:text="@string/name"
+                        android:text="@string/date"
                         android:textColor="@color/Blue_text_color"
                         android:textSize="@dimen/Fifteen_dp">
 
@@ -144,7 +272,7 @@
                 </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/filledTextField"
+
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
 
@@ -153,10 +281,11 @@
 
                     <!--this is the actual edit text which takes the input-->
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/tv_create_member_name"
+                        android:id="@+id/tv_event_creation_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
+                        android:drawableRight="@drawable/calendar_activity"
                         android:background="@drawable/rectangle_grey_background"
                         android:gravity="start"
                         android:imeOptions="actionDone" />
@@ -183,7 +312,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed-medium"
-                android:text="@string/name"
+                android:text="@string/event_start_time"
                 android:textColor="@color/Blue_text_color"
                 android:textSize="@dimen/Fifteen_dp">
 
@@ -199,7 +328,7 @@
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/filledTextField"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
@@ -208,10 +337,11 @@
 
             <!--this is the actual edit text which takes the input-->
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/tv_create_member_name"
+                android:id="@+id/tv_event_start_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
+                android:drawableRight="@drawable/calendar_activity"
                 android:background="@drawable/rectangle_grey_background"
                 android:gravity="start"
                 android:imeOptions="actionDone" />
@@ -234,7 +364,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed-medium"
-                android:text="@string/name"
+                android:text="@string/event_end_time"
                 android:textColor="@color/Blue_text_color"
                 android:textSize="@dimen/Fifteen_dp">
 
@@ -250,7 +380,6 @@
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/filledTextField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
@@ -259,10 +388,11 @@
 
             <!--this is the actual edit text which takes the input-->
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/tv_create_member_name"
+                android:id="@+id/tv_event_end_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
+                android:drawableRight="@drawable/calendar_activity"
                 android:background="@drawable/rectangle_grey_background"
                 android:gravity="start"
                 android:imeOptions="actionDone" />
@@ -280,7 +410,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-condensed-medium"
-                        android:text="@string/project"
+                        android:text="@string/time_zone"
                         android:textColor="@color/Blue_text_color"
                         android:textSize="@dimen/Fifteen_dp">
 
@@ -296,7 +426,6 @@
                 </LinearLayout>
 
                 <RelativeLayout
-                    android:id="@+id/spinnerLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="3dp"
@@ -307,7 +436,7 @@
                     android:orientation="horizontal">
 
                     <Spinner
-                        android:id="@+id/sp_project"
+                        android:id="@+id/sp_time_zone"
                         android:layout_width="match_parent"
                         android:layout_height="55dp"
                         android:layout_centerVertical="true"
@@ -338,18 +467,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-condensed-medium"
-                        android:text="@string/project"
+                        android:text="Repetetion"
                         android:textColor="@color/Blue_text_color"
                         android:textSize="@dimen/Fifteen_dp">
 
                     </TextView>
 
-                    <ImageView
-                        android:layout_width="15dp"
-                        android:layout_height="10dp"
-                        android:src="@drawable/asterisk_icon">
+<!--                    <ImageView-->
+<!--                        android:layout_width="15dp"-->
+<!--                        android:layout_height="10dp"-->
+<!--                        android:src="@drawable/asterisk_icon">-->
 
-                    </ImageView>
+<!--                    </ImageView>-->
 
                 </LinearLayout>
 
@@ -365,7 +494,7 @@
                     android:orientation="horizontal">
 
                     <Spinner
-                        android:id="@+id/sp_project"
+                        android:id="@+id/sp_repetetion"
                         android:layout_width="match_parent"
                         android:layout_height="55dp"
                         android:layout_centerVertical="true"
@@ -418,23 +547,22 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-condensed-medium"
-                        android:text="@string/name"
+                        android:text="@string/meeting_link"
                         android:textColor="@color/Blue_text_color"
                         android:textSize="@dimen/Fifteen_dp">
 
                     </TextView>
 
-                    <ImageView
-                        android:layout_width="15dp"
-                        android:layout_height="10dp"
-                        android:src="@drawable/asterisk_icon">
+<!--                    <ImageView-->
+<!--                        android:layout_width="15dp"-->
+<!--                        android:layout_height="10dp"-->
+<!--                        android:src="@drawable/asterisk_icon">-->
 
-                    </ImageView>
+<!--                    </ImageView>-->
 
                 </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/filledTextField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
 
@@ -443,7 +571,7 @@
 
                     <!--this is the actual edit text which takes the input-->
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/tv_create_member_name"
+                        android:id="@+id/tv_meeting_link"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
@@ -461,32 +589,30 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-condensed-medium"
-                        android:text="@string/name"
+                        android:text="@string/dailing_link"
                         android:textColor="@color/Blue_text_color"
                         android:textSize="@dimen/Fifteen_dp">
 
                     </TextView>
 
-                    <ImageView
-                        android:layout_width="15dp"
-                        android:layout_height="10dp"
-                        android:src="@drawable/asterisk_icon">
+<!--                    <ImageView-->
+<!--                        android:layout_width="15dp"-->
+<!--                        android:layout_height="10dp"-->
+<!--                        android:src="@drawable/asterisk_icon">-->
 
-                    </ImageView>
+<!--                    </ImageView>-->
 
                 </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/filledTextField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
                     android:textColorHint="@color/black"
                     app:boxBackgroundMode="none">
 
                     <!--this is the actual edit text which takes the input-->
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/tv_create_member_name"
+                        android:id="@+id/tv_dialing_number"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
@@ -504,18 +630,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-condensed-medium"
-                        android:text="@string/name"
+                        android:text="@string/location"
                         android:textColor="@color/Blue_text_color"
                         android:textSize="@dimen/Fifteen_dp">
 
                     </TextView>
 
-                    <ImageView
-                        android:layout_width="15dp"
-                        android:layout_height="10dp"
-                        android:src="@drawable/asterisk_icon">
+<!--                    <ImageView-->
+<!--                        android:layout_width="15dp"-->
+<!--                        android:layout_height="10dp"-->
+<!--                        android:src="@drawable/asterisk_icon">-->
 
-                    </ImageView>
+<!--                    </ImageView>-->
 
                 </LinearLayout>
 
@@ -529,7 +655,7 @@
 
                     <!--this is the actual edit text which takes the input-->
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/tv_create_member_name"
+                        android:id="@+id/tv_location"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
@@ -547,23 +673,23 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-condensed-medium"
-                        android:text="@string/name"
+                        android:text="@string/description"
                         android:textColor="@color/Blue_text_color"
                         android:textSize="@dimen/Fifteen_dp">
 
                     </TextView>
 
-                    <ImageView
-                        android:layout_width="15dp"
-                        android:layout_height="10dp"
-                        android:src="@drawable/asterisk_icon">
+<!--                    <ImageView-->
+<!--                        android:layout_width="15dp"-->
+<!--                        android:layout_height="10dp"-->
+<!--                        android:src="@drawable/asterisk_icon">-->
 
-                    </ImageView>
+<!--                    </ImageView>-->
 
                 </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/filledTextField"
+
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
 
@@ -572,7 +698,7 @@
 
                     <!--this is the actual edit text which takes the input-->
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/tv_create_member_name"
+                        android:id="@+id/tv_description"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
                         android:layout_gravity="start"
@@ -585,7 +711,7 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
-            android:id="@+id/cv_notification_details"
+            android:id="@+id/cv_add_clients"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -595,6 +721,215 @@
             android:visibility="visible"
             android:elevation="@dimen/Fifty_dp"
             app:layout_constraintTop_toBottomOf="@+id/cv_meeting_details"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="0.0">
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:text="@string/add_team_members"
+                    android:textColor="@color/Blue_text_color"
+                    android:textSize="@dimen/Fifteen_dp">
+
+                </TextView>
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/asterisk_icon">
+
+                </ImageView>
+
+            </LinearLayout>
+
+            <RelativeLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="3dp"
+                android:gravity="center"
+                android:layout_alignParentTop="true"
+                android:layout_weight=".28"
+                android:background="@drawable/rectangle_grey_background"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/sp_add_team_member"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:spinnerMode="dropdown"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:src="@drawable/down_arrow" />
+
+            </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        android:text="@string/add_entity"
+                        android:textColor="@color/Blue_text_color"
+                        android:textSize="@dimen/Fifteen_dp">
+
+                    </TextView>
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="10dp"
+                        android:src="@drawable/asterisk_icon">
+
+                    </ImageView>
+
+                </LinearLayout>
+
+                <RelativeLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="3dp"
+                    android:gravity="center"
+                    android:layout_alignParentTop="true"
+                    android:layout_weight=".28"
+                    android:background="@drawable/rectangle_grey_background"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/sp_add_entity"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        android:gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:spinnerMode="dropdown"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:src="@drawable/down_arrow" />
+
+                </RelativeLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        android:text="@string/client_team_members"
+                        android:textColor="@color/Blue_text_color"
+                        android:textSize="@dimen/Fifteen_dp">
+
+                    </TextView>
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="10dp"
+                        android:src="@drawable/asterisk_icon">
+
+                    </ImageView>
+
+                </LinearLayout>
+
+                <RelativeLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="3dp"
+                    android:gravity="center"
+                    android:layout_alignParentTop="true"
+                    android:layout_weight=".28"
+                    android:background="@drawable/rectangle_grey_background"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/sp_client_team_members"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        android:gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:spinnerMode="dropdown"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:src="@drawable/down_arrow" />
+
+                </RelativeLayout>
+            </LinearLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_notification_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:padding="10dp"
+            android:layout_marginBottom="100dp"
+            app:cardCornerRadius="4dp"
+            android:visibility="visible"
+            android:elevation="@dimen/Fifty_dp"
+            app:layout_constraintTop_toBottomOf="@+id/cv_add_clients"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -618,11 +953,14 @@
 
                 </TextView>
                 <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/add_notification"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Add Notificaiton"
                     android:layout_weight="1"
-                    android:background="@color/Blue_text_color"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/Blue_text_color"
+                    android:background="@drawable/save_button_background"
                     android:textSize="@dimen/Fifteen_dp"
                     android:textAllCaps="false"
                     >
@@ -637,6 +975,47 @@
                 >
 
             </LinearLayout>
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/ll_activity_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:visibility="visible"
+                android:orientation="horizontal"
+
+                >
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_cancel_timesheet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="20dp"
+                    android:elevation="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/cancel_button_background"
+                    android:textAllCaps="false"
+                    android:text="@string/cancel">
+
+                </androidx.appcompat.widget.AppCompatButton>
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_save_timesheet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:elevation="@dimen/Fifteen_dp"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:background="@drawable/save_button_background"
+                    android:textColor="@color/white"
+                    android:textAllCaps="false"
+                    android:backgroundTint="@color/Blue_text_color"
+                    android:text="Save">
+
+                </androidx.appcompat.widget.AppCompatButton>
+            </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.cardview.widget.CardView>

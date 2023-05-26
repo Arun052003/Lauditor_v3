@@ -108,8 +108,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener {
             case "Legal Matter":
                 legalTaksList.clear();
                 unHideMatterDetails();
-                String project_type = "legal";
-                callProjectWebservice(project_type);
+                String matter_legal = "legal";
+                callProjectWebservice(matter_legal);
                 TaskDo caseFilling = new TaskDo("Case Filling");
                 TaskDo consultation = new TaskDo("Consultation");
                 TaskDo clb = new TaskDo("Creating Legal Breifs");
@@ -125,6 +125,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener {
             case "General Matter":
                 legalTaksList.clear();
                 unHideMatterDetails();
+                String matter_general = "general";
+                callProjectWebservice(matter_general);
                 TaskDo consultation_general = new TaskDo("Consultation");
                 TaskDo draft_agreements = new TaskDo("Draft agreements");
                 TaskDo fwa = new TaskDo("Filling with authorities");

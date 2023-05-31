@@ -5,22 +5,35 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Calendar.Models.CalendarDo;
 import com.digicoffer.lauditor.Calendar.Models.TaskDo;
+import com.digicoffer.lauditor.Calendar.Models.TeamDo;
+import com.digicoffer.lauditor.Matter.Adapters.GroupsAdapter;
+import com.digicoffer.lauditor.Matter.Models.GroupsModel;
+import com.digicoffer.lauditor.Matter.Models.TeamModel;
 import com.digicoffer.lauditor.Matter.Models.ViewMatterModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
@@ -41,16 +54,23 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Locale;
 
-public class CreateEvent extends Fragment implements AsyncTaskCompleteListener,View.OnClickListener {
+public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, View.OnClickListener {
+    private static  String ADAPTER_TAG = "";
     private AlertDialog progressDialog;
-
-
+    MultiAutoCompleteTextView at_family_members;
+    final ArrayList<String> Repetetions = new ArrayList<>();
+    LinearLayout ll_client_team_members,ll_selected_entites,ll_selected_team_members,selected_tm,selected_groups;
     final int[] mHour = new int[1];
     final int[] mMinute = new int[1];
     private boolean timeZonesTaskCompleted = false;
+    private boolean matterTaskCompleted = false;
     final String[] AM_PM = new String[1];
     int offset;
-    private Spinner sp_project, sp_matter_name, sp_task, sp_time_zone, sp_repetetion;
+    private Button btn_add_groups,btn_add_clients,btn_assigned_team_members;
+    String team_member_id;
+    ArrayList<TeamDo> selected_tm_list = new ArrayList<>();
+    private TextView at_add_groups,at_add_clients,at_assigned_team_members;
+    private Spinner sp_project, sp_matter_name, sp_task, sp_time_zone, sp_repetetion,sp_add_team_member,sp_add_entity,sp_client_team_members;
     private TextInputEditText tv_event_creation_date, tv_event_start_time, tv_event_end_time, tv_meeting_link, tv_dialing_number, tv_location, tv_description;
     private AppCompatButton add_notification, btn_cancel_timesheet, btn_save_timesheet;
     private String selected_project;
@@ -58,10 +78,12 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener,V
     private String selected_task;
     Hashtable<String, Integer> timesPosHash = new Hashtable<>();
     ArrayList<TimeZonesDO> timeZonesList = new ArrayList<TimeZonesDO>();
-    private LinearLayout ll_project,ll_matter_name,ll_message,ll_task;
+    private LinearLayout ll_project, ll_matter_name, ll_message, ll_task;
     ArrayList<CalendarDo> projectList = new ArrayList<>();
     ArrayList<ViewMatterModel> matterList = new ArrayList<>();
+    ArrayList<TeamDo> teamList = new ArrayList<>();
     ArrayList<TaskDo> legalTaksList = new ArrayList<>();
+    private String repeat_interval;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,6 +100,21 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener,V
         sp_task = view.findViewById(R.id.sp_task);
         sp_time_zone = view.findViewById(R.id.sp_time_zone);
         sp_repetetion = view.findViewById(R.id.sp_repetetion);
+        at_add_groups = view.findViewById(R.id.at_add_groups);
+        at_add_clients = view.findViewById(R.id.at_add_clients);
+        at_assigned_team_members = view.findViewById(R.id.at_assigned_team_members);
+        btn_add_groups = view.findViewById(R.id.btn_add_groups);
+        selected_groups= view.findViewById(R.id.selected_groups);
+        btn_add_groups.setOnClickListener(this);
+        btn_add_clients = view.findViewById(R.id.btn_add_clients);
+        btn_add_clients.setOnClickListener(this);
+        selected_tm = view.findViewById(R.id.selected_tm);
+        ll_client_team_members = view.findViewById(R.id.ll_client_team_members);
+        ll_selected_entites = view.findViewById(R.id.ll_selected_entites);
+        ll_selected_team_members = view.findViewById(R.id.ll_selected_team_members);
+        btn_assigned_team_members = view.findViewById(R.id.btn_assigned_team_members);
+        btn_assigned_team_members.setOnClickListener(this);
+//        at_assigned_team_members = view.findViewById(R.id.at_assigned_team_members);
         tv_event_creation_date = view.findViewById(R.id.tv_event_creation_date);
         tv_event_creation_date.setOnClickListener(this);
         tv_event_start_time = view.findViewById(R.id.tv_event_start_time);
@@ -93,17 +130,18 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener,V
         ll_message = view.findViewById(R.id.ll_message);
         ll_task = view.findViewById(R.id.ll_task);
         projectList.clear();
-        CalendarDo LegalMatter = new CalendarDo("Legal Matter");
-        CalendarDo GeneralMatter = new CalendarDo("General Matter");
-        CalendarDo overhead = new CalendarDo("Overhead");
-        CalendarDo Others = new CalendarDo("Others");
-        CalendarDo reminders = new CalendarDo("Reminders");
-        projectList.add(LegalMatter);
-        projectList.add(GeneralMatter);
-        projectList.add(overhead);
-        projectList.add(Others);
-        projectList.add(reminders);
+//        CalendarDo LegalMatter = new CalendarDo("Legal Matter");
+//        CalendarDo GeneralMatter = new CalendarDo("General Matter");
+//        CalendarDo overhead = new CalendarDo("Overhead");
+//        CalendarDo Others = new CalendarDo("Others");
+//        CalendarDo reminders = new CalendarDo("Reminders");
+        projectList.add(new CalendarDo("Legal Matter"));
+        projectList.add(new CalendarDo("General Matter"));
+        projectList.add(new CalendarDo("Overhead"));
+        projectList.add(new CalendarDo("Others"));
+        projectList.add(new CalendarDo("Reminders"));
         legalTaksList.clear();
+
 //        callTimeZoneWebservice();
         final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) getContext(), projectList);
 
@@ -122,6 +160,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener,V
         });
         return view;
     }
+
     private void callTimeZoneWebservice() {
         try {
 
@@ -136,6 +175,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener,V
             e.printStackTrace();
         }
     }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -213,6 +253,133 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener,V
                         }, mHour[0], mMinute[0], true);
                 timePickerDialog_end_time.show();
                 break;
+            case R.id.btn_add_groups:
+                callTeamMemberWebservice();
+                break;
+            case R.id.btn_add_clients:
+                break;
+            case R.id.btn_assigned_team_members:
+        }
+
+    }
+    private void TeamMembersPopup() {
+        try {
+
+
+//            teamList.clear();
+
+            for (int i = 0; i < teamList.size(); i++) {
+                for (int j = 0; j < selected_tm_list.size(); j++) {
+                    if (teamList.get(i).getId().matches(selected_tm_list.get(j).getId())) {
+                        TeamDo teamModel = teamList.get(i);
+                        teamModel.setChecked(true);
+//                        selected_groups_list.set(j,documentsModel);
+
+                    }
+                }
+            }
+            selected_tm_list.clear();
+//            selected_tm_list.clear();
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View view = inflater.inflate(R.layout.groups_list_adapter, null);
+            RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
+            ImageView iv_cancel = view.findViewById(R.id.close_groups);
+            AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
+            AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+            rv_groups.setLayoutManager(layoutManager);
+            rv_groups.setHasFixedSize(true);
+//            ADAPTER_TAG = "TM";
+            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList);
+            rv_groups.setAdapter(documentsAdapter);
+            AlertDialog dialog = dialogBuilder.create();
+            iv_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            btn_save_group.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    for (int i = 0; i < documentsAdapter.getTmList().size(); i++) {
+                        TeamDo teamModel = documentsAdapter.getTmList().get(i);
+                        if (teamModel.isChecked()) {
+                            selected_tm_list.add(teamModel);
+                            //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
+                        }
+                    }
+
+
+                    loadSelectedTM();
+                    dialog.dismiss();
+                }
+            });
+            dialog.setCancelable(false);
+            dialog.setView(view);
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            AndroidUtils.showAlert(e.getMessage(), getContext());
+        }
+    }
+    private void loadSelectedTM() {
+        String[] value = new String[selected_tm_list.size()];
+        for (int i = 0; i < selected_tm_list.size(); i++) {
+//                                value += "," + family_members.get(i);
+//                               value.add(family_members.get(i));
+            value[i] = selected_tm_list.get(i).getName();
+
+        }
+
+        String str = String.join(",", value);
+        at_add_groups.setText(str);
+        selected_groups.setVisibility(View.VISIBLE);
+        ll_selected_team_members.removeAllViews();
+        for (int i = 0; i < selected_tm_list.size(); i++) {
+            View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);
+            TextView tv_opponent_name = view_opponents.findViewById(R.id.tv_opponent_name);
+            tv_opponent_name.setText(selected_tm_list.get(i).getName());
+            ImageView iv_edit_opponent = view_opponents.findViewById(R.id.iv_edit_opponent);
+            ImageView iv_remove_opponent = view_opponents.findViewById(R.id.iv_remove_opponent);
+            iv_remove_opponent.setTag(i);
+            iv_remove_opponent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        int position = 0;
+                        if (v.getTag() instanceof Integer) {
+                            position = (Integer) v.getTag();
+                            v = ll_selected_team_members.getChildAt(position);
+                            ll_selected_team_members.removeView(v);
+//                            ll_selected_groups.addView(view_opponents,position);
+                            TeamDo teamModel = selected_tm_list.get(position);
+                            teamModel.setChecked(false);
+                            selected_tm_list.remove(position);
+//                            selected_groups_list.set(position, groupsModel);
+                            String[] value = new String[selected_tm_list.size()];
+                            for (int i = 0; i < selected_tm_list.size(); i++) {
+                                value[i] = selected_tm_list.get(i).getName();
+                            }
+
+                            String str = String.join(",", value);
+                            at_assigned_team_members.setText(str);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        AndroidUtils.showAlert(e.getMessage(), getContext());
+                    }
+                }
+            });
+            iv_edit_opponent.setVisibility(View.GONE);
+            ll_selected_team_members.addView(view_opponents);
         }
     }
     private void loadProjectData(String selected_project) {
@@ -221,73 +388,101 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener,V
             case "Legal Matter":
                 legalTaksList.clear();
                 unHideMatterDetails();
+                loadRepetetions();
                 String matter_legal = "legal";
                 callProjectWebservice(matter_legal);
-                TaskDo caseFilling = new TaskDo("Case Filling");
-                TaskDo consultation = new TaskDo("Consultation");
-                TaskDo clb = new TaskDo("Creating Legal Breifs");
-                TaskDo mwc = new TaskDo("Meeting with client");
-                TaskDo hearing = new TaskDo("Hearing");
-                legalTaksList.add(caseFilling);
-                legalTaksList.add(consultation);
-                legalTaksList.add(clb);
-                legalTaksList.add(mwc);
-                legalTaksList.add(hearing);
+//                TaskDo caseFilling = new TaskDo("Case Filling");
+//                TaskDo consultation = new TaskDo("Consultation");
+//                TaskDo clb = new TaskDo("Creating Legal Breifs");
+//                TaskDo mwc = new TaskDo("Meeting with client");
+//                TaskDo hearing = new TaskDo("Hearing");
+                legalTaksList.add(new TaskDo("Case Filling"));
+                legalTaksList.add(new TaskDo("Consultation"));
+                legalTaksList.add(new TaskDo("Creating Legal Breifs"));
+                legalTaksList.add(new TaskDo("Meeting with client"));
+                legalTaksList.add(new TaskDo("Hearing"));
                 loadTaskList(legalTaksList);
                 break;
             case "General Matter":
                 legalTaksList.clear();
                 unHideMatterDetails();
+                loadRepetetions();
                 String matter_general = "general";
                 callProjectWebservice(matter_general);
-                TaskDo consultation_general = new TaskDo("Consultation");
-                TaskDo draft_agreements = new TaskDo("Draft agreements");
-                TaskDo fwa = new TaskDo("Filling with authorities");
-                TaskDo mwc_general = new TaskDo("Meeting with client");
-                TaskDo paf = new TaskDo("Prepare annual fillings");
-                legalTaksList.add(consultation_general);
-                legalTaksList.add(draft_agreements);
-                legalTaksList.add(fwa);
-                legalTaksList.add(mwc_general);
-                legalTaksList.add(paf);
+//                TaskDo consultation_general = new TaskDo("Consultation");
+//                TaskDo draft_agreements = new TaskDo("Draft agreements");
+//                TaskDo fwa = new TaskDo("Filling with authorities");
+//                TaskDo mwc_general = new TaskDo("Meeting with client");
+//                TaskDo paf = new TaskDo("Prepare annual fillings");
+                legalTaksList.add(new TaskDo("Consultation"));
+                legalTaksList.add(new TaskDo("Draft agreements"));
+                legalTaksList.add(new TaskDo("Filling with authorities"));
+                legalTaksList.add(new TaskDo("Meeting with client"));
+                legalTaksList.add(new TaskDo("Prepare annual fillings"));
                 loadTaskList(legalTaksList);
                 break;
             case "Overhead":
                 legalTaksList.clear();
                 hideMatterDetails();
-                TaskDo conference = new TaskDo("Conference");
-                TaskDo holidays = new TaskDo("Holidays");
-                TaskDo research = new TaskDo("Research");
-                TaskDo training = new TaskDo("Training");
-                TaskDo vacation = new TaskDo("Vacation");
-                legalTaksList.add(conference);
-                legalTaksList.add(holidays);
-                legalTaksList.add(research);
-                legalTaksList.add(training);
-                legalTaksList.add(vacation);
+                loadRepetetions();
+//                TaskDo conference = new TaskDo("Conference");
+//                TaskDo holidays = new TaskDo("Holidays");
+//                TaskDo research = new TaskDo("Research");
+//                TaskDo training = new TaskDo("Training");
+//                TaskDo vacation = new TaskDo("Vacation");
+                legalTaksList.add(new TaskDo("Conference"));
+                legalTaksList.add(new TaskDo("Holidays"));
+                legalTaksList.add(new TaskDo("Research"));
+                legalTaksList.add(new TaskDo("Training"));
+                legalTaksList.add(new TaskDo("Vacation"));
                 loadTaskList(legalTaksList);
                 break;
             case "Others":
                 legalTaksList.clear();
                 hideMatterDetails();
+                loadRepetetions();
                 TaskDo business_development = new TaskDo("Business Development");
                 TaskDo personal = new TaskDo("Personal");
                 TaskDo doctor_appointment = new TaskDo("Doctor Appointment");
                 TaskDo lunch_dinner = new TaskDo("Lunch/Dinner");
                 TaskDo misc = new TaskDo("Misc");
-                legalTaksList.add(business_development);
-                legalTaksList.add(personal);
-                legalTaksList.add(doctor_appointment);
-                legalTaksList.add(lunch_dinner);
-                legalTaksList.add(misc);
+                legalTaksList.add(new TaskDo("Business Development"));
+                legalTaksList.add(new TaskDo("Personal"));
+                legalTaksList.add(new TaskDo("Doctor Appointment"));
+                legalTaksList.add(new TaskDo("Lunch/Dinner"));
+                legalTaksList.add(new TaskDo("Misc"));
                 loadTaskList(legalTaksList);
                 break;
             case "Reminders":
                 legalTaksList.clear();
                 hideAlldetails();
+                loadRepetetions();
 
                 break;
         }
+    }
+
+    private void loadRepetetions() {
+        Repetetions.clear();
+        Repetetions.add("None");
+        Repetetions.add("Weekly");
+        Repetetions.add("Bi- Weekly");
+        Repetetions.add("Monthly");
+        Repetetions.add("Yearly");
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, Repetetions);
+        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sp_repetetion.setAdapter(adapter1);
+        sp_repetetion.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                repeat_interval = Repetetions.get(sp_repetetion.getSelectedItemPosition());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     private void hideAlldetails() {
@@ -342,7 +537,19 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener,V
             e.printStackTrace();
         }
     }
-
+    private void callTeamMemberWebservice() {
+        try {
+            progressDialog = AndroidUtils.get_progress(getActivity());
+            JSONObject postdata = new JSONObject();
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v3/event/tms", "Team List", postdata.toString());
+        } catch (Exception e) {
+            AndroidUtils.showToast(e.getMessage(), getContext());
+            if (progressDialog != null && progressDialog.isShowing()) {
+                AndroidUtils.dismiss_dialog(progressDialog);
+            }
+            e.printStackTrace();
+        }
+    }
     @Override
     public void onAsyncTaskComplete(HttpResultDo httpResult) {
         if (progressDialog.isShowing() && progressDialog != null) {
@@ -359,18 +566,36 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener,V
                     }
                     JSONArray matters = result.getJSONArray("matters");
                     try {
+                        matterTaskCompleted = true;
                         loadMattersList(matters);
+
                     } catch (Exception e) {
                         AndroidUtils.showAlert(e.getMessage(), getContext());
                         e.printStackTrace();
                     }
-                }else  if (httpResult.getRequestType().equals("TIMEZONES")) {
+                } else if (httpResult.getRequestType().equals("TIMEZONES")) {
                     if (!result.getBoolean("error")) {
 
                         JSONArray jsonArray = result.getJSONArray("timezones");
                         load_timezones(jsonArray);
 //                        Thre
                         timeZonesTaskCompleted = true;
+                    }else{
+                        AndroidUtils.showAlert("Something went wrong", getContext());
+                    }
+                }
+                else if(httpResult.getRequestType().equals("Team List")){
+                    if (!matterTaskCompleted) {
+
+                        return;
+                    }
+                    if (!result.getBoolean("error")) {
+                        JSONArray jsonArray = result.getJSONArray("users");
+                        loadTeamList(jsonArray);
+//                        Thre
+
+                    }else{
+                        AndroidUtils.showAlert("Something went wrong", getContext());
                     }
                 }
             } catch (JSONException e) {
@@ -380,6 +605,52 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener,V
             AndroidUtils.showAlert("Something went wrong", getContext());
         }
     }
+
+    private void loadTeamList(JSONArray jsonArray) throws JSONException{
+        teamList.clear();
+        for(int i=0;i<jsonArray.length();i++){
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            TeamDo teamDo = new TeamDo();
+            teamDo.setId(jsonObject.getString("id"));
+            teamDo.setName(jsonObject.getString("name"));
+            teamList.add(teamDo);
+        }
+        TeamMembersPopup();
+    }
+
+    private void loadTeamSpinner() {
+//        final CommonSpinnerAdapter adapter = new CommonSpinnerAdapter(getActivity(), teamList);
+//        sp_add_team_member.setAdapter(adapter);
+////        callTimeZoneWebservice();
+//        sp_add_team_member.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                team_member_id = teamList.get(sp_add_team_member.getSelectedItemPosition()).getId();
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
+        final AutocompleteAdapter matterAutocompleteAdapter = new AutocompleteAdapter(getContext(), 1, teamList);
+//        callLegalwebservice();
+        at_family_members.setInputType(InputType.TYPE_NULL);
+        at_family_members.setThreshold(0);
+        at_family_members.setAdapter(matterAutocompleteAdapter);
+        at_family_members.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        at_family_members.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TeamDo selectedItem = matterAutocompleteAdapter.getItem(position);
+                matterAutocompleteAdapter.remove(selectedItem);
+                matterAutocompleteAdapter.notifyDataSetChanged();
+            }
+        });
+
+    }
+
+
     private void load_timezones(JSONArray jsonArray) throws JSONException {
         TimeZonesDO timeZonesDO;
         timeZonesList.clear();
@@ -445,7 +716,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener,V
 
             }
         });
-
+//            callTeamMemberWebservice();
     }
+
 
 }

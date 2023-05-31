@@ -794,192 +794,351 @@
                 android:layout_margin="10dp"
                 android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-condensed-medium"
-                    android:text="@string/add_team_members"
-                    android:textColor="@color/Blue_text_color"
-                    android:textSize="@dimen/Fifteen_dp">
-
-                </TextView>
-
-                <ImageView
-                    android:layout_width="15dp"
-                    android:layout_height="10dp"
-                    android:src="@drawable/asterisk_icon">
-
-                </ImageView>
-
-            </LinearLayout>
-
-            <RelativeLayout
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="3dp"
-                android:gravity="center"
-                android:layout_alignParentTop="true"
-                android:layout_weight=".28"
-                android:background="@drawable/rectangle_grey_background"
-                android:orientation="horizontal">
-
-                <Spinner
-                    android:id="@+id/sp_add_team_member"
-                    android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center"
-                    android:background="@android:color/transparent"
-                    android:gravity="center"
-                    android:layout_marginLeft="5dp"
-                    android:spinnerMode="dropdown"/>
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center"
-                    android:src="@drawable/down_arrow" />
-
-            </RelativeLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
                 <LinearLayout
+                    android:id="@+id/ll_add_groups"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_below="@id/matter_date"
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-condensed-medium"
-                        android:text="@string/add_entity"
-                        android:textColor="@color/Blue_text_color"
-                        android:textSize="@dimen/Fifteen_dp">
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
 
-                    </TextView>
+                        <TextView
+                            android:id="@+id/add_groups"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:text="@string/add_team_members"
+                            android:textColor="@color/Blue_text_color"
+                            android:textSize="@dimen/Fifteen_dp">
 
-                    <ImageView
-                        android:layout_width="15dp"
-                        android:layout_height="10dp"
-                        android:src="@drawable/asterisk_icon">
+                        </TextView>
 
-                    </ImageView>
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:layout_height="10dp"
+                            android:src="@drawable/asterisk_icon">
+
+                        </ImageView>
+
+                    </LinearLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tl_add_groups"
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rectangle_grey_background"
+                        android:textColorHint="@color/black"
+                        app:boxBackgroundMode="none">
+
+                        >
+                        <TextView
+                            android:id="@+id/at_add_groups"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:enabled="true"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:padding="15dp"
+                            android:drawableRight="@drawable/spinner_drop_down"
+                            android:text="Select Team Members"
+                            android:textColor="@color/Blue_text_color"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btn_add_groups"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/add"
+                        android:textAllCaps="false"
+                        android:layout_gravity="right">
+
+                    </Button>
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/selected_groups"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    android:layout_below="@id/ll_add_groups"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:text="Selected Groups"
+                            android:textColor="@color/Blue_text_color"
+                            android:textSize="@dimen/Fifteen_dp">
+
+                        </TextView>
+
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:layout_height="10dp"
+                            android:src="@drawable/asterisk_icon">
+
+                        </ImageView>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_selected_team_members"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                    </LinearLayout>
 
                 </LinearLayout>
-
-                <RelativeLayout
-
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="3dp"
-                    android:gravity="center"
-                    android:layout_alignParentTop="true"
-                    android:layout_weight=".28"
-                    android:background="@drawable/rectangle_grey_background"
-                    android:orientation="horizontal">
-
-                    <Spinner
-                        android:id="@+id/sp_add_entity"
-                        android:layout_width="match_parent"
-                        android:layout_height="55dp"
-                        android:layout_centerVertical="true"
-                        android:layout_gravity="center"
-                        android:background="@android:color/transparent"
-                        android:gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:spinnerMode="dropdown"/>
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_centerVertical="true"
-                        android:layout_gravity="center"
-                        android:src="@drawable/down_arrow" />
-
-                </RelativeLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
                 <LinearLayout
+                    android:id="@+id/ll_add_clients"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_below="@id/selected_groups"
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-condensed-medium"
-                        android:text="@string/client_team_members"
-                        android:textColor="@color/Blue_text_color"
-                        android:textSize="@dimen/Fifteen_dp">
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
 
-                    </TextView>
+                        <TextView
+                            android:id="@+id/add_clients"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:text="@string/add_entity"
+                            android:textColor="@color/Blue_text_color"
+                            android:textSize="@dimen/Fifteen_dp">
 
-                    <ImageView
-                        android:layout_width="15dp"
-                        android:layout_height="10dp"
-                        android:src="@drawable/asterisk_icon">
+                        </TextView>
 
-                    </ImageView>
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:layout_height="10dp"
+                            android:src="@drawable/asterisk_icon">
+
+                        </ImageView>
+
+                    </LinearLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tl_add_clients"
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rectangle_grey_background"
+                        android:textColorHint="@color/black"
+                        app:boxBackgroundMode="none">
+
+                        >
+
+                        <TextView
+                            android:id="@+id/at_add_clients"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:enabled="true"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:padding="15dp"
+                            android:drawableRight="@drawable/spinner_drop_down"
+                            android:text="Select Entity"
+                            android:textColor="@color/Blue_text_color"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btn_add_clients"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/add"
+                        android:textAllCaps="false"
+                        android:layout_gravity="end">
+
+                    </Button>
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/selected_clients"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    android:layout_weight="1"
+                    android:layout_below="@id/ll_add_clients"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_selected_clients"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:text="Selected Clients"
+                            android:textColor="@color/Blue_text_color"
+                            android:textSize="@dimen/Fifteen_dp">
+
+                        </TextView>
+
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:layout_height="10dp"
+                            android:src="@drawable/asterisk_icon">
+
+                        </ImageView>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_selected_entites"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                    </LinearLayout>
 
                 </LinearLayout>
-
-                <RelativeLayout
-
+                <LinearLayout
+                    android:id="@+id/ll_assign_team_members"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="3dp"
-                    android:gravity="center"
-                    android:layout_alignParentTop="true"
-                    android:layout_weight=".28"
-                    android:background="@drawable/rectangle_grey_background"
-                    android:orientation="horizontal">
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_below="@id/selected_clients"
+                    android:orientation="vertical">
 
-                    <Spinner
-                        android:id="@+id/sp_client_team_members"
+                    <LinearLayout
+
                         android:layout_width="match_parent"
-                        android:layout_height="55dp"
-                        android:layout_centerVertical="true"
-                        android:layout_gravity="center"
-                        android:background="@android:color/transparent"
-                        android:gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:spinnerMode="dropdown"/>
-
-                    <ImageView
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_centerVertical="true"
-                        android:layout_gravity="center"
-                        android:src="@drawable/down_arrow" />
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
 
-                </RelativeLayout>
-            </LinearLayout>
+                        <TextView
+                            android:id="@+id/tv_assigned_team_members"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:textColor="@color/Blue_text_color"
+                            android:text="@string/client_team_members"
+                            android:textSize="@dimen/Fifteen_dp">
+
+                        </TextView>
+
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:layout_height="10dp"
+                            android:src="@drawable/asterisk_icon">
+
+                        </ImageView>
+
+                    </LinearLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tl_assigned_team_members"
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rectangle_grey_background"
+                        android:textColorHint="@color/black"
+                        app:boxBackgroundMode="none">
+
+                        >
+
+
+                        <TextView
+                            android:id="@+id/at_assigned_team_members"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:enabled="true"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:padding="15dp"
+                            android:drawableRight="@drawable/spinner_drop_down"
+                            android:text="Select Client Team Members"
+                            android:textColor="@color/Blue_text_color"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btn_assigned_team_members"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/add"
+                        android:textAllCaps="false"
+                        android:layout_gravity="end">
+
+                    </Button>
+                    <LinearLayout
+                        android:id="@+id/selected_tm"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:visibility="gone"
+                        android:layout_below="@id/ll_assign_team_members"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tv_selected_tm"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-condensed-medium"
+                                android:text="@string/assign_team_member"
+                                android:textColor="@color/Blue_text_color"
+                                android:textSize="@dimen/Fifteen_dp">
+
+                            </TextView>
+
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="10dp"
+                                android:src="@drawable/asterisk_icon">
+
+                            </ImageView>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_client_team_members"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
             </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView

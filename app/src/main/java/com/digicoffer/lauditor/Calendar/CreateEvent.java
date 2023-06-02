@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Calendar.Models.CalendarDo;
+import com.digicoffer.lauditor.Calendar.Models.RelationshipsDO;
 import com.digicoffer.lauditor.Calendar.Models.TaskDo;
 import com.digicoffer.lauditor.Calendar.Models.TeamDo;
 import com.digicoffer.lauditor.Matter.Adapters.GroupsAdapter;
@@ -68,6 +69,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     int offset;
     private Button btn_add_groups,btn_add_clients,btn_assigned_team_members;
     String team_member_id;
+    ArrayList<RelationshipsDO> entities_list = new ArrayList<>();
+    ArrayList<RelationshipsDO> individual_list = new ArrayList<>();
     ArrayList<TeamDo> selected_tm_list = new ArrayList<>();
     private TextView at_add_groups,at_add_clients,at_assigned_team_members;
     private Spinner sp_project, sp_matter_name, sp_task, sp_time_zone, sp_repetetion,sp_add_team_member,sp_add_entity,sp_client_team_members;
@@ -257,11 +260,27 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                 callTeamMemberWebservice();
                 break;
             case R.id.btn_add_clients:
+                callClientsWebservice();
                 break;
             case R.id.btn_assigned_team_members:
         }
 
     }
+
+    private void callClientsWebservice() {
+        try {
+            progressDialog = AndroidUtils.get_progress(getActivity());
+            JSONObject postdata = new JSONObject();
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v2/relationship/client/list", "Client List", postdata.toString());
+        } catch (Exception e) {
+            AndroidUtils.showToast(e.getMessage(), getContext());
+            if (progressDialog != null && progressDialog.isShowing()) {
+                AndroidUtils.dismiss_dialog(progressDialog);
+            }
+            e.printStackTrace();
+        }
+    }
+
     private void TeamMembersPopup() {
         try {
 
@@ -370,7 +389,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                             }
 
                             String str = String.join(",", value);
-                            at_assigned_team_members.setText(str);
+                            at_add_groups.setText(str);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -597,6 +616,20 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                     }else{
                         AndroidUtils.showAlert("Something went wrong", getContext());
                     }
+                }else if(httpResult.getRequestType().equals("Client List")){
+                    if (!matterTaskCompleted) {
+
+                        return;
+                    }
+                    if (!result.getBoolean("error")) {
+                        JSONObject jsonObject = result.getJSONObject("data");
+                        JSONArray jsonArray = jsonObject.getJSONArray("relationships");
+                        loadRelationshipsList(jsonArray);
+//                        Thre
+
+                    }else{
+                        AndroidUtils.showAlert("Something went wrong", getContext());
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -604,6 +637,26 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         } else {
             AndroidUtils.showAlert("Something went wrong", getContext());
         }
+    }
+
+    private void loadRelationshipsList(JSONArray jsonArray) throws JSONException {
+            for(int i=0;i<jsonArray.length();i++){
+                RelationshipsDO relationshipsDO = new RelationshipsDO();
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String type =   jsonObject.getString("type");
+
+                if (type.equals("consumer")){
+                    relationshipsDO.setId(jsonObject.getString("id"));
+                    relationshipsDO.setName(jsonObject.getString("name"));
+                    relationshipsDO.setType(jsonObject.getString("type"));
+                    individual_list.add(relationshipsDO);
+                }else{
+                    relationshipsDO.setId(jsonObject.getString("id"));
+                    relationshipsDO.setName(jsonObject.getString("name"));
+                    relationshipsDO.setType(jsonObject.getString("type"));
+                    entities_list.add(relationshipsDO);
+                }
+            }
     }
 
     private void loadTeamList(JSONArray jsonArray) throws JSONException{

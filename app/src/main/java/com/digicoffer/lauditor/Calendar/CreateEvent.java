@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -41,6 +42,7 @@ import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.digicoffer.lauditor.Webservice.WebServiceHelper;
 import com.digicoffer.lauditor.common.AndroidUtils;
+import com.digicoffer.lauditor.common.Constants;
 import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 import com.digicoffer.lauditor.common_objects.TimeZonesDO;
 import com.google.android.material.textfield.TextInputEditText;
@@ -48,6 +50,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pgpainless.key.selection.key.util.And;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -56,24 +59,26 @@ import java.util.Hashtable;
 import java.util.Locale;
 
 public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, View.OnClickListener {
-    private static  String ADAPTER_TAG = "";
+    private static String ADAPTER_TAG = "";
     private AlertDialog progressDialog;
     MultiAutoCompleteTextView at_family_members;
     final ArrayList<String> Repetetions = new ArrayList<>();
-    LinearLayout ll_client_team_members,ll_selected_entites,ll_selected_team_members,selected_tm,selected_groups;
+    LinearLayout ll_client_team_members, ll_selected_entites, ll_selected_team_members, selected_tm, selected_groups;
     final int[] mHour = new int[1];
     final int[] mMinute = new int[1];
     private boolean timeZonesTaskCompleted = false;
     private boolean matterTaskCompleted = false;
+    private boolean tmTaskCompleted = false;
     final String[] AM_PM = new String[1];
     int offset;
-    private Button btn_add_groups,btn_add_clients,btn_assigned_team_members;
+    private Button btn_add_groups, btn_add_clients, btn_assigned_team_members, btn_individual;
     String team_member_id;
     ArrayList<RelationshipsDO> entities_list = new ArrayList<>();
     ArrayList<RelationshipsDO> individual_list = new ArrayList<>();
+    ArrayList<RelationshipsDO> selected_individual_list = new ArrayList<>();
     ArrayList<TeamDo> selected_tm_list = new ArrayList<>();
-    private TextView at_add_groups,at_add_clients,at_assigned_team_members;
-    private Spinner sp_project, sp_matter_name, sp_task, sp_time_zone, sp_repetetion,sp_add_team_member,sp_add_entity,sp_client_team_members;
+    private TextView at_add_groups, at_add_clients, at_assigned_team_members;
+    private Spinner sp_entities, sp_project, sp_matter_name, sp_task, sp_time_zone, sp_repetetion, sp_add_team_member, sp_add_entity, sp_client_team_members;
     private TextInputEditText tv_event_creation_date, tv_event_start_time, tv_event_end_time, tv_meeting_link, tv_dialing_number, tv_location, tv_description;
     private AppCompatButton add_notification, btn_cancel_timesheet, btn_save_timesheet;
     private String selected_project;
@@ -91,6 +96,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         callTimeZoneWebservice();
+
         super.onCreate(savedInstanceState);
     }
 
@@ -104,13 +110,15 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         sp_time_zone = view.findViewById(R.id.sp_time_zone);
         sp_repetetion = view.findViewById(R.id.sp_repetetion);
         at_add_groups = view.findViewById(R.id.at_add_groups);
-        at_add_clients = view.findViewById(R.id.at_add_clients);
+        sp_entities = view.findViewById(R.id.sp_entities);
         at_assigned_team_members = view.findViewById(R.id.at_assigned_team_members);
         btn_add_groups = view.findViewById(R.id.btn_add_groups);
-        selected_groups= view.findViewById(R.id.selected_groups);
+        selected_groups = view.findViewById(R.id.selected_groups);
+        btn_individual = view.findViewById(R.id.btn_individual);
+        btn_individual.setOnClickListener(this);
         btn_add_groups.setOnClickListener(this);
-        btn_add_clients = view.findViewById(R.id.btn_add_clients);
-        btn_add_clients.setOnClickListener(this);
+//        btn_add_clients = view.findViewById(R.id.btn_add_clients);
+//        btn_add_clients.setOnClickListener(this);
         selected_tm = view.findViewById(R.id.selected_tm);
         ll_client_team_members = view.findViewById(R.id.ll_client_team_members);
         ll_selected_entites = view.findViewById(R.id.ll_selected_entites);
@@ -138,11 +146,21 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 //        CalendarDo overhead = new CalendarDo("Overhead");
 //        CalendarDo Others = new CalendarDo("Others");
 //        CalendarDo reminders = new CalendarDo("Reminders");
-        projectList.add(new CalendarDo("Legal Matter"));
-        projectList.add(new CalendarDo("General Matter"));
-        projectList.add(new CalendarDo("Overhead"));
-        projectList.add(new CalendarDo("Others"));
-        projectList.add(new CalendarDo("Reminders"));
+        if (Constants.ROLE.equals("AAM")) {
+
+            projectList.add(new CalendarDo("Overhead"));
+            projectList.add(new CalendarDo("Others"));
+            projectList.add(new CalendarDo("Reminders"));
+
+
+        } else {
+            projectList.add(new CalendarDo("Legal Matter"));
+            projectList.add(new CalendarDo("General Matter"));
+            projectList.add(new CalendarDo("Overhead"));
+            projectList.add(new CalendarDo("Others"));
+            projectList.add(new CalendarDo("Reminders"));
+        }
+
         legalTaksList.clear();
 
 //        callTimeZoneWebservice();
@@ -259,13 +277,82 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
             case R.id.btn_add_groups:
                 callTeamMemberWebservice();
                 break;
-            case R.id.btn_add_clients:
-                callClientsWebservice();
+            case R.id.btn_individual:
+                load_individual_Popup();
                 break;
-            case R.id.btn_assigned_team_members:
+//            case R.id.btn_assigned_team_members:
         }
 
     }
+
+    private void load_individual_Popup() {
+try{
+    for (int i = 0; i < individual_list.size(); i++) {
+        for (int j = 0; j < selected_individual_list.size(); j++) {
+            if (individual_list.get(i).getId().matches(selected_individual_list.get(j).getId())) {
+                RelationshipsDO teamModel = individual_list.get(i);
+                teamModel.setChecked(true);
+//                        selected_groups_list.set(j,documentsModel);
+
+            }
+        }
+    }
+        selected_individual_list.clear();
+//            selected_tm_list.clear();
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.groups_list_adapter, null);
+        RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
+        ImageView iv_cancel = view.findViewById(R.id.close_groups);
+        AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
+        AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        rv_groups.setLayoutManager(layoutManager);
+        rv_groups.setHasFixedSize(true);
+        ADAPTER_TAG = "INDIVIDUAL";
+        CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list);
+        rv_groups.setAdapter(documentsAdapter);
+        AlertDialog dialog = dialogBuilder.create();
+        iv_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        btn_save_group.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for (int i = 0; i < documentsAdapter.getTmList().size(); i++) {
+                    RelationshipsDO teamModel = documentsAdapter.getIndividual_List().get(i);
+                    if (teamModel.isChecked()) {
+                        selected_individual_list.add(teamModel);
+                        //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
+                    }
+                }
+
+
+                loadSelectedTM();
+                dialog.dismiss();
+            }
+        });
+        dialog.setCancelable(false);
+        dialog.setView(view);
+        dialog.show();
+    } catch(Exception e)
+
+    {
+        e.printStackTrace();
+        AndroidUtils.showAlert(e.getMessage(), getContext());
+    }
+
+}
+
 
     private void callClientsWebservice() {
         try {
@@ -309,8 +396,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
             rv_groups.setLayoutManager(layoutManager);
             rv_groups.setHasFixedSize(true);
-//            ADAPTER_TAG = "TM";
-            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList);
+            ADAPTER_TAG = "TM";
+            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList,ADAPTER_TAG,individual_list);
             rv_groups.setAdapter(documentsAdapter);
             AlertDialog dialog = dialogBuilder.create();
             iv_cancel.setOnClickListener(new View.OnClickListener() {
@@ -410,6 +497,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                 loadRepetetions();
                 String matter_legal = "legal";
                 callProjectWebservice(matter_legal);
+//                callClientsWebservice();
 //                TaskDo caseFilling = new TaskDo("Case Filling");
 //                TaskDo consultation = new TaskDo("Consultation");
 //                TaskDo clb = new TaskDo("Creating Legal Breifs");
@@ -611,25 +699,41 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                     if (!result.getBoolean("error")) {
                         JSONArray jsonArray = result.getJSONArray("users");
                         loadTeamList(jsonArray);
+                        tmTaskCompleted = true;
 //                        Thre
 
                     }else{
                         AndroidUtils.showAlert("Something went wrong", getContext());
                     }
                 }else if(httpResult.getRequestType().equals("Client List")){
-                    if (!matterTaskCompleted) {
+                    if(Constants.ROLE.equals("AAM")){
+                        if (!timeZonesTaskCompleted) {
 
-                        return;
-                    }
-                    if (!result.getBoolean("error")) {
-                        JSONObject jsonObject = result.getJSONObject("data");
-                        JSONArray jsonArray = jsonObject.getJSONArray("relationships");
-                        loadRelationshipsList(jsonArray);
-//                        Thre
+                            return;
+                        }
+                        if (!result.getBoolean("error")) {
 
+                            JSONObject jsonObject = result.getJSONObject("data");
+                            JSONArray jsonArray = jsonObject.getJSONArray("relationships");
+                            loadRelationshipsList(jsonArray);
+                        }else{
+                            AndroidUtils.showAlert("Something went wrong", getContext());
+                        }
                     }else{
-                        AndroidUtils.showAlert("Something went wrong", getContext());
+                        if (!result.getBoolean("error")) {
+
+                            JSONObject jsonObject = result.getJSONObject("data");
+                            JSONArray jsonArray = jsonObject.getJSONArray("relationships");
+                            loadRelationshipsList(jsonArray);
+                        }else{
+                            AndroidUtils.showAlert("Something went wrong", getContext());
+                        }
                     }
+//                    if (!matterTaskCompleted) {
+////                        AndroidUtils.showToast("Please add team members",getContext());
+//                        return;
+//                    }
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -643,9 +747,9 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
             for(int i=0;i<jsonArray.length();i++){
                 RelationshipsDO relationshipsDO = new RelationshipsDO();
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String type =   jsonObject.getString("type");
+//                String type =   ;
 
-                if (type.equals("consumer")){
+                if (jsonObject.getString("type").equals("consumer")){
                     relationshipsDO.setId(jsonObject.getString("id"));
                     relationshipsDO.setName(jsonObject.getString("name"));
                     relationshipsDO.setType(jsonObject.getString("type"));
@@ -657,6 +761,24 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                     entities_list.add(relationshipsDO);
                 }
             }
+            loadEntitiesSpinnerData();
+    }
+
+    private void loadEntitiesSpinnerData() {
+        final CommonSpinnerAdapter adapter = new CommonSpinnerAdapter(getActivity(), entities_list);
+        sp_entities.setAdapter(adapter);
+//        callTimeZoneWebservice();
+        sp_entities.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                offset = Integer.parseInt(timeZonesList.get(sp_time_zone.getSelectedItemPosition()).getGMT());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     private void loadTeamList(JSONArray jsonArray) throws JSONException{
@@ -735,6 +857,9 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 
             }
         });
+        if (Constants.ROLE.equals("AAM")){
+            callClientsWebservice();
+        }
     }
 
     private void loadMattersList(JSONArray matters) throws JSONException {
@@ -769,6 +894,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 
             }
         });
+        callClientsWebservice();
 //            callTeamMemberWebservice();
     }
 

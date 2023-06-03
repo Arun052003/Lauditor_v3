@@ -546,7 +546,7 @@
                 </LinearLayout>
 
                 <RelativeLayout
-                    android:id="@+id/spinnerLayout"
+
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="3dp"
@@ -820,12 +820,6 @@
 
                         </TextView>
 
-                        <ImageView
-                            android:layout_width="15dp"
-                            android:layout_height="10dp"
-                            android:src="@drawable/asterisk_icon">
-
-                        </ImageView>
 
                     </LinearLayout>
 
@@ -934,49 +928,46 @@
 
                         </TextView>
 
-                        <ImageView
-                            android:layout_width="15dp"
-                            android:layout_height="10dp"
-                            android:src="@drawable/asterisk_icon">
-
-                        </ImageView>
 
                     </LinearLayout>
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tl_add_clients"
 
+
+                    <RelativeLayout
+                        android:id="@+id/spinnerLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginRight="3dp"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true"
+                        android:layout_weight=".28"
                         android:background="@drawable/rectangle_grey_background"
-                        android:textColorHint="@color/black"
-                        app:boxBackgroundMode="none">
+                        android:orientation="horizontal">
 
-                        >
-
-                        <TextView
-                            android:id="@+id/at_add_clients"
+                        <Spinner
+                            android:id="@+id/sp_entities"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="55dp"
+                            android:layout_centerVertical="true"
                             android:layout_gravity="center"
-                            android:enabled="true"
-                            android:fontFamily="sans-serif-condensed-medium"
-                            android:padding="15dp"
-                            android:drawableRight="@drawable/spinner_drop_down"
-                            android:text="Select Entity"
-                            android:textColor="@color/Blue_text_color"
-                            android:textSize="15dp" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:background="@android:color/transparent"
+                            android:gravity="center"
+                            android:layout_marginLeft="5dp"
+                            android:spinnerMode="dropdown"/>
 
-                    <Button
-                        android:id="@+id/btn_add_clients"
-                        android:layout_width="80dp"
-                        android:layout_height="wrap_content"
-                        android:text="@string/add"
-                        android:textAllCaps="false"
-                        android:layout_gravity="end">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center"
+                            android:src="@drawable/down_arrow" />
 
-                    </Button>
+                    </RelativeLayout>
+
                 </LinearLayout>
                 <LinearLayout
                     android:id="@+id/selected_clients"
@@ -1044,17 +1035,11 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-condensed-medium"
                             android:textColor="@color/Blue_text_color"
-                            android:text="@string/client_team_members"
+                            android:text="Search Client"
                             android:textSize="@dimen/Fifteen_dp">
 
                         </TextView>
 
-                        <ImageView
-                            android:layout_width="15dp"
-                            android:layout_height="10dp"
-                            android:src="@drawable/asterisk_icon">
-
-                        </ImageView>
 
                     </LinearLayout>
 
@@ -1079,7 +1064,7 @@
                             android:fontFamily="sans-serif-condensed-medium"
                             android:padding="15dp"
                             android:drawableRight="@drawable/spinner_drop_down"
-                            android:text="Select Client Team Members"
+                            android:text="Select Client"
                             android:textColor="@color/Blue_text_color"
                             android:textSize="15dp" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -1131,6 +1116,116 @@
 
                         <LinearLayout
                             android:id="@+id/ll_client_team_members"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/ll_individual"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_below="@id/selected_clients"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_individual"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:textColor="@color/Blue_text_color"
+                            android:text="Add Individual"
+                            android:textSize="@dimen/Fifteen_dp">
+
+                        </TextView>
+
+
+                    </LinearLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tl_individual"
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rectangle_grey_background"
+                        android:textColorHint="@color/black"
+                        app:boxBackgroundMode="none">
+
+                        >
+
+
+                        <TextView
+                            android:id="@+id/at_individual"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:enabled="true"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:padding="15dp"
+                            android:drawableRight="@drawable/spinner_drop_down"
+                            android:text="Select Individual Client"
+                            android:textColor="@color/Blue_text_color"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btn_individual"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/add"
+                        android:textAllCaps="false"
+                        android:layout_gravity="end">
+
+                    </Button>
+                    <LinearLayout
+                        android:id="@+id/select_individual"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:visibility="gone"
+                        android:layout_below="@id/ll_assign_team_members"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tv_selected_individual"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-condensed-medium"
+                                android:text="@string/assign_team_member"
+                                android:textColor="@color/Blue_text_color"
+                                android:textSize="@dimen/Fifteen_dp">
+
+                            </TextView>
+
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="10dp"
+                                android:src="@drawable/asterisk_icon">
+
+                            </ImageView>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_individual_list"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">

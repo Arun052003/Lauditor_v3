@@ -1,5 +1,6 @@
 package com.digicoffer.lauditor.Calendar;
 
+import android.nfc.Tag;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.Calendar.Models.RelationshipsDO;
 import com.digicoffer.lauditor.Calendar.Models.TeamDo;
 import com.digicoffer.lauditor.Matter.Adapters.GroupsAdapter;
 import com.digicoffer.lauditor.Matter.Models.ClientsModel;
@@ -22,20 +24,20 @@ import java.util.ArrayList;
 public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelationshipsAdapter.Viewholder> {
     ArrayList<TeamDo> sharedList = new ArrayList<>();
     ArrayList<TeamDo> list_item = new ArrayList<>();
-    ArrayList<TeamDo> clientsList = new ArrayList<>();
+    ArrayList<RelationshipsDO> individual_list = new ArrayList<>();
     ArrayList<TeamDo> tmList = new ArrayList<>();
     ArrayList<TeamDo> groupsList = new ArrayList<>();
 
-    String TAG = "Groups";
+    String TAG = "TM";
 
 
-    public CommonRelationshipsAdapter( ArrayList<TeamDo> teamList) {
+    public CommonRelationshipsAdapter(ArrayList<TeamDo> teamList,String Tag,ArrayList<RelationshipsDO> individual_list) {
 //        this.sharedList = sharedList;
 //        this.list_item = sharedList;
-//        this.clientsList = clientsList;
+        this.individual_list = individual_list;
         this.tmList = teamList;
 //        this.groupsList = groups_list;
-//        this.TAG = Tag;
+        this.TAG = Tag;
     }
 
     @NonNull
@@ -79,7 +81,8 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
 //                    }
 //                }
 //            });
-//        } else if (TAG == "TM") {
+//        } else
+        if (TAG == "TM") {
             TeamDo teamModel = tmList.get(position);
             holder.cb_documents.setChecked(tmList.get(position).isChecked());
             holder.cb_documents.setTag(position);
@@ -95,7 +98,24 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
                     }
                 }
             });
-//        }else if(TAG == "UGM"){
+        }else{
+            RelationshipsDO relationshipsDO = individual_list.get(position);
+            holder.cb_documents.setChecked(individual_list.get(position).isChecked());
+            holder.cb_documents.setTag(position);
+            holder.tv_tm_name.setText(relationshipsDO.getName());
+            holder.cb_documents.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Integer pos = (Integer) holder.cb_documents.getTag();
+                    if (individual_list.get(pos).isChecked()) {
+                        individual_list.get(pos).setChecked(false);
+                    } else {
+                        individual_list.get(pos).setChecked(true);
+                    }
+                }
+            });
+        }
+//        else if(TAG == "UGM"){
 //            TeamDo viewMatterModel = groupsList.get(position);
 //            holder.cb_documents.setChecked(groupsList.get(position).isChecked());
 //            holder.cb_documents.setTag(position);
@@ -115,8 +135,8 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
 
     }
 
-    public ArrayList<TeamDo> getClientsList_item() {
-        return clientsList;
+    public ArrayList<RelationshipsDO> getIndividual_List() {
+        return individual_list;
     }
 
     public ArrayList<TeamDo> getList_item() {
@@ -139,9 +159,13 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
 //            return clientsList.size();
 //        } else if(TAG == "UGM"){
 //            return groupsList.size();
-//        }else  {
-            return tmList.size();
 //        }
+        if(TAG == "TM")  {
+            return tmList.size();
+        }
+        else{
+            return individual_list.size();
+        }
     }
 
     @Override

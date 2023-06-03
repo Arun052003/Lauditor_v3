@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.digicoffer.lauditor.Calendar.Models.CalendarDo;
+import com.digicoffer.lauditor.Calendar.Models.RelationshipsDO;
 import com.digicoffer.lauditor.Calendar.Models.TaskDo;
 import com.digicoffer.lauditor.Calendar.Models.TeamDo;
 import com.digicoffer.lauditor.ClientRelationships.Model.CountriesDO;
@@ -96,6 +97,8 @@ public class CommonSpinnerAdapter<Object> extends BaseAdapter {
             data = ((TaskDo)listData).getTaskName();
         }if(listData instanceof TeamDo){
             data = ((TeamDo)listData).getName();
+        }if(listData instanceof RelationshipsDO) {
+            data = ((RelationshipsDO)listData).getName();
         }
         listTextView.setText(data);
 

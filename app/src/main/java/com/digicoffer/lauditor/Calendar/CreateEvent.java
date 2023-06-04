@@ -63,7 +63,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     private AlertDialog progressDialog;
     MultiAutoCompleteTextView at_family_members;
     final ArrayList<String> Repetetions = new ArrayList<>();
-    LinearLayout ll_client_team_members, ll_selected_entites, ll_selected_team_members, selected_tm, selected_groups;
+    LinearLayout ll_client_team_members, ll_selected_entites,selected_individual, ll_individual_list,ll_selected_team_members, selected_tm, selected_groups;
     final int[] mHour = new int[1];
     final int[] mMinute = new int[1];
     private boolean timeZonesTaskCompleted = false;
@@ -76,8 +76,9 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     ArrayList<RelationshipsDO> entities_list = new ArrayList<>();
     ArrayList<RelationshipsDO> individual_list = new ArrayList<>();
     ArrayList<RelationshipsDO> selected_individual_list = new ArrayList<>();
+    ArrayList<RelationshipsDO> new_selected_client_list = new ArrayList<>();
     ArrayList<TeamDo> selected_tm_list = new ArrayList<>();
-    private TextView at_add_groups, at_add_clients, at_assigned_team_members;
+    private TextView at_add_groups, at_add_clients, at_assigned_team_members,at_individual;
     private Spinner sp_entities, sp_project, sp_matter_name, sp_task, sp_time_zone, sp_repetetion, sp_add_team_member, sp_add_entity, sp_client_team_members;
     private TextInputEditText tv_event_creation_date, tv_event_start_time, tv_event_end_time, tv_meeting_link, tv_dialing_number, tv_location, tv_description;
     private AppCompatButton add_notification, btn_cancel_timesheet, btn_save_timesheet;
@@ -106,6 +107,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         View view = inflater.inflate(R.layout.create_event, container, false);
         sp_project = view.findViewById(R.id.sp_project);
         sp_matter_name = view.findViewById(R.id.sp_matter_name);
+        at_individual = view.findViewById(R.id.at_individual);
         sp_task = view.findViewById(R.id.sp_task);
         sp_time_zone = view.findViewById(R.id.sp_time_zone);
         sp_repetetion = view.findViewById(R.id.sp_repetetion);
@@ -115,6 +117,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         btn_add_groups = view.findViewById(R.id.btn_add_groups);
         selected_groups = view.findViewById(R.id.selected_groups);
         btn_individual = view.findViewById(R.id.btn_individual);
+        selected_individual = view.findViewById(R.id.selected_individual);
+        ll_individual_list = view.findViewById(R.id.ll_individual_list);
         btn_individual.setOnClickListener(this);
         btn_add_groups.setOnClickListener(this);
 //        btn_add_clients = view.findViewById(R.id.btn_add_clients);
@@ -293,7 +297,6 @@ try{
                 RelationshipsDO teamModel = individual_list.get(i);
                 teamModel.setChecked(true);
 //                        selected_groups_list.set(j,documentsModel);
-
             }
         }
     }
@@ -328,16 +331,18 @@ try{
         btn_save_group.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for (int i = 0; i < documentsAdapter.getTmList().size(); i++) {
+                for (int i = 0; i < documentsAdapter.getIndividual_List().size(); i++) {
                     RelationshipsDO teamModel = documentsAdapter.getIndividual_List().get(i);
                     if (teamModel.isChecked()) {
                         selected_individual_list.add(teamModel);
+//                        AndroidUtils.showAlert(selected_individual_list.toString(),getContext());
+//                        new_selected_individual_list.add(teamModel);
                         //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
                     }
                 }
 
 
-                loadSelectedTM();
+                loadSelectedIndividual();
                 dialog.dismiss();
             }
         });
@@ -352,6 +357,68 @@ try{
     }
 
 }
+
+    private void loadSelectedIndividual() {
+
+        String[] value = new String[selected_individual_list.size()];
+        for (int i = 0; i < selected_individual_list.size(); i++) {
+//                                value += "," + family_members.get(i);
+//                               value.add(family_members.get(i));
+            value[i] = selected_individual_list.get(i).getName();
+
+        }
+
+        String str = String.join(",", value);
+        at_individual.setText(str);
+        if (selected_individual_list.size()==0){
+            selected_individual.setVisibility(View.GONE);
+        }else{
+            selected_individual.setVisibility(View.VISIBLE);
+        }
+
+        ll_individual_list.removeAllViews();
+        for (int i = 0; i < selected_individual_list.size(); i++) {
+            View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);
+            TextView tv_opponent_name = view_opponents.findViewById(R.id.tv_opponent_name);
+            tv_opponent_name.setText(selected_individual_list.get(i).getName());
+            ImageView iv_edit_opponent = view_opponents.findViewById(R.id.iv_edit_opponent);
+            ImageView iv_remove_opponent = view_opponents.findViewById(R.id.iv_remove_opponent);
+            iv_remove_opponent.setTag(i);
+            iv_remove_opponent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        int position = 0;
+                        if (v.getTag() instanceof Integer) {
+                            position = (Integer) v.getTag();
+                            v = ll_individual_list.getChildAt(position);
+                            ll_individual_list.removeView(v);
+//                            ll_selected_groups.addView(view_opponents,position);
+                            RelationshipsDO teamModel = selected_individual_list.get(position);
+                            teamModel.setChecked(false);
+                            selected_individual_list.remove(position);
+                            if (selected_individual_list.size()==0){
+                                selected_individual.setVisibility(View.GONE);
+                            }
+//                            selected_groups_list.set(position, groupsModel);
+                            String[] value = new String[selected_individual_list.size()];
+                            for (int i = 0; i < selected_individual_list.size(); i++) {
+                                value[i] = selected_individual_list.get(i).getName();
+                            }
+
+                            String str = String.join(",", value);
+                            at_individual.setText(str);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        AndroidUtils.showAlert(e.getMessage(), getContext());
+                    }
+                }
+            });
+            iv_edit_opponent.setVisibility(View.GONE);
+            ll_individual_list.addView(view_opponents);
+        }
+    }
 
 
     private void callClientsWebservice() {
@@ -434,6 +501,58 @@ try{
         } catch (Exception e) {
             e.printStackTrace();
             AndroidUtils.showAlert(e.getMessage(), getContext());
+        }
+    }
+    private void loadSelectedClients(){
+        String[] value = new String[new_selected_client_list.size()];
+        for (int i = 0; i <  new_selected_client_list.size(); i++) {
+//                                value += "," + family_members.get(i);
+//                               value.add(family_members.get(i));
+            value[i] =  new_selected_client_list.get(i).getName();
+        }
+
+        String str = String.join(",", value);
+        at_add_groups.setText(str);
+        selected_groups.setVisibility(View.VISIBLE);
+        ll_client_team_members.removeAllViews();
+        for (int i = 0; i <  new_selected_client_list.size(); i++) {
+            View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);
+            TextView tv_opponent_name = view_opponents.findViewById(R.id.tv_opponent_name);
+            tv_opponent_name.setText( new_selected_client_list.get(i).getName());
+            ImageView iv_edit_opponent = view_opponents.findViewById(R.id.iv_edit_opponent);
+            ImageView iv_remove_opponent = view_opponents.findViewById(R.id.iv_remove_opponent);
+            iv_remove_opponent.setTag(i);
+            iv_remove_opponent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        int position = 0;
+                        if (v.getTag() instanceof Integer) {
+                            position = (Integer) v.getTag();
+                            v = ll_client_team_members.getChildAt(position);
+                            ll_client_team_members.removeView(v);
+//                            ll_selected_groups.addView(view_opponents,position);
+                            RelationshipsDO teamModel =  new_selected_client_list.get(position);
+                            teamModel.setChecked(false);
+                            new_selected_client_list.remove(position);
+//                            selected_groups_list.set(position, groupsModel);
+                            String[] value = new String[ new_selected_client_list.size()];
+                            for (int i = 0; i <  new_selected_client_list.size(); i++) {
+                                value[i] =  new_selected_client_list.get(i).getName();
+                            }
+
+                            String str = String.join(",", value);
+                            at_assigned_team_members.setText(str);
+                        }
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                        AndroidUtils.showAlert(e.getMessage(), getContext());
+                    }
+                }
+            });
+            iv_edit_opponent.setVisibility(View.GONE);
+            ll_client_team_members.addView(view_opponents);
         }
     }
     private void loadSelectedTM() {

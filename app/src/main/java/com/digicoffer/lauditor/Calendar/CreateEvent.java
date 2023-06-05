@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.nfc.Tag;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
-import android.util.Log;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,17 +25,16 @@ import android.widget.TimePicker;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Calendar.Models.CalendarDo;
+import com.digicoffer.lauditor.Calendar.Models.MinutesDO;
 import com.digicoffer.lauditor.Calendar.Models.RelationshipsDO;
 import com.digicoffer.lauditor.Calendar.Models.TaskDo;
 import com.digicoffer.lauditor.Calendar.Models.TeamDo;
-import com.digicoffer.lauditor.Matter.Adapters.GroupsAdapter;
-import com.digicoffer.lauditor.Matter.Models.GroupsModel;
-import com.digicoffer.lauditor.Matter.Models.TeamModel;
 import com.digicoffer.lauditor.Matter.Models.ViewMatterModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
@@ -50,7 +49,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.pgpainless.key.selection.key.util.And;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,31 +61,39 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     private AlertDialog progressDialog;
     MultiAutoCompleteTextView at_family_members;
     final ArrayList<String> Repetetions = new ArrayList<>();
-    LinearLayout ll_client_team_members, ll_selected_entites,selected_individual, ll_individual_list,ll_selected_team_members, selected_tm, selected_groups;
+    JSONArray notification = new JSONArray();
+    LinearLayout ll_client_team_members, ll_selected_entites, selected_individual, ll_individual_list, ll_selected_team_members, selected_tm, selected_groups;
     final int[] mHour = new int[1];
     final int[] mMinute = new int[1];
+    private ArrayList<String> selectedValues = new ArrayList<>();
+    String selected_hour_type = "";
     private boolean timeZonesTaskCompleted = false;
+
     private boolean matterTaskCompleted = false;
     private boolean tmTaskCompleted = false;
     final String[] AM_PM = new String[1];
     int offset;
     private Button btn_add_groups, btn_add_clients, btn_assigned_team_members, btn_individual;
     String team_member_id;
+    int adapter_position = 0;
     ArrayList<RelationshipsDO> entities_list = new ArrayList<>();
     ArrayList<RelationshipsDO> individual_list = new ArrayList<>();
     ArrayList<RelationshipsDO> selected_individual_list = new ArrayList<>();
+    ArrayList<RelationshipsDO> selected_entity_client_list = new ArrayList<>();
     ArrayList<RelationshipsDO> new_selected_client_list = new ArrayList<>();
+    ArrayList<RelationshipsDO> entity_client_list = new ArrayList<>();
     ArrayList<TeamDo> selected_tm_list = new ArrayList<>();
-    private TextView at_add_groups, at_add_clients, at_assigned_team_members,at_individual;
+    private TextView at_add_groups, at_add_clients, at_assigned_team_members, at_individual;
     private Spinner sp_entities, sp_project, sp_matter_name, sp_task, sp_time_zone, sp_repetetion, sp_add_team_member, sp_add_entity, sp_client_team_members;
     private TextInputEditText tv_event_creation_date, tv_event_start_time, tv_event_end_time, tv_meeting_link, tv_dialing_number, tv_location, tv_description;
     private AppCompatButton add_notification, btn_cancel_timesheet, btn_save_timesheet;
     private String selected_project;
     private String selected_matter;
     private String selected_task;
+
     Hashtable<String, Integer> timesPosHash = new Hashtable<>();
     ArrayList<TimeZonesDO> timeZonesList = new ArrayList<TimeZonesDO>();
-    private LinearLayout ll_project, ll_matter_name, ll_message, ll_task;
+    private LinearLayout ll_project, ll_matter_name, ll_message, ll_task, ll_add_notification;
     ArrayList<CalendarDo> projectList = new ArrayList<>();
     ArrayList<ViewMatterModel> matterList = new ArrayList<>();
     ArrayList<TeamDo> teamList = new ArrayList<>();
@@ -112,7 +118,10 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         sp_time_zone = view.findViewById(R.id.sp_time_zone);
         sp_repetetion = view.findViewById(R.id.sp_repetetion);
         at_add_groups = view.findViewById(R.id.at_add_groups);
+        ll_add_notification = view.findViewById(R.id.ll_add_notification);
         sp_entities = view.findViewById(R.id.sp_entities);
+        add_notification = view.findViewById(R.id.add_notification);
+        add_notification.setOnClickListener(this);
         at_assigned_team_members = view.findViewById(R.id.at_assigned_team_members);
         btn_add_groups = view.findViewById(R.id.btn_add_groups);
         selected_groups = view.findViewById(R.id.selected_groups);
@@ -284,79 +293,190 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
             case R.id.btn_individual:
                 load_individual_Popup();
                 break;
-//            case R.id.btn_assigned_team_members:
+            case R.id.btn_assigned_team_members:
+                loadEntityClientPopup();
+                break;
+            case R.id.add_notification:
+                NotificationPopup();
+                break;
         }
 
     }
 
+    private void NotificationPopup() {
+        View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.add_calendar_notification, null);
+        Spinner sp_minutes = view_opponents.findViewById(R.id.sp_minutes);
+        ArrayList<MinutesDO> minutes_list = new ArrayList<>();
+        minutes_list.add(new MinutesDO("Minutes"));
+        minutes_list.add(new MinutesDO("Hours"));
+        minutes_list.add(new MinutesDO("Days"));
+        minutes_list.add(new MinutesDO("Weeks"));
+        TextInputEditText tv_numbers = view_opponents.findViewById(R.id.tv_numbers);
+        ImageView iv_delete_notification = view_opponents.findViewById(R.id.iv_delete_notification);
+        tv_numbers.setText("1");
+        final int position =  ll_add_notification.getChildCount();
+        ll_add_notification.setTag(position);
+        final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) getContext(), minutes_list);
+        sp_minutes.setAdapter(spinner_adapter);
+        sp_minutes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                selected_hour_type = minutes_list.get(adapterView.getSelectedItemPosition()).getName();
+                selectedValues.clear();
+                loadnewInput(tv_numbers);
+                View selectedView = ll_add_notification.getChildAt(i);
+                AppCompatSpinner selectedSpinnerTextView = selectedView.findViewById(R.id.sp_minutes);
+                selectedSpinnerTextView.setSelection(i);
+                if (i >= 0 && i < selectedValues.size()) {
+                    selectedValues.set(i, selected_hour_type + ": " + tv_numbers.getText().toString());
+                }
+//                loadUpdatedInput(tv_numbers);
+//              position = i;
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+//        iv_delete_notification.setTag();
+        iv_delete_notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = ll_add_notification.indexOfChild(view_opponents);
+
+                // Remove the view from the LinearLayout
+                ll_add_notification.removeView(view_opponents);
+
+                // Remove the view from the ArrayList
+//                selectedValues.remove(position);
+            }
+        });
+
+        ll_add_notification.addView(view_opponents);
+        selectedValues.add(selected_hour_type + ": " + tv_numbers.getText().toString());
+
+    }
+
+    private void loadnewInput(TextInputEditText tv_numbers) {
+        View parentView = (View) tv_numbers.getParent();
+        TextView inputFieldValueTextView = parentView.findViewById(R.id.tv_numbers);
+        inputFieldValueTextView.setText(tv_numbers.getText().toString());
+        int position = ll_add_notification.indexOfChild(parentView);
+        if (position >= 0 && position < selectedValues.size()) {
+            // Update the input field value in the ArrayList
+            selectedValues.set(position, selected_hour_type + ": " + tv_numbers.getText().toString());
+        }
+    }
+
+    private void loadUpdatedInput(TextInputEditText tv_numbers) {
+        tv_numbers.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Do nothing
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Do nothing
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                loadTextchangedData(s,tv_numbers,selected_hour_type);
+            }
+        });
+    }
+
+    private void loadTextchangedData(Editable s, TextInputEditText tv_numbers, String selected_hour_type){
+//        if (!s.toString().isEmpty()) {
+            int number = Integer.parseInt(tv_numbers.getText().toString());
+//            if (number > 4) {
+//                tv_numbers.setText("4");
+//                tv_numbers.setSelection(tv_numbers.getText().length());
+//            } else if (number <= 0) {
+//                tv_numbers.setText("1");
+//                tv_numbers.setSelection(tv_numbers.getText().length());
+//
+//            }
+            String value = number + "-"+selected_hour_type.toLowerCase(Locale.ROOT);
+//            selectedValues.set(position, value);
+//                                notification.put(selectedValues);
+            StringBuilder sb = new StringBuilder();
+            for (String notification : selectedValues) {
+                sb.append(notification).append("\n");
+            }
+            AndroidUtils.showToast(sb.toString(),getContext());
+//        }
+    }
     private void load_individual_Popup() {
-try{
-    for (int i = 0; i < individual_list.size(); i++) {
-        for (int j = 0; j < selected_individual_list.size(); j++) {
-            if (individual_list.get(i).getId().matches(selected_individual_list.get(j).getId())) {
-                RelationshipsDO teamModel = individual_list.get(i);
-                teamModel.setChecked(true);
+        try {
+            for (int i = 0; i < individual_list.size(); i++) {
+                for (int j = 0; j < selected_individual_list.size(); j++) {
+                    if (individual_list.get(i).getId().matches(selected_individual_list.get(j).getId())) {
+                        RelationshipsDO teamModel = individual_list.get(i);
+                        teamModel.setChecked(true);
 //                        selected_groups_list.set(j,documentsModel);
-            }
-        }
-    }
-        selected_individual_list.clear();
-//            selected_tm_list.clear();
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.groups_list_adapter, null);
-        RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
-        ImageView iv_cancel = view.findViewById(R.id.close_groups);
-        AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
-        AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        rv_groups.setLayoutManager(layoutManager);
-        rv_groups.setHasFixedSize(true);
-        ADAPTER_TAG = "INDIVIDUAL";
-        CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list);
-        rv_groups.setAdapter(documentsAdapter);
-        AlertDialog dialog = dialogBuilder.create();
-        iv_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-        btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-        btn_save_group.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                for (int i = 0; i < documentsAdapter.getIndividual_List().size(); i++) {
-                    RelationshipsDO teamModel = documentsAdapter.getIndividual_List().get(i);
-                    if (teamModel.isChecked()) {
-                        selected_individual_list.add(teamModel);
-//                        AndroidUtils.showAlert(selected_individual_list.toString(),getContext());
-//                        new_selected_individual_list.add(teamModel);
-                        //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
                     }
                 }
-
-
-                loadSelectedIndividual();
-                dialog.dismiss();
             }
-        });
-        dialog.setCancelable(false);
-        dialog.setView(view);
-        dialog.show();
-    } catch(Exception e)
+            selected_individual_list.clear();
+//            selected_tm_list.clear();
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View view = inflater.inflate(R.layout.groups_list_adapter, null);
+            RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
+            ImageView iv_cancel = view.findViewById(R.id.close_groups);
+            AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
+            AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+            rv_groups.setLayoutManager(layoutManager);
+            rv_groups.setHasFixedSize(true);
+            ADAPTER_TAG = "INDIVIDUAL";
+            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list);
+            rv_groups.setAdapter(documentsAdapter);
+            AlertDialog dialog = dialogBuilder.create();
+            iv_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            btn_save_group.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    for (int i = 0; i < documentsAdapter.getIndividual_List().size(); i++) {
+                        RelationshipsDO teamModel = documentsAdapter.getIndividual_List().get(i);
+                        if (teamModel.isChecked()) {
+                            selected_individual_list.add(teamModel);
+//                        AndroidUtils.showAlert(selected_individual_list.toString(),getContext());
+//                        new_selected_individual_list.add(teamModel);
+                            //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
+                        }
+                    }
 
-    {
-        e.printStackTrace();
-        AndroidUtils.showAlert(e.getMessage(), getContext());
+
+                    loadSelectedIndividual();
+                    dialog.dismiss();
+                }
+            });
+            dialog.setCancelable(false);
+            dialog.setView(view);
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            AndroidUtils.showAlert(e.getMessage(), getContext());
+        }
+
     }
-
-}
 
     private void loadSelectedIndividual() {
 
@@ -370,9 +490,9 @@ try{
 
         String str = String.join(",", value);
         at_individual.setText(str);
-        if (selected_individual_list.size()==0){
+        if (selected_individual_list.size() == 0) {
             selected_individual.setVisibility(View.GONE);
-        }else{
+        } else {
             selected_individual.setVisibility(View.VISIBLE);
         }
 
@@ -397,7 +517,7 @@ try{
                             RelationshipsDO teamModel = selected_individual_list.get(position);
                             teamModel.setChecked(false);
                             selected_individual_list.remove(position);
-                            if (selected_individual_list.size()==0){
+                            if (selected_individual_list.size() == 0) {
                                 selected_individual.setVisibility(View.GONE);
                             }
 //                            selected_groups_list.set(position, groupsModel);
@@ -464,7 +584,7 @@ try{
             rv_groups.setLayoutManager(layoutManager);
             rv_groups.setHasFixedSize(true);
             ADAPTER_TAG = "TM";
-            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList,ADAPTER_TAG,individual_list);
+            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list);
             rv_groups.setAdapter(documentsAdapter);
             AlertDialog dialog = dialogBuilder.create();
             iv_cancel.setOnClickListener(new View.OnClickListener() {
@@ -503,22 +623,22 @@ try{
             AndroidUtils.showAlert(e.getMessage(), getContext());
         }
     }
-    private void loadSelectedClients(){
-        String[] value = new String[new_selected_client_list.size()];
-        for (int i = 0; i <  new_selected_client_list.size(); i++) {
+
+    private void loadSelectedClients() {
+        String[] value = new String[selected_entity_client_list.size()];
+        for (int i = 0; i < selected_entity_client_list.size(); i++) {
 //                                value += "," + family_members.get(i);
 //                               value.add(family_members.get(i));
-            value[i] =  new_selected_client_list.get(i).getName();
+            value[i] = selected_entity_client_list.get(i).getName();
         }
-
         String str = String.join(",", value);
-        at_add_groups.setText(str);
-        selected_groups.setVisibility(View.VISIBLE);
+        at_assigned_team_members.setText(str);
+        selected_tm.setVisibility(View.VISIBLE);
         ll_client_team_members.removeAllViews();
-        for (int i = 0; i <  new_selected_client_list.size(); i++) {
+        for (int i = 0; i < selected_entity_client_list.size(); i++) {
             View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);
             TextView tv_opponent_name = view_opponents.findViewById(R.id.tv_opponent_name);
-            tv_opponent_name.setText( new_selected_client_list.get(i).getName());
+            tv_opponent_name.setText(selected_entity_client_list.get(i).getName());
             ImageView iv_edit_opponent = view_opponents.findViewById(R.id.iv_edit_opponent);
             ImageView iv_remove_opponent = view_opponents.findViewById(R.id.iv_remove_opponent);
             iv_remove_opponent.setTag(i);
@@ -532,20 +652,19 @@ try{
                             v = ll_client_team_members.getChildAt(position);
                             ll_client_team_members.removeView(v);
 //                            ll_selected_groups.addView(view_opponents,position);
-                            RelationshipsDO teamModel =  new_selected_client_list.get(position);
+                            RelationshipsDO teamModel = selected_entity_client_list.get(position);
                             teamModel.setChecked(false);
-                            new_selected_client_list.remove(position);
+                            selected_entity_client_list.remove(position);
 //                            selected_groups_list.set(position, groupsModel);
-                            String[] value = new String[ new_selected_client_list.size()];
-                            for (int i = 0; i <  new_selected_client_list.size(); i++) {
-                                value[i] =  new_selected_client_list.get(i).getName();
+                            String[] value = new String[selected_entity_client_list.size()];
+                            for (int i = 0; i < selected_entity_client_list.size(); i++) {
+                                value[i] = selected_entity_client_list.get(i).getName();
                             }
 
                             String str = String.join(",", value);
                             at_assigned_team_members.setText(str);
                         }
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         AndroidUtils.showAlert(e.getMessage(), getContext());
                     }
@@ -555,6 +674,7 @@ try{
             ll_client_team_members.addView(view_opponents);
         }
     }
+
     private void loadSelectedTM() {
         String[] value = new String[selected_tm_list.size()];
         for (int i = 0; i < selected_tm_list.size(); i++) {
@@ -607,6 +727,7 @@ try{
             ll_selected_team_members.addView(view_opponents);
         }
     }
+
     private void loadProjectData(String selected_project) {
         switch (selected_project) {
 
@@ -763,6 +884,7 @@ try{
             e.printStackTrace();
         }
     }
+
     private void callTeamMemberWebservice() {
         try {
             progressDialog = AndroidUtils.get_progress(getActivity());
@@ -776,6 +898,7 @@ try{
             e.printStackTrace();
         }
     }
+
     @Override
     public void onAsyncTaskComplete(HttpResultDo httpResult) {
         if (progressDialog.isShowing() && progressDialog != null) {
@@ -806,11 +929,10 @@ try{
                         load_timezones(jsonArray);
 //                        Thre
                         timeZonesTaskCompleted = true;
-                    }else{
+                    } else {
                         AndroidUtils.showAlert("Something went wrong", getContext());
                     }
-                }
-                else if(httpResult.getRequestType().equals("Team List")){
+                } else if (httpResult.getRequestType().equals("Team List")) {
                     if (!matterTaskCompleted) {
 
                         return;
@@ -821,11 +943,11 @@ try{
                         tmTaskCompleted = true;
 //                        Thre
 
-                    }else{
+                    } else {
                         AndroidUtils.showAlert("Something went wrong", getContext());
                     }
-                }else if(httpResult.getRequestType().equals("Client List")){
-                    if(Constants.ROLE.equals("AAM")){
+                } else if (httpResult.getRequestType().equals("Client List")) {
+                    if (Constants.ROLE.equals("AAM")) {
                         if (!timeZonesTaskCompleted) {
 
                             return;
@@ -835,16 +957,16 @@ try{
                             JSONObject jsonObject = result.getJSONObject("data");
                             JSONArray jsonArray = jsonObject.getJSONArray("relationships");
                             loadRelationshipsList(jsonArray);
-                        }else{
+                        } else {
                             AndroidUtils.showAlert("Something went wrong", getContext());
                         }
-                    }else{
+                    } else {
                         if (!result.getBoolean("error")) {
 
                             JSONObject jsonObject = result.getJSONObject("data");
                             JSONArray jsonArray = jsonObject.getJSONArray("relationships");
                             loadRelationshipsList(jsonArray);
-                        }else{
+                        } else {
                             AndroidUtils.showAlert("Something went wrong", getContext());
                         }
                     }
@@ -853,6 +975,13 @@ try{
 //                        return;
 //                    }
 
+                } else if (httpResult.getRequestType().equals("Entity Client List")) {
+                    if (!result.getBoolean("error")) {
+                        JSONArray jsonArray = result.getJSONArray("users");
+                        loadEntity_Clients(jsonArray);
+                    } else {
+                        AndroidUtils.showAlert("Something went wrong", getContext());
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -862,25 +991,105 @@ try{
         }
     }
 
-    private void loadRelationshipsList(JSONArray jsonArray) throws JSONException {
-            for(int i=0;i<jsonArray.length();i++){
-                RelationshipsDO relationshipsDO = new RelationshipsDO();
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-//                String type =   ;
+    private void loadEntity_Clients(JSONArray jsonArray) throws JSONException {
+        entity_client_list.clear();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            RelationshipsDO relationshipsDO = new RelationshipsDO();
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            relationshipsDO.setId(jsonObject.getString("id"));
+            relationshipsDO.setName(jsonObject.getString("name"));
+            entity_client_list.add(relationshipsDO);
+        }
 
-                if (jsonObject.getString("type").equals("consumer")){
-                    relationshipsDO.setId(jsonObject.getString("id"));
-                    relationshipsDO.setName(jsonObject.getString("name"));
-                    relationshipsDO.setType(jsonObject.getString("type"));
-                    individual_list.add(relationshipsDO);
-                }else{
-                    relationshipsDO.setId(jsonObject.getString("id"));
-                    relationshipsDO.setName(jsonObject.getString("name"));
-                    relationshipsDO.setType(jsonObject.getString("type"));
-                    entities_list.add(relationshipsDO);
+//        loadSelectedClients();
+    }
+
+    private void loadEntityClientPopup() {
+        try {
+            for (int i = 0; i < entity_client_list.size(); i++) {
+                for (int j = 0; j < selected_entity_client_list.size(); j++) {
+                    if (entity_client_list.get(i).getId().matches(selected_entity_client_list.get(j).getId())) {
+                        RelationshipsDO teamModel = entity_client_list.get(i);
+                        teamModel.setChecked(true);
+//                        selected_groups_list.set(j,documentsModel);
+                    }
                 }
             }
-            loadEntitiesSpinnerData();
+            selected_entity_client_list.clear();
+//            selected_tm_list.clear();
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View view = inflater.inflate(R.layout.groups_list_adapter, null);
+            RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
+            ImageView iv_cancel = view.findViewById(R.id.close_groups);
+            AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
+            AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+            rv_groups.setLayoutManager(layoutManager);
+            rv_groups.setHasFixedSize(true);
+            ADAPTER_TAG = "ENTITY";
+            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list);
+            rv_groups.setAdapter(documentsAdapter);
+            AlertDialog dialog = dialogBuilder.create();
+            iv_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            btn_save_group.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    for (int i = 0; i < documentsAdapter.getEntity_client_list().size(); i++) {
+                        RelationshipsDO teamModel = documentsAdapter.getEntity_client_list().get(i);
+                        if (teamModel.isChecked()) {
+                            selected_entity_client_list.add(teamModel);
+//                        AndroidUtils.showAlert(selected_individual_list.toString(),getContext());
+//                        new_selected_client_list.add(teamModel);
+                            //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
+                        }
+                    }
+                    loadSelectedClients();
+                    dialog.dismiss();
+                }
+            });
+            dialog.setCancelable(false);
+            dialog.setView(view);
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            AndroidUtils.showAlert(e.getMessage(), getContext());
+        }
+
+    }
+
+    private void loadRelationshipsList(JSONArray jsonArray) throws JSONException {
+        individual_list.clear();
+        entities_list.clear();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            RelationshipsDO relationshipsDO = new RelationshipsDO();
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+//                String type =   ;
+
+            if (jsonObject.getString("type").equals("consumer")) {
+                relationshipsDO.setId(jsonObject.getString("id"));
+                relationshipsDO.setName(jsonObject.getString("name"));
+                relationshipsDO.setType(jsonObject.getString("type"));
+                individual_list.add(relationshipsDO);
+            } else {
+                relationshipsDO.setId(jsonObject.getString("id"));
+                relationshipsDO.setName(jsonObject.getString("name"));
+                relationshipsDO.setType(jsonObject.getString("type"));
+                entities_list.add(relationshipsDO);
+            }
+        }
+        loadEntitiesSpinnerData();
     }
 
     private void loadEntitiesSpinnerData() {
@@ -890,7 +1099,9 @@ try{
         sp_entities.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                offset = Integer.parseInt(timeZonesList.get(sp_time_zone.getSelectedItemPosition()).getGMT());
+
+                String id = entities_list.get(sp_entities.getSelectedItemPosition()).getId();
+                callEntityClientWebservice(id);
             }
 
             @Override
@@ -900,9 +1111,23 @@ try{
         });
     }
 
-    private void loadTeamList(JSONArray jsonArray) throws JSONException{
+    private void callEntityClientWebservice(String id) {
+        try {
+            progressDialog = AndroidUtils.get_progress(getActivity());
+            JSONObject postdata = new JSONObject();
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "related/entities/tms/" + id, "Entity Client List", postdata.toString());
+        } catch (Exception e) {
+            AndroidUtils.showToast(e.getMessage(), getContext());
+            if (progressDialog != null && progressDialog.isShowing()) {
+                AndroidUtils.dismiss_dialog(progressDialog);
+            }
+            e.printStackTrace();
+        }
+    }
+
+    private void loadTeamList(JSONArray jsonArray) throws JSONException {
         teamList.clear();
-        for(int i=0;i<jsonArray.length();i++){
+        for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             TeamDo teamDo = new TeamDo();
             teamDo.setId(jsonObject.getString("id"));
@@ -976,7 +1201,7 @@ try{
 
             }
         });
-        if (Constants.ROLE.equals("AAM")){
+        if (Constants.ROLE.equals("AAM")) {
             callClientsWebservice();
         }
     }

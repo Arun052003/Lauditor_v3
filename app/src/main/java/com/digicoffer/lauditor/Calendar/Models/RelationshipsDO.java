@@ -4,9 +4,19 @@ public class RelationshipsDO {
     String id;
     String name;
     String type;
+    String entity_id;
     private boolean isSelected;
     boolean isChecked;
     boolean isenabled;
+
+
+    public String getEntity_id() {
+        return entity_id;
+    }
+
+    public void setEntity_id(String entity_id) {
+        this.entity_id = entity_id;
+    }
 
     public boolean isSelected() {
         return isSelected;

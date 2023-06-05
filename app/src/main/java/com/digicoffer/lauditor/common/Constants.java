@@ -5,6 +5,7 @@ public class Constants {
     public static String TOKEN = "";
     public static String NAME = "";
     public static String PROBIZ_TYPE = "";
+    public static String ENTITY_ID = "";
     public static String pdfFilePath;
     public static Boolean ISPRODUCTION = false;
     public static String MATTER_TYPE = "";

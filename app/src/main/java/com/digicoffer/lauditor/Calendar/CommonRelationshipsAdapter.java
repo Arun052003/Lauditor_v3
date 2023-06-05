@@ -26,17 +26,16 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
     ArrayList<TeamDo> list_item = new ArrayList<>();
     ArrayList<RelationshipsDO> individual_list = new ArrayList<>();
     ArrayList<TeamDo> tmList = new ArrayList<>();
-    ArrayList<TeamDo> groupsList = new ArrayList<>();
+    ArrayList<RelationshipsDO> entity_client_list = new ArrayList<>();
 
     String TAG = "TM";
 
 
-    public CommonRelationshipsAdapter(ArrayList<TeamDo> teamList,String Tag,ArrayList<RelationshipsDO> individual_list) {
-//        this.sharedList = sharedList;
-//        this.list_item = sharedList;
+    public CommonRelationshipsAdapter(ArrayList<TeamDo> teamList,String Tag,ArrayList<RelationshipsDO> individual_list,ArrayList<RelationshipsDO> entity_client_list) {
+
+        this.entity_client_list = entity_client_list;
         this.individual_list = individual_list;
         this.tmList = teamList;
-//        this.groupsList = groups_list;
         this.TAG = Tag;
     }
 
@@ -49,39 +48,7 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
 
     @Override
     public void onBindViewHolder(@NonNull CommonRelationshipsAdapter.Viewholder holder, int position) {
-//        if (TAG == "Groups") {
-//            TeamDo groupsModel = sharedList.get(position);
-//            holder.cb_documents.setChecked(sharedList.get(position).isChecked());
-//            holder.cb_documents.setTag(position);
-//            holder.tv_tm_name.setText(groupsModel.getName());
-//            holder.cb_documents.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Integer pos = (Integer) holder.cb_documents.getTag();
-//                    if (sharedList.get(pos).isChecked()) {
-//                        sharedList.get(pos).setChecked(false);
-//                    } else {
-//                        sharedList.get(pos).setChecked(true);
-//                    }
-//                }
-//            });
-//        } else if (TAG == "Clients") {
-//            TeamDo clientsModel = clientsList.get(position);
-//            holder.cb_documents.setChecked(clientsList.get(position).isChecked());
-//            holder.cb_documents.setTag(position);
-//            holder.tv_tm_name.setText(clientsModel.getName());
-//            holder.cb_documents.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Integer pos = (Integer) holder.cb_documents.getTag();
-//                    if (clientsList.get(pos).isChecked()) {
-//                        clientsList.get(pos).setChecked(false);
-//                    } else {
-//                        clientsList.get(pos).setChecked(true);
-//                    }
-//                }
-//            });
-//        } else
+
         if (TAG == "TM") {
             TeamDo teamModel = tmList.get(position);
             holder.cb_documents.setChecked(tmList.get(position).isChecked());
@@ -98,7 +65,7 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
                     }
                 }
             });
-        }else{
+        }else if(TAG == "INDIVIDUAL"){
             RelationshipsDO relationshipsDO = individual_list.get(position);
             holder.cb_documents.setChecked(individual_list.get(position).isChecked());
             holder.cb_documents.setTag(position);
@@ -114,24 +81,23 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
                     }
                 }
             });
+        }else {
+            RelationshipsDO relationshipsDO = entity_client_list.get(position);
+            holder.cb_documents.setChecked(entity_client_list.get(position).isChecked());
+            holder.cb_documents.setTag(position);
+            holder.tv_tm_name.setText(relationshipsDO.getName());
+            holder.cb_documents.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Integer pos = (Integer) holder.cb_documents.getTag();
+                    if (entity_client_list.get(pos).isChecked()) {
+                        entity_client_list.get(pos).setChecked(false);
+                    } else {
+                        entity_client_list.get(pos).setChecked(true);
+                    }
+                }
+            });
         }
-//        else if(TAG == "UGM"){
-//            TeamDo viewMatterModel = groupsList.get(position);
-//            holder.cb_documents.setChecked(groupsList.get(position).isChecked());
-//            holder.cb_documents.setTag(position);
-//            holder.tv_tm_name.setText(viewMatterModel.getName());
-//            holder.cb_documents.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Integer pos = (Integer) holder.cb_documents.getTag();
-//                    if (groupsList.get(pos).isChecked()) {
-//                        groupsList.get(pos).setChecked(false);
-//                    } else {
-//                        groupsList.get(pos).setChecked(true);
-//                    }
-//                }
-//            });
-//        }
 
     }
 
@@ -147,8 +113,8 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
         return tmList;
     }
 
-    public ArrayList<TeamDo> getGroupsList(){
-        return groupsList;
+    public ArrayList<RelationshipsDO> getEntity_client_list(){
+        return entity_client_list;
     }
 
     @Override
@@ -163,8 +129,10 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
         if(TAG == "TM")  {
             return tmList.size();
         }
-        else{
+        else if(TAG == "INDIVIDUAL"){
             return individual_list.size();
+        }else{
+            return entity_client_list.size();
         }
     }
 

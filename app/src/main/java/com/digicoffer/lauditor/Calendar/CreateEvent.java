@@ -350,6 +350,27 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
             }
         });
 
+
+        tv_numbers.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // Do nothing
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // Update the corresponding value in the ArrayList
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (position >= 0 && position < selectedValues.size()) {
+                    selectedValues.set(position, selected_hour_type + ": " + editable.toString());
+                }
+                // Do nothing
+            }
+        });
         iv_delete_notification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

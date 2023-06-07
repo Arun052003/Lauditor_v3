@@ -25,7 +25,6 @@ import android.widget.TimePicker;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -314,25 +313,35 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         TextInputEditText tv_numbers = view_opponents.findViewById(R.id.tv_numbers);
         ImageView iv_delete_notification = view_opponents.findViewById(R.id.iv_delete_notification);
         tv_numbers.setText("1");
-        final int position =  ll_add_notification.getChildCount();
-        ll_add_notification.setTag(position);
+        final int position = ll_add_notification.getChildCount();
+
+// Set the position as a tag to the view
+        view_opponents.setTag(position);
+
         final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) getContext(), minutes_list);
         sp_minutes.setAdapter(spinner_adapter);
         sp_minutes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 selected_hour_type = minutes_list.get(adapterView.getSelectedItemPosition()).getName();
-                selectedValues.clear();
-                loadnewInput(tv_numbers);
-                View selectedView = ll_add_notification.getChildAt(i);
-                AppCompatSpinner selectedSpinnerTextView = selectedView.findViewById(R.id.sp_minutes);
-                selectedSpinnerTextView.setSelection(i);
-                if (i >= 0 && i < selectedValues.size()) {
-                    selectedValues.set(i, selected_hour_type + ": " + tv_numbers.getText().toString());
-                }
-//                loadUpdatedInput(tv_numbers);
-//              position = i;
+//                selectedValues.clear();
+                loadnewInput(tv_numbers, view);
 
+                try {
+                    if (position >= 0 && position < ll_add_notification.getChildCount()) {
+                        View selectedView = ll_add_notification.getChildAt(position);
+                        if (selectedView != null) {
+                            Spinner selectedSpinnerTextView = selectedView.findViewById(R.id.sp_minutes);
+                            selectedSpinnerTextView.setSelection(i);
+                        }
+                    }
+
+                    if (position >= 0 && position < selectedValues.size()) {
+                        selectedValues.set(position, selected_hour_type + ": " + tv_numbers.getText().toString());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -340,36 +349,54 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 
             }
         });
-//        iv_delete_notification.setTag();
+
         iv_delete_notification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position = ll_add_notification.indexOfChild(view_opponents);
+                // Retrieve the position from the clicked view's tag
+                int position = (int) view_opponents.getTag();
 
                 // Remove the view from the LinearLayout
                 ll_add_notification.removeView(view_opponents);
 
-                // Remove the view from the ArrayList
-//                selectedValues.remove(position);
+                // Remove the value from the ArrayList at the specified position
+                if (position >= 0 && position < selectedValues.size()) {
+                    selectedValues.remove(position);
+                }
             }
         });
 
         ll_add_notification.addView(view_opponents);
         selectedValues.add(selected_hour_type + ": " + tv_numbers.getText().toString());
-
     }
 
-    private void loadnewInput(TextInputEditText tv_numbers) {
+    private void loadnewInput(TextInputEditText tv_numbers, View view) {
         View parentView = (View) tv_numbers.getParent();
         TextView inputFieldValueTextView = parentView.findViewById(R.id.tv_numbers);
         inputFieldValueTextView.setText(tv_numbers.getText().toString());
-        int position = ll_add_notification.indexOfChild(parentView);
+        int position = findPositionInParent(view, ll_add_notification);
         if (position >= 0 && position < selectedValues.size()) {
             // Update the input field value in the ArrayList
             selectedValues.set(position, selected_hour_type + ": " + tv_numbers.getText().toString());
         }
     }
-
+    private int findPositionInParent(View view, ViewGroup parent) {
+        int position = parent.indexOfChild(view);
+        if (position >= 0) {
+            return position;
+        } else {
+            for (int i = 0; i < parent.getChildCount(); i++) {
+                View child = parent.getChildAt(i);
+                if (child instanceof ViewGroup) {
+                    int childPosition = findPositionInParent(view, (ViewGroup) child);
+                    if (childPosition >= 0) {
+                        return childPosition; // Return the childPosition if it's >= 0
+                    }
+                }
+            }
+        }
+        return -1; // Return -1 if the view is not found in the parent or its children
+    }
     private void loadUpdatedInput(TextInputEditText tv_numbers) {
         tv_numbers.addTextChangedListener(new TextWatcher() {
             @Override

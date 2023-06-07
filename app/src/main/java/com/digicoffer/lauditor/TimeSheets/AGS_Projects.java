@@ -144,7 +144,6 @@ public class AGS_Projects extends Fragment implements AsyncTaskCompleteListener 
                updated_projectList.clear();
                 selected_project = projectsList.get(adapterView.getSelectedItemPosition()).getMatterId();
                 try {
-
                     for (int i = 0; i < projectsList.size(); i++) {
                         if (projectsList.get(i).getMatterId().equals(selected_project)) {
                             for(int j=0;j<projectsList.get(i).getTeamMembers().length();j++) {

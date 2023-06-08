@@ -298,6 +298,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintVertical_bias="0.0">
+
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -342,128 +343,174 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
-                        android:editable="false"
-                        android:inputType="none"
-                        android:drawableRight="@drawable/calendar_activity"
                         android:background="@drawable/rectangle_grey_background"
+                        android:drawableRight="@drawable/calendar_activity"
+                        android:editable="false"
                         android:gravity="start"
-                         />
+                        android:inputType="none" />
 
                 </com.google.android.material.textfield.TextInputLayout>
-<androidx.appcompat.widget.LinearLayoutCompat
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_weight="0"
-    android:layout_margin="5dp">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed-medium"
-                android:text="@string/event_start_time"
-                android:textColor="@color/Blue_text_color"
-                android:textSize="@dimen/Fifteen_dp">
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="0"
+                    android:orientation="horizontal">
 
-            </TextView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="10dp"
-                android:src="@drawable/asterisk_icon">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
 
-            </ImageView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-condensed-medium"
+                                android:text="@string/event_start_time"
+                                android:textColor="@color/Blue_text_color"
+                                android:textSize="@dimen/Fifteen_dp">
 
-        </LinearLayout>
+                            </TextView>
 
-        <com.google.android.material.textfield.TextInputLayout
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="10dp"
+                                android:src="@drawable/asterisk_icon">
 
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+                            </ImageView>
 
-            android:textColorHint="@color/black"
-            app:boxBackgroundMode="none">
+                        </LinearLayout>
 
-            <!--this is the actual edit text which takes the input-->
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/tv_event_start_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:editable="false"
-                android:hint="00:00AM"
-                android:drawableRight="@drawable/calendar_activity"
-                android:background="@drawable/rectangle_grey_background"
-                android:gravity="start"
-                android:imeOptions="actionDone" />
+                        <com.google.android.material.textfield.TextInputLayout
 
-        </com.google.android.material.textfield.TextInputLayout>
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
 
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="5dp"
-        android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+                            android:textColorHint="@color/black"
+                            app:boxBackgroundMode="none">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed-medium"
-                android:text="@string/event_end_time"
-                android:textColor="@color/Blue_text_color"
-                android:textSize="@dimen/Fifteen_dp">
+                            <!--this is the actual edit text which takes the input-->
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/tv_event_start_time"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="start"
+                                android:background="@drawable/rectangle_grey_background"
+                                android:drawableRight="@drawable/calendar_activity"
+                                android:editable="false"
+                                android:gravity="start"
+                                android:hint="00:00AM"
+                                android:imeOptions="actionDone" />
 
-            </TextView>
+                        </com.google.android.material.textfield.TextInputLayout>
 
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="10dp"
-                android:src="@drawable/asterisk_icon">
+                    </LinearLayout>
 
-            </ImageView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-condensed-medium"
+                                android:text="@string/event_end_time"
+                                android:textColor="@color/Blue_text_color"
+                                android:textSize="@dimen/Fifteen_dp">
 
-            android:textColorHint="@color/black"
-            app:boxBackgroundMode="none">
+                            </TextView>
 
-            <!--this is the actual edit text which takes the input-->
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/tv_event_end_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:hint="00:00AM"
-                android:editable="false"
-                android:drawableRight="@drawable/calendar_activity"
-                android:background="@drawable/rectangle_grey_background"
-                android:gravity="start"
-                android:imeOptions="actionDone" />
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="10dp"
+                                android:src="@drawable/asterisk_icon">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                            </ImageView>
 
-    </LinearLayout>
-</androidx.appcompat.widget.LinearLayoutCompat>
+                        </LinearLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            android:textColorHint="@color/black"
+                            app:boxBackgroundMode="none">
+
+                            <!--this is the actual edit text which takes the input-->
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/tv_event_end_time"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="start"
+                                android:background="@drawable/rectangle_grey_background"
+                                android:drawableRight="@drawable/calendar_activity"
+                                android:editable="false"
+                                android:gravity="start"
+                                android:hint="00:00AM"
+                                android:imeOptions="actionDone" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:text="Duration:"
+                        android:textColor="@color/Blue_text_color"
+                        android:textSize="@dimen/Fifteen_dp">
+
+                    </TextView>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+
+
+                        >
+
+                        <CheckBox
+                            android:id="@+id/cb_all_day"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/Blue_text_color"
+                            android:shadowColor="@color/Blue_text_color"
+                            android:text="All Day"
+                            android:textColor="@color/Blue_text_color"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -491,11 +538,11 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="3dp"
-                    android:gravity="center"
                     android:layout_alignParentTop="true"
+                    android:layout_marginRight="3dp"
                     android:layout_weight=".28"
                     android:background="@drawable/rectangle_grey_background"
+                    android:gravity="center"
                     android:orientation="horizontal">
 
                     <Spinner
@@ -504,23 +551,24 @@
                         android:layout_height="55dp"
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
                         android:background="@android:color/transparent"
                         android:gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:spinnerMode="dropdown"/>
+                        android:spinnerMode="dropdown" />
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
+                        android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
                         android:src="@drawable/down_arrow" />
 
                 </RelativeLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -536,12 +584,12 @@
 
                     </TextView>
 
-<!--                    <ImageView-->
-<!--                        android:layout_width="15dp"-->
-<!--                        android:layout_height="10dp"-->
-<!--                        android:src="@drawable/asterisk_icon">-->
+                    <!--                    <ImageView-->
+                    <!--                        android:layout_width="15dp"-->
+                    <!--                        android:layout_height="10dp"-->
+                    <!--                        android:src="@drawable/asterisk_icon">-->
 
-<!--                    </ImageView>-->
+                    <!--                    </ImageView>-->
 
                 </LinearLayout>
 
@@ -549,11 +597,11 @@
 
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="3dp"
-                    android:gravity="center"
                     android:layout_alignParentTop="true"
+                    android:layout_marginRight="3dp"
                     android:layout_weight=".28"
                     android:background="@drawable/rectangle_grey_background"
+                    android:gravity="center"
                     android:orientation="horizontal">
 
                     <Spinner
@@ -562,20 +610,20 @@
                         android:layout_height="55dp"
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
                         android:background="@android:color/transparent"
                         android:gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:spinnerMode="dropdown"/>
+                        android:spinnerMode="dropdown" />
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
+                        android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
                         android:src="@drawable/down_arrow" />
 
                 </RelativeLayout>
@@ -1233,6 +1281,117 @@
                         </LinearLayout>
 
                     </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/ll_attach_document"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    android:layout_below="@id/selected_clients"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_attach_document"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:textColor="@color/Blue_text_color"
+                            android:text="Attach Document"
+                            android:textSize="@dimen/Fifteen_dp">
+
+                        </TextView>
+
+
+                    </LinearLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tl_attach_document"
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rectangle_grey_background"
+                        android:textColorHint="@color/black"
+                        app:boxBackgroundMode="none">
+
+                        >
+
+
+                        <TextView
+                            android:id="@+id/at_attach_document"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:enabled="true"
+                            android:fontFamily="sans-serif-condensed-medium"
+                            android:padding="15dp"
+                            android:drawableRight="@drawable/spinner_drop_down"
+                            android:text="Select Documents"
+                            android:textColor="@color/Blue_text_color"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btn_attach_document"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/add"
+                        android:textAllCaps="false"
+                        android:layout_gravity="end">
+
+                    </Button>
+                    <LinearLayout
+                        android:id="@+id/selected_attached_documents"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:visibility="gone"
+                        android:layout_below="@id/ll_assign_team_members"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tv_selected_document"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-condensed-medium"
+                                android:text="Selected Document"
+                                android:textColor="@color/Blue_text_color"
+                                android:textSize="@dimen/Fifteen_dp">
+
+                            </TextView>
+
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="10dp"
+                                android:src="@drawable/asterisk_icon">
+
+                            </ImageView>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_documents_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
                 </LinearLayout>
             </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.cardview.widget.CardView>
@@ -1317,7 +1476,7 @@
 
                 </androidx.appcompat.widget.AppCompatButton>
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btn_save_timesheet"
+                    android:id="@+id/btn_create_event"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.Calendar.Models.DocumentsDo;
 import com.digicoffer.lauditor.Calendar.Models.RelationshipsDO;
 import com.digicoffer.lauditor.Calendar.Models.TeamDo;
 import com.digicoffer.lauditor.Matter.Adapters.GroupsAdapter;
@@ -27,15 +28,16 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
     ArrayList<RelationshipsDO> individual_list = new ArrayList<>();
     ArrayList<TeamDo> tmList = new ArrayList<>();
     ArrayList<RelationshipsDO> entity_client_list = new ArrayList<>();
-
+    ArrayList<DocumentsDo> documents_list = new ArrayList<>();
     String TAG = "TM";
 
 
-    public CommonRelationshipsAdapter(ArrayList<TeamDo> teamList,String Tag,ArrayList<RelationshipsDO> individual_list,ArrayList<RelationshipsDO> entity_client_list) {
+    public CommonRelationshipsAdapter(ArrayList<TeamDo> teamList,String Tag,ArrayList<RelationshipsDO> individual_list,ArrayList<RelationshipsDO> entity_client_list,ArrayList<DocumentsDo> documents_list) {
 
         this.entity_client_list = entity_client_list;
         this.individual_list = individual_list;
         this.tmList = teamList;
+        this.documents_list = documents_list;
         this.TAG = Tag;
     }
 
@@ -81,6 +83,22 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
                     }
                 }
             });
+        }else if(TAG =="Documents"){
+            DocumentsDo documentsDo = documents_list.get(position);
+            holder.cb_documents.setChecked(documents_list.get(position).isChecked());
+            holder.cb_documents.setTag(position);
+            holder.tv_tm_name.setText(documentsDo.getName());
+            holder.cb_documents.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Integer pos = (Integer) holder.cb_documents.getTag();
+                    if (documents_list.get(pos).isChecked()) {
+                        documents_list.get(pos).setChecked(false);
+                    } else {
+                        documents_list.get(pos).setChecked(true);
+                    }
+                }
+            });
         }else {
             RelationshipsDO relationshipsDO = entity_client_list.get(position);
             holder.cb_documents.setChecked(entity_client_list.get(position).isChecked());
@@ -116,6 +134,9 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
     public ArrayList<RelationshipsDO> getEntity_client_list(){
         return entity_client_list;
     }
+    public ArrayList<DocumentsDo> getDocuments_list(){
+        return  documents_list;
+    }
 
     @Override
     public int getItemCount() {
@@ -131,6 +152,8 @@ public class CommonRelationshipsAdapter extends RecyclerView.Adapter<CommonRelat
         }
         else if(TAG == "INDIVIDUAL"){
             return individual_list.size();
+        }else if(TAG =="Documents"){
+            return documents_list.size();
         }else{
             return entity_client_list.size();
         }

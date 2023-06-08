@@ -54,10 +54,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Locale;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, View.OnClickListener {
     private static String ADAPTER_TAG = "";
@@ -71,7 +77,9 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     private ArrayList<String> selectedValues = new ArrayList<>();
     String selected_hour_type = "";
     private boolean timeZonesTaskCompleted = false;
-    CheckBox cb_all_day;
+    CheckBox cb_all_day,cb_add_to_timesheet;
+    boolean isAllDay;
+    boolean isAddTimesheet;
     private boolean matterTaskCompleted = false;
     private boolean tmTaskCompleted = false;
     final String[] AM_PM = new String[1];
@@ -94,7 +102,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     private String selected_project;
     private String selected_matter;
     private String selected_task;
-
+    private String entity_id;
     Hashtable<String, Integer> timesPosHash = new Hashtable<>();
     ArrayList<TimeZonesDO> timeZonesList = new ArrayList<TimeZonesDO>();
     private LinearLayout ll_project, selected_attached_documents,ll_matter_name, ll_message, ll_task, ll_add_notification;
@@ -104,6 +112,12 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     ArrayList<TeamDo> teamList = new ArrayList<>();
     ArrayList<TaskDo> legalTaksList = new ArrayList<>();
     private String repeat_interval;
+    private String event_creation_date;
+    private String event_starting_date;
+    private String event_end_time;
+    private String timezone_location;
+    private String matter_id;
+    private String matter_name;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -127,6 +141,9 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         btn_create_event.setOnClickListener(this);
         at_attach_document = view.findViewById(R.id.at_attach_document);
         cb_all_day = view.findViewById(R.id.cb_all_day);
+       isAllDay = cb_all_day.isChecked();
+        cb_add_to_timesheet = view.findViewById(R.id.cb_add_to_timesheet);
+        isAddTimesheet = cb_add_to_timesheet.isChecked();
         ll_attach_document = view.findViewById(R.id.ll_attach_document);
         btn_attach_document = view.findViewById(R.id.btn_attach_document);
         btn_attach_document.setOnClickListener(this);
@@ -255,7 +272,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                         tv_event_creation_date.setText(sdf.format(myCalendar.getTime()));
                     }
                 };
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), date, myCalendar.get(java.util.Calendar.YEAR), myCalendar.get(java.util.Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), R.style.Blue, date, myCalendar.get(java.util.Calendar.YEAR), myCalendar.get(java.util.Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
                 datePickerDialog.show();
                 break;
@@ -337,7 +354,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 //            documents_list.clear();
             if(documents_list.size()==0) {
                 for (int i = 0; i < matterList.size(); i++) {
-                    if (selected_matter.equals(matterList.get(i).getId())) {
+                    if (matter_id.equals(matterList.get(i).getId())) {
                         JSONArray documents = matterList.get(i).getDocuments();
                         for (int j = 0; j < documents.length(); j++) {
                             DocumentsDo documentsDo = new DocumentsDo();
@@ -480,7 +497,133 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     }
 
     private void callCreateEventWebservice() {
+        try {
 
+        String doctype = "doctype";
+        String docid = "docid";
+        JSONObject postData = new JSONObject();
+        progressDialog = AndroidUtils.get_progress(getActivity());
+        JSONArray selected_team_member = new JSONArray();
+        JSONArray selected_clients_list = new JSONArray();
+        JSONArray selected_individual_list = new JSONArray();
+        JSONArray added_notification_list = new JSONArray();
+        JSONArray time_sheets = new JSONArray();
+        JSONArray existing_attachments = new JSONArray();
+
+        for (int i = 0; i < selectedValues.size(); i++) {
+
+//            NotifyMeDo notifyMeDo = notifyme_list.get(i);
+            added_notification_list.put(selectedValues.get(i));
+
+        }
+
+        JSONObject selected_docs;
+        for (int j = 0; j < selected_documents_list.size(); j++) {
+            selected_docs = new JSONObject();
+            DocumentsDo attachDocumentsDO = selected_documents_list.get(j);
+            selected_docs.put(doctype, attachDocumentsDO.getDoctype());
+            selected_docs.put(docid, attachDocumentsDO.getDocid());
+            existing_attachments.put(selected_docs);
+        }
+
+        for (int i = 0; i < selected_tm_list.size(); i++) {
+            TeamDo addTeamMembersDo = selected_tm_list.get(i);
+            selected_team_member.put(addTeamMembersDo.getId());
+        }
+        for (int i = 0; i < selected_entity_client_list.size(); i++) {
+            RelationshipsDO addClientsDo = selected_entity_client_list.get(i);
+            selected_clients_list.put(addClientsDo.getId());
+        }
+        for(int i=0;i<individual_list.size();i++){
+            RelationshipsDO relationshipsDO = individual_list.get(i);
+            selected_individual_list.put(relationshipsDO.getId());
+        }
+
+        Date event_date = AndroidUtils.stringToDateTimeDefault(tv_event_creation_date.getText().toString(), "MM-dd-yyyy");
+        event_creation_date = AndroidUtils.getDateToString(event_date, "yyyy-MM-dd");
+        Date event_start_date = null;
+        Date event_date2 = null;
+        String start_time = tv_event_start_time.getText().toString();
+        if(start_time.equals("")||start_time == null){
+            start_time = "00:00";
+            event_start_date  = AndroidUtils.stringToDateTimeDefault(start_time, "hh:mm");
+
+        }
+        else {
+            event_start_date  = AndroidUtils.stringToDateTimeDefault(start_time, "hh:mm");
+        }
+     event_starting_date = AndroidUtils.getDateToString(event_start_date, event_creation_date + "'T'HH:mm:ss");
+       String end_time = tv_event_end_time.getText().toString();
+        if (end_time.equals("")||end_time==null){
+            end_time = "00:00";
+            event_date2 = AndroidUtils.stringToDateTimeDefault(end_time, "hh:mm");
+        }
+        else {
+            event_date2 = AndroidUtils.stringToDateTimeDefault(end_time, "hh:mm");
+        }
+        String duration_timesheet = "";
+    if(event_start_date!=null&&event_date2!=null) {
+
+            long differenceInMilliSeconds = Math.abs(event_start_date.getTime() - event_date2.getTime());
+            long differenceInHours = (differenceInMilliSeconds / (60 * 60 * 1000)) % 24;
+            long differenceInMinutes
+                    = (differenceInMilliSeconds / (60 * 1000)) % 60;
+            long differenceInSeconds
+                    = (differenceInMilliSeconds / 1000) % 60;
+            String duration = differenceInHours + ":" + differenceInMinutes;
+            Date hours = AndroidUtils.stringToDateTimeDefault(duration, "HH:mm");
+            duration_timesheet = AndroidUtils.getDateToString(hours, "HH:mm");
+        }
+        event_end_time = AndroidUtils.getDateToString(event_date2, event_creation_date + "'T'HH:mm:ss");
+
+        if (isAddTimesheet){
+            JSONObject time_sheet_obj;
+//                        for (int i = 0; i < time_sheets.length(); i++) {
+            time_sheet_obj = new JSONObject();
+            time_sheet_obj.put("date", event_creation_date);
+            if (duration_timesheet.equals("")||duration_timesheet==null){
+                time_sheet_obj.put("duration", "30:00");
+            }else {
+                time_sheet_obj.put("duration", duration_timesheet);
+            }
+            time_sheet_obj.put("eventtitle", selected_task);
+            time_sheet_obj.put("addedby", Constants.NAME);
+            time_sheet_obj.put("user_id", Constants.USER_ID);
+            time_sheets.put(time_sheet_obj);
+        }
+
+        int multiplied_offset = (-1) * (offset);
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = inputFormat.parse(event_creation_date);
+
+            LocalDateTime localDateTime = LocalDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
+            String outputDate = localDateTime.toString();
+        postData.put("date",outputDate);
+        postData.put("attachments", existing_attachments);
+        postData.put("invitees_internal", selected_team_member);
+        postData.put("invitees_external", selected_clients_list);
+        postData.put("invitees_consumer_external",selected_individual_list);
+        postData.put("title",matter_name +" - "+ selected_task);
+        postData.put("dialin",tv_dialing_number.getText().toString());
+        postData.put("notifications", added_notification_list);
+        postData.put("description", tv_description.getText().toString());
+        postData.put("timezone_location", timezone_location);
+        postData.put("timezone_offset", multiplied_offset);
+        postData.put("repeat_interval", repeat_interval);
+        postData.put("meeting_link",tv_meeting_link.getText().toString());
+        postData.put("allday", isAllDay);
+        postData.put("location",tv_location.getText().toString());
+        postData.put("addtimesheet",isAddTimesheet);
+        postData.put("from_ts", event_starting_date);
+        postData.put("to_ts", event_end_time);
+        postData.put("matter_type", selected_matter.toLowerCase(Locale.ROOT));
+        postData.put("matter_id", matter_id);
+        postData.put("event_type",selected_matter.toLowerCase(Locale.ROOT));
+        postData.put("timesheets",time_sheets);
+        WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "event/create", "CREATE_EVENT", postData.toString());
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
     }
 
     private void NotificationPopup() {
@@ -864,6 +1007,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         selected_tm.setVisibility(View.VISIBLE);
         ll_client_team_members.removeAllViews();
         for (int i = 0; i < selected_entity_client_list.size(); i++) {
+
             View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);
             TextView tv_opponent_name = view_opponents.findViewById(R.id.tv_opponent_name);
             tv_opponent_name.setText(selected_entity_client_list.get(i).getName());
@@ -882,6 +1026,13 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 //                            ll_selected_groups.addView(view_opponents,position);
                             RelationshipsDO teamModel = selected_entity_client_list.get(position);
                             teamModel.setChecked(false);
+                            if (selected_entity_client_list.size()==0){
+                                selected_tm.setVisibility(View.GONE);
+                                ll_client_team_members.removeAllViews();
+                                at_assigned_team_members.setText("Select Client");
+                            }else{
+                                selected_tm.setVisibility(View.VISIBLE);
+                            }
                             selected_entity_client_list.remove(position);
 //                            selected_groups_list.set(position, groupsModel);
                             String[] value = new String[selected_entity_client_list.size()];
@@ -1227,7 +1378,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         for (int i = 0; i < jsonArray.length(); i++) {
             RelationshipsDO relationshipsDO = new RelationshipsDO();
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            relationshipsDO.setId(jsonObject.getString("id"));
+            relationshipsDO.setId(jsonObject.getString("id")+entity_id);
             relationshipsDO.setName(jsonObject.getString("name"));
             entity_client_list.add(relationshipsDO);
         }
@@ -1331,8 +1482,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
-                String id = entities_list.get(sp_entities.getSelectedItemPosition()).getId();
-                callEntityClientWebservice(id);
+                entity_id = entities_list.get(sp_entities.getSelectedItemPosition()).getId();
+                callEntityClientWebservice(entity_id);
             }
 
             @Override
@@ -1420,11 +1571,25 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     private void loadTimeZonespinner() {
         final CommonSpinnerAdapter adapter = new CommonSpinnerAdapter(getActivity(), timeZonesList);
         sp_time_zone.setAdapter(adapter);
+        Calendar calendar = new GregorianCalendar();
+        TimeZone timeZone = calendar.getTimeZone();
+        int offset1 = timeZone.getRawOffset();
+        final long hours = TimeUnit.MILLISECONDS.toMinutes(offset1);
 //        callTimeZoneWebservice();
         sp_time_zone.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                offset = Integer.parseInt(timeZonesList.get(sp_time_zone.getSelectedItemPosition()).getGMT());
+                ArrayList<TimeZonesDO> timezones = new ArrayList<>();
+                for (int j = 0; j < timeZonesList.size(); j++) {
+                    String timezone_offset = timeZonesList.get(j).getGMT();
+
+                    if (timezone_offset.matches(String.valueOf((hours)))) {
+                        sp_time_zone.setSelection(j);
+                        offset = Integer.parseInt(timeZonesList.get(sp_time_zone.getSelectedItemPosition()).getGMT());
+
+                        timezone_location = (timeZonesList.get(sp_time_zone.getSelectedItemPosition()).getNAME());
+                    }
+                }
             }
 
             @Override
@@ -1446,6 +1611,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
             viewMatterModel.setId(jsonObject.getString("id"));
             viewMatterModel.setTitle(jsonObject.getString("title"));
             viewMatterModel.setDocuments(jsonObject.getJSONArray("documents"));
+            viewMatterModel.setCasetype(jsonObject.getString("caseType"));
             matterList.add(viewMatterModel);
         }
 //        AndroidUtils.showAlert(matters.toString(),getContext());
@@ -1460,8 +1626,9 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         sp_matter_name.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                selected_matter = matterList.get(adapterView.getSelectedItemPosition()).getId();
-
+                selected_matter = matterList.get(adapterView.getSelectedItemPosition()).getCasetype();
+                matter_id = matterList.get(adapterView.getSelectedItemPosition()).getCasetype();
+                matter_name = matterList.get(adapterView.getSelectedItemPosition()).getTitle();
 //                loadProjectData(selected_project);
             }
 

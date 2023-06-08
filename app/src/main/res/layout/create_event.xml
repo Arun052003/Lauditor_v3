@@ -163,6 +163,19 @@
                         android:src="@drawable/down_arrow" />
 
                 </RelativeLayout>
+                <CheckBox
+                    android:buttonTint="@color/Blue_text_color"
+                    android:id="@+id/cb_add_to_timesheet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/Blue_text_color"
+                    android:shadowColor="@color/Blue_text_color"
+                    android:text="Add To TimeSheet"
+                    android:textColor="@color/Blue_text_color"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/ll_task"

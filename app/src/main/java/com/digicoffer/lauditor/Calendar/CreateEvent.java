@@ -54,8 +54,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -118,6 +116,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     private String timezone_location;
     private String matter_id;
     private String matter_name;
+    private String matter_legal;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -141,9 +140,11 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         btn_create_event.setOnClickListener(this);
         at_attach_document = view.findViewById(R.id.at_attach_document);
         cb_all_day = view.findViewById(R.id.cb_all_day);
-       isAllDay = cb_all_day.isChecked();
+//       isAllDay = cb_all_day.isChecked();
+
         cb_add_to_timesheet = view.findViewById(R.id.cb_add_to_timesheet);
-        isAddTimesheet = cb_add_to_timesheet.isChecked();
+        loadcheckboxData();
+
         ll_attach_document = view.findViewById(R.id.ll_attach_document);
         btn_attach_document = view.findViewById(R.id.btn_attach_document);
         btn_attach_document.setOnClickListener(this);
@@ -178,7 +179,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         selected_attached_documents = view.findViewById(R.id.selected_attached_documents);
         tv_meeting_link = view.findViewById(R.id.tv_meeting_link);
         tv_dialing_number = view.findViewById(R.id.tv_dialing_number);
-        tv_location = view.findViewById(R.id.tv_dialing_number);
+        tv_location = view.findViewById(R.id.tv_location);
         tv_description = view.findViewById(R.id.tv_description);
         ll_project = view.findViewById(R.id.ll_project);
         ll_matter_name = view.findViewById(R.id.ll_matter_name);
@@ -235,7 +236,38 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         });
         return view;
     }
-
+private void loadcheckboxData(){
+    cb_all_day.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            // Retrieve the checked status of the checkbox
+            if (isChecked) {
+                // Checkbox is checked, return true
+                // Perform any additional actions here
+                isAllDay = true;
+            } else {
+                // Checkbox is not checked, return false
+                // Perform any additional actions here
+               isAllDay = false;
+            }
+        }
+    });
+    cb_add_to_timesheet.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            // Retrieve the checked status of the checkbox
+            if (isChecked) {
+                // Checkbox is checked, return true
+                // Perform any additional actions here
+                isAddTimesheet = true;
+            } else {
+                // Checkbox is not checked, return false
+                // Perform any additional actions here
+                isAddTimesheet = false;
+            }
+        }
+    });
+}
     private void callTimeZoneWebservice() {
         try {
 
@@ -272,7 +304,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                         tv_event_creation_date.setText(sdf.format(myCalendar.getTime()));
                     }
                 };
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), R.style.Blue, date, myCalendar.get(java.util.Calendar.YEAR), myCalendar.get(java.util.Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), R.style.BlueDatePickerDialogTheme, date, myCalendar.get(java.util.Calendar.YEAR), myCalendar.get(java.util.Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
                 datePickerDialog.show();
                 break;
@@ -505,7 +537,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         progressDialog = AndroidUtils.get_progress(getActivity());
         JSONArray selected_team_member = new JSONArray();
         JSONArray selected_clients_list = new JSONArray();
-        JSONArray selected_individual_list = new JSONArray();
+        JSONArray individual_array = new JSONArray();
         JSONArray added_notification_list = new JSONArray();
         JSONArray time_sheets = new JSONArray();
         JSONArray existing_attachments = new JSONArray();
@@ -534,9 +566,9 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
             RelationshipsDO addClientsDo = selected_entity_client_list.get(i);
             selected_clients_list.put(addClientsDo.getId());
         }
-        for(int i=0;i<individual_list.size();i++){
-            RelationshipsDO relationshipsDO = individual_list.get(i);
-            selected_individual_list.put(relationshipsDO.getId());
+        for(int i=0;i<selected_individual_list.size();i++){
+            RelationshipsDO relationshipsDO = selected_individual_list.get(i);
+            individual_array.put(relationshipsDO.getId());
         }
 
         Date event_date = AndroidUtils.stringToDateTimeDefault(tv_event_creation_date.getText().toString(), "MM-dd-yyyy");
@@ -593,32 +625,43 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         }
 
         int multiplied_offset = (-1) * (offset);
-            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = inputFormat.parse(event_creation_date);
+            String originalDateString = event_creation_date;
 
-            LocalDateTime localDateTime = LocalDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
-            String outputDate = localDateTime.toString();
-        postData.put("date",outputDate);
-        postData.put("attachments", existing_attachments);
-        postData.put("invitees_internal", selected_team_member);
+            SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat desiredFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+
+                Date originalDate = originalFormat.parse(originalDateString);
+
+                desiredFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                String newDateString = desiredFormat.format(originalDate);
+                postData.put("date",newDateString);
+                postData.put("attachments", existing_attachments);
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+            postData.put("invitees_internal", selected_team_member);
         postData.put("invitees_external", selected_clients_list);
-        postData.put("invitees_consumer_external",selected_individual_list);
+        postData.put("invitees_consumer_external",individual_array);
         postData.put("title",matter_name +" - "+ selected_task);
         postData.put("dialin",tv_dialing_number.getText().toString());
         postData.put("notifications", added_notification_list);
         postData.put("description", tv_description.getText().toString());
         postData.put("timezone_location", timezone_location);
         postData.put("timezone_offset", multiplied_offset);
-        postData.put("repeat_interval", repeat_interval);
+        postData.put("repeat_interval", repeat_interval.toLowerCase(Locale.ROOT));
         postData.put("meeting_link",tv_meeting_link.getText().toString());
+
         postData.put("allday", isAllDay);
         postData.put("location",tv_location.getText().toString());
         postData.put("addtimesheet",isAddTimesheet);
         postData.put("from_ts", event_starting_date);
         postData.put("to_ts", event_end_time);
-        postData.put("matter_type", selected_matter.toLowerCase(Locale.ROOT));
+        postData.put("matter_type", matter_legal);
         postData.put("matter_id", matter_id);
-        postData.put("event_type",selected_matter.toLowerCase(Locale.ROOT));
+        postData.put("event_type",matter_legal);
         postData.put("timesheets",time_sheets);
         WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "event/create", "CREATE_EVENT", postData.toString());
     } catch (Exception e) {
@@ -660,7 +703,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                     }
 
                     if (position >= 0 && position < selectedValues.size()) {
-                        selectedValues.set(position, tv_numbers.getText().toString() + "- " +selected_hour_type);
+                        selectedValues.set(position, tv_numbers.getText().toString() + "- " +selected_hour_type.toLowerCase(Locale.ROOT));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -689,7 +732,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
             @Override
             public void afterTextChanged(Editable editable) {
                 if (position >= 0 && position < selectedValues.size()) {
-                    selectedValues.set(position,  editable.toString()+"- "+selected_hour_type);
+                    selectedValues.set(position,  editable.toString()+"- "+selected_hour_type.toLowerCase(Locale.ROOT));
                 }
                 // Do nothing
             }
@@ -711,7 +754,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         });
 
         ll_add_notification.addView(view_opponents);
-        selectedValues.add(tv_numbers.getText().toString() + "- " +selected_hour_type );
+        selectedValues.add(tv_numbers.getText().toString() + "- " +selected_hour_type.toLowerCase(Locale.ROOT) );
     }
 
     private void loadnewInput(TextInputEditText tv_numbers, View view) {
@@ -721,7 +764,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         int position = findPositionInParent(view, ll_add_notification);
         if (position >= 0 && position < selectedValues.size()) {
             // Update the input field value in the ArrayList
-            selectedValues.set(position,tv_numbers.getText().toString() + "- " +selected_hour_type);
+            selectedValues.set(position,tv_numbers.getText().toString() + "- " +selected_hour_type.toLowerCase(Locale.ROOT));
         }
     }
     private int findPositionInParent(View view, ViewGroup parent) {
@@ -756,7 +799,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 
             @Override
             public void afterTextChanged(Editable s) {
-                loadTextchangedData(s,tv_numbers,selected_hour_type);
+                loadTextchangedData(s,tv_numbers,selected_hour_type.toLowerCase(Locale.ROOT));
             }
         });
     }
@@ -1114,7 +1157,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                 legalTaksList.clear();
                 unHideMatterDetails();
                 loadRepetetions();
-                String matter_legal = "legal";
+                matter_legal = "legal";
                 callProjectWebservice(matter_legal);
 //                callClientsWebservice();
 //                TaskDo caseFilling = new TaskDo("Case Filling");
@@ -1133,8 +1176,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                 legalTaksList.clear();
                 unHideMatterDetails();
                 loadRepetetions();
-                String matter_general = "general";
-                callProjectWebservice(matter_general);
+                 matter_legal = "general";
+                callProjectWebservice(matter_legal);
 //                TaskDo consultation_general = new TaskDo("Consultation");
 //                TaskDo draft_agreements = new TaskDo("Draft agreements");
 //                TaskDo fwa = new TaskDo("Filling with authorities");
@@ -1378,7 +1421,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         for (int i = 0; i < jsonArray.length(); i++) {
             RelationshipsDO relationshipsDO = new RelationshipsDO();
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            relationshipsDO.setId(jsonObject.getString("id")+entity_id);
+            relationshipsDO.setId(entity_id+"_"+jsonObject.getString("id"));
             relationshipsDO.setName(jsonObject.getString("name"));
             entity_client_list.add(relationshipsDO);
         }
@@ -1627,7 +1670,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 selected_matter = matterList.get(adapterView.getSelectedItemPosition()).getCasetype();
-                matter_id = matterList.get(adapterView.getSelectedItemPosition()).getCasetype();
+                matter_id = matterList.get(adapterView.getSelectedItemPosition()).getId();
                 matter_name = matterList.get(adapterView.getSelectedItemPosition()).getTitle();
 //                loadProjectData(selected_project);
             }

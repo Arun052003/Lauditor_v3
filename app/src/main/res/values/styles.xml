@@ -7,6 +7,13 @@
     <style name="ShapeAppearanceOverlay.MaterialAlertDialog.Rounded" parent="">
         <item name="cornerSize">10dp</item>
     </style>
+    <style name="BlueDatePickerDialogTheme" parent="android:Theme.Material.Light.Dialog">
+        <item name="android:datePickerStyle">@style/BlueDatePickerStyle</item>
+    </style>
+
+    <style name="BlueDatePickerStyle" parent="android:Widget.Material.Light.DatePicker">
+        <item name="android:colorAccent">@color/Blue_text_color</item>
+    </style>
     <style name="SquareFabShapeOverlay" parent="ShapeAppearanceOverlay.MaterialComponents.FloatingActionButton">
         <item name="cornerSize">0dp</item>
     </style>
@@ -15,11 +22,7 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">18sp</item>
     </style>
-    <resources>
-        <style name="BlueDatePickerDialogTheme" parent="Theme.AppCompat.Light.Dialog">
-            <item name="colorAccent">@color/Blue_text_color</item>
-        </style>
-    </resources>
+
     <style name="TextLimitError" parent="TextAppearance.AppCompat.Small">
         <item name="android:textColor">@color/Red</item>
     </style>

@@ -23,12 +23,12 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -69,20 +69,20 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     MultiAutoCompleteTextView at_family_members;
     final ArrayList<String> Repetetions = new ArrayList<>();
     JSONArray notification = new JSONArray();
-    LinearLayout ll_client_team_members,ll_documents_list,ll_attach_document, ll_selected_entites, selected_individual, ll_individual_list, ll_selected_team_members, selected_tm, selected_groups;
+    LinearLayout ll_client_team_members, ll_documents_list, ll_attach_document, ll_selected_entites, selected_individual, ll_individual_list, ll_selected_team_members, selected_tm, selected_groups;
     final int[] mHour = new int[1];
     final int[] mMinute = new int[1];
     private ArrayList<String> selectedValues = new ArrayList<>();
     String selected_hour_type = "";
     private boolean timeZonesTaskCompleted = false;
-    CheckBox cb_all_day,cb_add_to_timesheet;
+    CheckBox cb_all_day, cb_add_to_timesheet;
     boolean isAllDay;
     boolean isAddTimesheet;
     private boolean matterTaskCompleted = false;
     private boolean tmTaskCompleted = false;
     final String[] AM_PM = new String[1];
     int offset;
-    private Button btn_add_groups,btn_attach_document,btn_create_event ,btn_add_clients, btn_assigned_team_members, btn_individual;
+    private Button btn_add_groups, btn_attach_document, btn_create_event, btn_add_clients, btn_assigned_team_members, btn_individual;
     String team_member_id;
     int adapter_position = 0;
     ArrayList<RelationshipsDO> entities_list = new ArrayList<>();
@@ -93,7 +93,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     ArrayList<RelationshipsDO> new_selected_client_list = new ArrayList<>();
     ArrayList<RelationshipsDO> entity_client_list = new ArrayList<>();
     ArrayList<TeamDo> selected_tm_list = new ArrayList<>();
-    private TextView at_add_groups,at_attach_document, at_add_clients, at_assigned_team_members, at_individual;
+    private TextView at_add_groups, at_attach_document, at_add_clients, at_assigned_team_members, at_individual;
     private Spinner sp_entities, sp_project, sp_matter_name, sp_task, sp_time_zone, sp_repetetion, sp_add_team_member, sp_add_entity, sp_client_team_members;
     private TextInputEditText tv_event_creation_date, tv_event_start_time, tv_event_end_time, tv_meeting_link, tv_dialing_number, tv_location, tv_description;
     private AppCompatButton add_notification, btn_cancel_timesheet, btn_save_timesheet;
@@ -103,7 +103,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     private String entity_id;
     Hashtable<String, Integer> timesPosHash = new Hashtable<>();
     ArrayList<TimeZonesDO> timeZonesList = new ArrayList<TimeZonesDO>();
-    private LinearLayout ll_project, selected_attached_documents,ll_matter_name, ll_message, ll_task, ll_add_notification;
+    private LinearLayout ll_project, selected_attached_documents, ll_matter_name, ll_message, ll_task, ll_add_notification;
     ArrayList<CalendarDo> projectList = new ArrayList<>();
     ArrayList<ViewMatterModel> matterList = new ArrayList<>();
     ArrayList<DocumentsDo> documents_list = new ArrayList<>();
@@ -186,16 +186,16 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         ll_message = view.findViewById(R.id.ll_message);
         ll_task = view.findViewById(R.id.ll_task);
         projectList.clear();
-        cb_all_day.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    Toast.makeText(getContext(), "Checkbox is checked!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), "Checkbox is unchecked!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+//        cb_all_day.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    Toast.makeText(getContext(), "Checkbox is checked!", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(getContext(), "Checkbox is unchecked!", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
 //        CalendarDo LegalMatter = new CalendarDo("Legal Matter");
 //        CalendarDo GeneralMatter = new CalendarDo("General Matter");
 //        CalendarDo overhead = new CalendarDo("Overhead");
@@ -236,38 +236,40 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         });
         return view;
     }
-private void loadcheckboxData(){
-    cb_all_day.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            // Retrieve the checked status of the checkbox
-            if (isChecked) {
-                // Checkbox is checked, return true
-                // Perform any additional actions here
-                isAllDay = true;
-            } else {
-                // Checkbox is not checked, return false
-                // Perform any additional actions here
-               isAllDay = false;
+
+    private void loadcheckboxData() {
+        cb_all_day.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // Retrieve the checked status of the checkbox
+                if (isChecked) {
+                    // Checkbox is checked, return true
+                    // Perform any additional actions here
+                    isAllDay = true;
+                } else {
+                    // Checkbox is not checked, return false
+                    // Perform any additional actions here
+                    isAllDay = false;
+                }
             }
-        }
-    });
-    cb_add_to_timesheet.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            // Retrieve the checked status of the checkbox
-            if (isChecked) {
-                // Checkbox is checked, return true
-                // Perform any additional actions here
-                isAddTimesheet = true;
-            } else {
-                // Checkbox is not checked, return false
-                // Perform any additional actions here
-                isAddTimesheet = false;
+        });
+        cb_add_to_timesheet.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // Retrieve the checked status of the checkbox
+                if (isChecked) {
+                    // Checkbox is checked, return true
+                    // Perform any additional actions here
+                    isAddTimesheet = true;
+                } else {
+                    // Checkbox is not checked, return false
+                    // Perform any additional actions here
+                    isAddTimesheet = false;
+                }
             }
-        }
-    });
-}
+        });
+    }
+
     private void callTimeZoneWebservice() {
         try {
 
@@ -361,13 +363,27 @@ private void loadcheckboxData(){
                 timePickerDialog_end_time.show();
                 break;
             case R.id.btn_add_groups:
-                callTeamMemberWebservice();
+                if(matterList.size()==0){
+                    callTeamMemberWebservice();
+                }
+                else{
+                    TeamMembersPopup();
+                }
+
+
+//
                 break;
             case R.id.btn_individual:
+
                 load_individual_Popup();
                 break;
             case R.id.btn_assigned_team_members:
-                loadEntityClientPopup();
+                if(matterList.size()==0){
+                    callClientsWebservice();
+                }else{
+                    loadEntityClientPopup();
+                }
+
                 break;
             case R.id.add_notification:
                 NotificationPopup();
@@ -384,7 +400,7 @@ private void loadcheckboxData(){
     private void load_documents_Popup() {
         try {
 //            documents_list.clear();
-            if(documents_list.size()==0) {
+            if (documents_list.size() == 0) {
                 for (int i = 0; i < matterList.size(); i++) {
                     if (matter_id.equals(matterList.get(i).getId())) {
                         JSONArray documents = matterList.get(i).getDocuments();
@@ -423,7 +439,7 @@ private void loadcheckboxData(){
             rv_groups.setLayoutManager(layoutManager);
             rv_groups.setHasFixedSize(true);
             ADAPTER_TAG = "Documents";
-            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list,documents_list);
+            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list, documents_list);
             rv_groups.setAdapter(documentsAdapter);
             AlertDialog dialog = dialogBuilder.create();
             iv_cancel.setOnClickListener(new View.OnClickListener() {
@@ -442,7 +458,7 @@ private void loadcheckboxData(){
                 @Override
                 public void onClick(View view) {
                     for (int i = 0; i < documentsAdapter.getDocuments_list().size(); i++) {
-                        DocumentsDo documentsDo= documentsAdapter.getDocuments_list().get(i);
+                        DocumentsDo documentsDo = documentsAdapter.getDocuments_list().get(i);
                         if (documentsDo.isChecked()) {
                             selected_documents_list.add(documentsDo);
 //                        AndroidUtils.showAlert(selected_individual_list.toString(),getContext());
@@ -531,142 +547,136 @@ private void loadcheckboxData(){
     private void callCreateEventWebservice() {
         try {
 
-        String doctype = "doctype";
-        String docid = "docid";
-        JSONObject postData = new JSONObject();
-        progressDialog = AndroidUtils.get_progress(getActivity());
-        JSONArray selected_team_member = new JSONArray();
-        JSONArray selected_clients_list = new JSONArray();
-        JSONArray individual_array = new JSONArray();
-        JSONArray added_notification_list = new JSONArray();
-        JSONArray time_sheets = new JSONArray();
-        JSONArray existing_attachments = new JSONArray();
-
-        for (int i = 0; i < selectedValues.size(); i++) {
-
+            String doctype = "doctype";
+            String docid = "docid";
+            JSONObject postData = new JSONObject();
+            progressDialog = AndroidUtils.get_progress(getActivity());
+            JSONArray selected_team_member = new JSONArray();
+            JSONArray selected_clients_list = new JSONArray();
+            JSONArray individual_array = new JSONArray();
+            JSONArray added_notification_list = new JSONArray();
+            JSONArray time_sheets = new JSONArray();
+            JSONArray existing_attachments = new JSONArray();
+            for (int i = 0; i < selectedValues.size(); i++) {
 //            NotifyMeDo notifyMeDo = notifyme_list.get(i);
-            added_notification_list.put(selectedValues.get(i));
-
-        }
-
-        JSONObject selected_docs;
-        for (int j = 0; j < selected_documents_list.size(); j++) {
-            selected_docs = new JSONObject();
-            DocumentsDo attachDocumentsDO = selected_documents_list.get(j);
-            selected_docs.put(doctype, attachDocumentsDO.getDoctype());
-            selected_docs.put(docid, attachDocumentsDO.getDocid());
-            existing_attachments.put(selected_docs);
-        }
-
-        for (int i = 0; i < selected_tm_list.size(); i++) {
-            TeamDo addTeamMembersDo = selected_tm_list.get(i);
-            selected_team_member.put(addTeamMembersDo.getId());
-        }
-        for (int i = 0; i < selected_entity_client_list.size(); i++) {
-            RelationshipsDO addClientsDo = selected_entity_client_list.get(i);
-            selected_clients_list.put(addClientsDo.getId());
-        }
-        for(int i=0;i<selected_individual_list.size();i++){
-            RelationshipsDO relationshipsDO = selected_individual_list.get(i);
-            individual_array.put(relationshipsDO.getId());
-        }
-
-        Date event_date = AndroidUtils.stringToDateTimeDefault(tv_event_creation_date.getText().toString(), "MM-dd-yyyy");
-        event_creation_date = AndroidUtils.getDateToString(event_date, "yyyy-MM-dd");
-        Date event_start_date = null;
-        Date event_date2 = null;
-        String start_time = tv_event_start_time.getText().toString();
-        if(start_time.equals("")||start_time == null){
-            start_time = "00:00";
-            event_start_date  = AndroidUtils.stringToDateTimeDefault(start_time, "hh:mm");
-
-        }
-        else {
-            event_start_date  = AndroidUtils.stringToDateTimeDefault(start_time, "hh:mm");
-        }
-     event_starting_date = AndroidUtils.getDateToString(event_start_date, event_creation_date + "'T'HH:mm:ss");
-       String end_time = tv_event_end_time.getText().toString();
-        if (end_time.equals("")||end_time==null){
-            end_time = "00:00";
-            event_date2 = AndroidUtils.stringToDateTimeDefault(end_time, "hh:mm");
-        }
-        else {
-            event_date2 = AndroidUtils.stringToDateTimeDefault(end_time, "hh:mm");
-        }
-        String duration_timesheet = "";
-    if(event_start_date!=null&&event_date2!=null) {
-
-            long differenceInMilliSeconds = Math.abs(event_start_date.getTime() - event_date2.getTime());
-            long differenceInHours = (differenceInMilliSeconds / (60 * 60 * 1000)) % 24;
-            long differenceInMinutes
-                    = (differenceInMilliSeconds / (60 * 1000)) % 60;
-            long differenceInSeconds
-                    = (differenceInMilliSeconds / 1000) % 60;
-            String duration = differenceInHours + ":" + differenceInMinutes;
-            Date hours = AndroidUtils.stringToDateTimeDefault(duration, "HH:mm");
-            duration_timesheet = AndroidUtils.getDateToString(hours, "HH:mm");
-        }
-        event_end_time = AndroidUtils.getDateToString(event_date2, event_creation_date + "'T'HH:mm:ss");
-
-        if (isAddTimesheet){
-            JSONObject time_sheet_obj;
-//                        for (int i = 0; i < time_sheets.length(); i++) {
-            time_sheet_obj = new JSONObject();
-            time_sheet_obj.put("date", event_creation_date);
-            if (duration_timesheet.equals("")||duration_timesheet==null){
-                time_sheet_obj.put("duration", "30:00");
-            }else {
-                time_sheet_obj.put("duration", duration_timesheet);
+                added_notification_list.put(selectedValues.get(i));
             }
-            time_sheet_obj.put("eventtitle", selected_task);
-            time_sheet_obj.put("addedby", Constants.NAME);
-            time_sheet_obj.put("user_id", Constants.USER_ID);
-            time_sheets.put(time_sheet_obj);
-        }
 
-        int multiplied_offset = (-1) * (offset);
+            JSONObject selected_docs;
+            for (int j = 0; j < selected_documents_list.size(); j++) {
+                selected_docs = new JSONObject();
+                DocumentsDo attachDocumentsDO = selected_documents_list.get(j);
+                selected_docs.put(doctype, attachDocumentsDO.getDoctype());
+                selected_docs.put(docid, attachDocumentsDO.getDocid());
+                existing_attachments.put(selected_docs);
+            }
+
+            for (int i = 0; i < selected_tm_list.size(); i++) {
+                TeamDo addTeamMembersDo = selected_tm_list.get(i);
+                selected_team_member.put(addTeamMembersDo.getId());
+            }
+            for (int i = 0; i < selected_entity_client_list.size(); i++) {
+                RelationshipsDO addClientsDo = selected_entity_client_list.get(i);
+                selected_clients_list.put(addClientsDo.getId());
+            }
+            for (int i = 0; i < selected_individual_list.size(); i++) {
+                RelationshipsDO relationshipsDO = selected_individual_list.get(i);
+                individual_array.put(relationshipsDO.getId());
+            }
+
+            Date event_date = AndroidUtils.stringToDateTimeDefault(tv_event_creation_date.getText().toString(), "MM-dd-yyyy");
+            event_creation_date = AndroidUtils.getDateToString(event_date, "yyyy-MM-dd");
+            Date event_start_date = null;
+            Date event_date2 = null;
+            String start_time = tv_event_start_time.getText().toString();
+            if (start_time.equals("") || start_time == null) {
+                start_time = "00:00";
+                event_start_date = AndroidUtils.stringToDateTimeDefault(start_time, "hh:mm");
+
+            } else {
+                event_start_date = AndroidUtils.stringToDateTimeDefault(start_time, "hh:mm");
+            }
+            event_starting_date = AndroidUtils.getDateToString(event_start_date, event_creation_date + "'T'HH:mm:ss");
+            String end_time = tv_event_end_time.getText().toString();
+            if (end_time.equals("") || end_time == null) {
+                end_time = "00:00";
+                event_date2 = AndroidUtils.stringToDateTimeDefault(end_time, "hh:mm");
+            } else {
+                event_date2 = AndroidUtils.stringToDateTimeDefault(end_time, "hh:mm");
+            }
+            String duration_timesheet = "";
+            if (event_start_date != null && event_date2 != null) {
+
+                long differenceInMilliSeconds = Math.abs(event_start_date.getTime() - event_date2.getTime());
+                long differenceInHours = (differenceInMilliSeconds / (60 * 60 * 1000)) % 24;
+                long differenceInMinutes
+                        = (differenceInMilliSeconds / (60 * 1000)) % 60;
+                long differenceInSeconds
+                        = (differenceInMilliSeconds / 1000) % 60;
+                String duration = differenceInHours + ":" + differenceInMinutes;
+                Date hours = AndroidUtils.stringToDateTimeDefault(duration, "HH:mm");
+                duration_timesheet = AndroidUtils.getDateToString(hours, "HH:mm");
+            }
+            event_end_time = AndroidUtils.getDateToString(event_date2, event_creation_date + "'T'HH:mm:ss");
+
+            if (isAddTimesheet) {
+                JSONObject time_sheet_obj;
+//                        for (int i = 0; i < time_sheets.length(); i++) {
+                time_sheet_obj = new JSONObject();
+                time_sheet_obj.put("date", event_creation_date);
+                if (duration_timesheet.equals("") || duration_timesheet == null) {
+                    time_sheet_obj.put("duration", "30:00");
+                } else {
+                    time_sheet_obj.put("duration", duration_timesheet);
+                }
+                time_sheet_obj.put("eventtitle", selected_task);
+                time_sheet_obj.put("addedby", Constants.NAME);
+                time_sheet_obj.put("user_id", Constants.USER_ID);
+                time_sheets.put(time_sheet_obj);
+            }
+
+            int multiplied_offset = (-1) * (offset);
             String originalDateString = event_creation_date;
 
             SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat desiredFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 
-                Date originalDate = originalFormat.parse(originalDateString);
+            Date originalDate = originalFormat.parse(originalDateString);
 
-                desiredFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-                String newDateString = desiredFormat.format(originalDate);
-                postData.put("date",newDateString);
-                postData.put("attachments", existing_attachments);
+            desiredFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            String newDateString = desiredFormat.format(originalDate);
+            postData.put("date", newDateString);
+            postData.put("attachments", existing_attachments);
 //            } catch (ParseException e) {
 //                e.printStackTrace();
 //            } catch (JSONException e) {
 //                e.printStackTrace();
 //            }
             postData.put("invitees_internal", selected_team_member);
-        postData.put("invitees_external", selected_clients_list);
-        postData.put("invitees_consumer_external",individual_array);
-        postData.put("title",matter_name +" - "+ selected_task);
-        postData.put("dialin",tv_dialing_number.getText().toString());
-        postData.put("notifications", added_notification_list);
-        postData.put("description", tv_description.getText().toString());
-        postData.put("timezone_location", timezone_location);
-        postData.put("timezone_offset", multiplied_offset);
-        postData.put("repeat_interval", repeat_interval.toLowerCase(Locale.ROOT));
-        postData.put("meeting_link",tv_meeting_link.getText().toString());
-
-        postData.put("allday", isAllDay);
-        postData.put("location",tv_location.getText().toString());
-        postData.put("addtimesheet",isAddTimesheet);
-        postData.put("from_ts", event_starting_date);
-        postData.put("to_ts", event_end_time);
-        postData.put("matter_type", matter_legal);
-        postData.put("matter_id", matter_id);
-        postData.put("event_type",matter_legal);
-        postData.put("timesheets",time_sheets);
-        WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "event/create", "CREATE_EVENT", postData.toString());
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
+            postData.put("invitees_external", selected_clients_list);
+            postData.put("invitees_consumer_external", individual_array);
+            postData.put("title", matter_name + " - " + selected_task);
+            postData.put("dialin", tv_dialing_number.getText().toString());
+            postData.put("notifications", added_notification_list);
+            postData.put("description", tv_description.getText().toString());
+            postData.put("timezone_location", timezone_location);
+            postData.put("timezone_offset", multiplied_offset);
+            postData.put("repeat_interval", repeat_interval.toLowerCase(Locale.ROOT));
+            postData.put("meeting_link", tv_meeting_link.getText().toString());
+            postData.put("allday", isAllDay);
+            postData.put("location", tv_location.getText().toString());
+            postData.put("addtimesheet", isAddTimesheet);
+            postData.put("from_ts", event_starting_date);
+            postData.put("to_ts", event_end_time);
+            postData.put("matter_type", matter_legal);
+            postData.put("matter_id", matter_id);
+            postData.put("event_type", matter_legal);
+            postData.put("timesheets", time_sheets);
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/events", "CREATE_EVENT", postData.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void NotificationPopup() {
@@ -703,7 +713,7 @@ private void loadcheckboxData(){
                     }
 
                     if (position >= 0 && position < selectedValues.size()) {
-                        selectedValues.set(position, tv_numbers.getText().toString() + "- " +selected_hour_type.toLowerCase(Locale.ROOT));
+                        selectedValues.set(position, tv_numbers.getText().toString() + "- " + selected_hour_type.toLowerCase(Locale.ROOT));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -732,7 +742,7 @@ private void loadcheckboxData(){
             @Override
             public void afterTextChanged(Editable editable) {
                 if (position >= 0 && position < selectedValues.size()) {
-                    selectedValues.set(position,  editable.toString()+"- "+selected_hour_type.toLowerCase(Locale.ROOT));
+                    selectedValues.set(position, editable.toString() + "- " + selected_hour_type.toLowerCase(Locale.ROOT));
                 }
                 // Do nothing
             }
@@ -754,7 +764,7 @@ private void loadcheckboxData(){
         });
 
         ll_add_notification.addView(view_opponents);
-        selectedValues.add(tv_numbers.getText().toString() + "- " +selected_hour_type.toLowerCase(Locale.ROOT) );
+        selectedValues.add(tv_numbers.getText().toString() + "- " + selected_hour_type.toLowerCase(Locale.ROOT));
     }
 
     private void loadnewInput(TextInputEditText tv_numbers, View view) {
@@ -764,9 +774,10 @@ private void loadcheckboxData(){
         int position = findPositionInParent(view, ll_add_notification);
         if (position >= 0 && position < selectedValues.size()) {
             // Update the input field value in the ArrayList
-            selectedValues.set(position,tv_numbers.getText().toString() + "- " +selected_hour_type.toLowerCase(Locale.ROOT));
+            selectedValues.set(position, tv_numbers.getText().toString() + "- " + selected_hour_type.toLowerCase(Locale.ROOT));
         }
     }
+
     private int findPositionInParent(View view, ViewGroup parent) {
         int position = parent.indexOfChild(view);
         if (position >= 0) {
@@ -784,6 +795,7 @@ private void loadcheckboxData(){
         }
         return -1; // Return -1 if the view is not found in the parent or its children
     }
+
     private void loadUpdatedInput(TextInputEditText tv_numbers) {
         tv_numbers.addTextChangedListener(new TextWatcher() {
             @Override
@@ -799,14 +811,14 @@ private void loadcheckboxData(){
 
             @Override
             public void afterTextChanged(Editable s) {
-                loadTextchangedData(s,tv_numbers,selected_hour_type.toLowerCase(Locale.ROOT));
+                loadTextchangedData(s, tv_numbers, selected_hour_type.toLowerCase(Locale.ROOT));
             }
         });
     }
 
-    private void loadTextchangedData(Editable s, TextInputEditText tv_numbers, String selected_hour_type){
+    private void loadTextchangedData(Editable s, TextInputEditText tv_numbers, String selected_hour_type) {
 //        if (!s.toString().isEmpty()) {
-            int number = Integer.parseInt(tv_numbers.getText().toString());
+        int number = Integer.parseInt(tv_numbers.getText().toString());
 //            if (number > 4) {
 //                tv_numbers.setText("4");
 //                tv_numbers.setSelection(tv_numbers.getText().length());
@@ -815,16 +827,17 @@ private void loadcheckboxData(){
 //                tv_numbers.setSelection(tv_numbers.getText().length());
 //
 //            }
-            String value = number + "-"+selected_hour_type.toLowerCase(Locale.ROOT);
+        String value = number + "-" + selected_hour_type.toLowerCase(Locale.ROOT);
 //            selectedValues.set(position, value);
 //                                notification.put(selectedValues);
-            StringBuilder sb = new StringBuilder();
-            for (String notification : selectedValues) {
-                sb.append(notification).append("\n");
-            }
-            AndroidUtils.showToast(sb.toString(),getContext());
+        StringBuilder sb = new StringBuilder();
+        for (String notification : selectedValues) {
+            sb.append(notification).append("\n");
+        }
+        AndroidUtils.showToast(sb.toString(), getContext());
 //        }
     }
+
     private void load_individual_Popup() {
         try {
             for (int i = 0; i < individual_list.size(); i++) {
@@ -849,7 +862,7 @@ private void loadcheckboxData(){
             rv_groups.setLayoutManager(layoutManager);
             rv_groups.setHasFixedSize(true);
             ADAPTER_TAG = "INDIVIDUAL";
-            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list,documents_list);
+            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list, documents_list);
             rv_groups.setAdapter(documentsAdapter);
             AlertDialog dialog = dialogBuilder.create();
             iv_cancel.setOnClickListener(new View.OnClickListener() {
@@ -957,6 +970,7 @@ private void loadcheckboxData(){
 
     private void callClientsWebservice() {
         try {
+            entities_list.clear();
             progressDialog = AndroidUtils.get_progress(getActivity());
             JSONObject postdata = new JSONObject();
             WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.GET, "v2/relationship/client/list", "Client List", postdata.toString());
@@ -974,6 +988,21 @@ private void loadcheckboxData(){
 
 
 //            teamList.clear();
+            if (teamList.size() == 0) {
+                for (int i = 0; i < matterList.size(); i++) {
+                    if (matter_id.equals(matterList.get(i).getId())) {
+                        JSONArray team_members = matterList.get(i).getMembers();
+                        for (int j = 0; j < team_members.length(); j++) {
+                            TeamDo teamModel = new TeamDo();
+                            JSONObject jsonObject = team_members.getJSONObject(j);
+                            teamModel.setId(jsonObject.getString("id"));
+                            teamModel.setName(jsonObject.getString("name"));
+                            teamList.add(teamModel);
+                        }
+                    }
+                }
+            }
+
 
             for (int i = 0; i < teamList.size(); i++) {
                 for (int j = 0; j < selected_tm_list.size(); j++) {
@@ -981,61 +1010,74 @@ private void loadcheckboxData(){
                         TeamDo teamModel = teamList.get(i);
                         teamModel.setChecked(true);
 //                        selected_groups_list.set(j,documentsModel);
-
                     }
                 }
             }
             selected_tm_list.clear();
+            if (teamList.size() == 0) {
+                AndroidUtils.showToast("No Team Members to View", getContext());
+            } else {
 //            selected_tm_list.clear();
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
-            LayoutInflater inflater = getActivity().getLayoutInflater();
-            View view = inflater.inflate(R.layout.groups_list_adapter, null);
-            RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
-            ImageView iv_cancel = view.findViewById(R.id.close_groups);
-            AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
-            AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-            rv_groups.setLayoutManager(layoutManager);
-            rv_groups.setHasFixedSize(true);
-            ADAPTER_TAG = "TM";
-            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list,documents_list);
-            rv_groups.setAdapter(documentsAdapter);
-            AlertDialog dialog = dialogBuilder.create();
-            iv_cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialog.dismiss();
-                }
-            });
-            btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialog.dismiss();
-                }
-            });
-            btn_save_group.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    for (int i = 0; i < documentsAdapter.getTmList().size(); i++) {
-                        TeamDo teamModel = documentsAdapter.getTmList().get(i);
-                        if (teamModel.isChecked()) {
-                            selected_tm_list.add(teamModel);
-                            //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
-                        }
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                View view = inflater.inflate(R.layout.groups_list_adapter, null);
+                RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
+                ImageView iv_cancel = view.findViewById(R.id.close_groups);
+                TextView tv_header = view.findViewById(R.id.header_name);
+                tv_header.setText("Select Team Members");
+                AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
+                AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+                rv_groups.setLayoutManager(layoutManager);
+                rv_groups.setHasFixedSize(true);
+                ADAPTER_TAG = "TM";
+                CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list, documents_list);
+                rv_groups.setAdapter(documentsAdapter);
+                AlertDialog dialog = dialogBuilder.create();
+                iv_cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
                     }
+                });
+                btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                btn_save_group.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
+                        for (int i = 0; i < documentsAdapter.getTmList().size(); i++) {
+                            TeamDo teamModel = documentsAdapter.getTmList().get(i);
+                            if (teamModel.isChecked()) {
+                                selected_tm_list.add(teamModel);
 
-                    loadSelectedTM();
-                    dialog.dismiss();
-                }
-            });
-            dialog.setCancelable(false);
-            dialog.setView(view);
-            dialog.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-            AndroidUtils.showAlert(e.getMessage(), getContext());
-        }
+                                //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
+                            }
+                        }
+
+                        if(selected_tm_list.size()==0){
+                                selected_groups.setVisibility(View.GONE);
+                                at_add_groups.setText("Select Team Members");
+
+                        }else {
+                            loadSelectedTM();
+                        }
+                        dialog.dismiss();
+                    }
+                });
+                dialog.setCancelable(false);
+                dialog.setView(view);
+                dialog.show();
+            }
+            } catch(Exception e){
+                e.printStackTrace();
+                AndroidUtils.showAlert(e.getMessage(), getContext());
+            }
+
     }
 
     private void loadSelectedClients() {
@@ -1069,11 +1111,11 @@ private void loadcheckboxData(){
 //                            ll_selected_groups.addView(view_opponents,position);
                             RelationshipsDO teamModel = selected_entity_client_list.get(position);
                             teamModel.setChecked(false);
-                            if (selected_entity_client_list.size()==0){
+                            if (selected_entity_client_list.size() == 0) {
                                 selected_tm.setVisibility(View.GONE);
                                 ll_client_team_members.removeAllViews();
                                 at_assigned_team_members.setText("Select Client");
-                            }else{
+                            } else {
                                 selected_tm.setVisibility(View.VISIBLE);
                             }
                             selected_entity_client_list.remove(position);
@@ -1098,6 +1140,7 @@ private void loadcheckboxData(){
     }
 
     private void loadSelectedTM() {
+
         String[] value = new String[selected_tm_list.size()];
         for (int i = 0; i < selected_tm_list.size(); i++) {
 //                                value += "," + family_members.get(i);
@@ -1129,15 +1172,24 @@ private void loadcheckboxData(){
 //                            ll_selected_groups.addView(view_opponents,position);
                             TeamDo teamModel = selected_tm_list.get(position);
                             teamModel.setChecked(false);
-                            selected_tm_list.remove(position);
-//                            selected_groups_list.set(position, groupsModel);
-                            String[] value = new String[selected_tm_list.size()];
-                            for (int i = 0; i < selected_tm_list.size(); i++) {
-                                value[i] = selected_tm_list.get(i).getName();
-                            }
 
-                            String str = String.join(",", value);
-                            at_add_groups.setText(str);
+                            selected_tm_list.remove(position);
+
+//                                ll_selected_team_members.setVisibility(View.GONE);
+                                if (selected_tm_list.size() == 0) {
+                                    selected_groups.setVisibility(View.GONE);
+                                    at_add_groups.setText("Select Team Members");
+                                }else {
+//                            selected_groups_list.set(position, groupsModel);
+                                    String[] value = new String[selected_tm_list.size()];
+                                    for (int i = 0; i < selected_tm_list.size(); i++) {
+                                        value[i] = selected_tm_list.get(i).getName();
+                                    }
+
+                                    String str = String.join(",", value);
+                                    at_add_groups.setText(str);
+                                }
+
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1152,9 +1204,10 @@ private void loadcheckboxData(){
 
     private void loadProjectData(String selected_project) {
         switch (selected_project) {
-
             case "Legal Matter":
-                legalTaksList.clear();
+
+                loadClearedLists();
+
                 unHideMatterDetails();
                 loadRepetetions();
                 matter_legal = "legal";
@@ -1175,8 +1228,9 @@ private void loadcheckboxData(){
             case "General Matter":
                 legalTaksList.clear();
                 unHideMatterDetails();
+                loadClearedLists();
                 loadRepetetions();
-                 matter_legal = "general";
+                matter_legal = "general";
                 callProjectWebservice(matter_legal);
 //                TaskDo consultation_general = new TaskDo("Consultation");
 //                TaskDo draft_agreements = new TaskDo("Draft agreements");
@@ -1193,7 +1247,9 @@ private void loadcheckboxData(){
             case "Overhead":
                 legalTaksList.clear();
                 hideMatterDetails();
+                loadClearedLists();
                 loadRepetetions();
+//                matter_legal = ""
 //                TaskDo conference = new TaskDo("Conference");
 //                TaskDo holidays = new TaskDo("Holidays");
 //                TaskDo research = new TaskDo("Research");
@@ -1209,6 +1265,7 @@ private void loadcheckboxData(){
             case "Others":
                 legalTaksList.clear();
                 hideMatterDetails();
+                loadClearedLists();
                 loadRepetetions();
                 TaskDo business_development = new TaskDo("Business Development");
                 TaskDo personal = new TaskDo("Personal");
@@ -1226,9 +1283,20 @@ private void loadcheckboxData(){
                 legalTaksList.clear();
                 hideAlldetails();
                 loadRepetetions();
-
+                loadClearedLists();
                 break;
         }
+    }
+
+    private void loadClearedLists() {
+        legalTaksList.clear();
+        matterList.clear();
+        entity_client_list.clear();
+        individual_list.clear();
+        documents_list.clear();
+        entities_list.clear();
+        selectedValues.clear();
+        teamList.clear();
     }
 
     private void loadRepetetions() {
@@ -1407,6 +1475,8 @@ private void loadcheckboxData(){
                     } else {
                         AndroidUtils.showAlert("Something went wrong", getContext());
                     }
+                }else if(httpResult.getRequestType().equals("CREATE_EVENT")){
+                    loadCreatEvent();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -1416,12 +1486,29 @@ private void loadcheckboxData(){
         }
     }
 
+    private void loadCreatEvent() {
+        try {
+//            Fragment fragment = new com.digicoffer.lauditor.Calendar.Calendar();
+//            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//            ft.replace(R.id.id_framelayout, fragment);
+//            ft.addToBackStack("current_fragment").commit();
+            FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+            com.digicoffer.lauditor.Calendar.Calendar nonSubmittedTimesheets = new com.digicoffer.lauditor.Calendar.Calendar();
+            ft.replace(R.id.id_framelayout, nonSubmittedTimesheets);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.addToBackStack(null);
+            ft.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void loadEntity_Clients(JSONArray jsonArray) throws JSONException {
         entity_client_list.clear();
         for (int i = 0; i < jsonArray.length(); i++) {
             RelationshipsDO relationshipsDO = new RelationshipsDO();
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            relationshipsDO.setId(entity_id+"_"+jsonObject.getString("id"));
+            relationshipsDO.setId(entity_id + "_" + jsonObject.getString("id"));
             relationshipsDO.setName(jsonObject.getString("name"));
             entity_client_list.add(relationshipsDO);
         }
@@ -1453,7 +1540,7 @@ private void loadcheckboxData(){
             rv_groups.setLayoutManager(layoutManager);
             rv_groups.setHasFixedSize(true);
             ADAPTER_TAG = "ENTITY";
-            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list,documents_list);
+            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list, documents_list);
             rv_groups.setAdapter(documentsAdapter);
             AlertDialog dialog = dialogBuilder.create();
             iv_cancel.setOnClickListener(new View.OnClickListener() {
@@ -1640,9 +1727,9 @@ private void loadcheckboxData(){
 
             }
         });
-        if (Constants.ROLE.equals("AAM")) {
-            callClientsWebservice();
-        }
+//        if (Constants.ROLE.equals("AAM")) {
+//            callClientsWebservice();
+//        }
     }
 
     private void loadMattersList(JSONArray matters) throws JSONException {
@@ -1654,7 +1741,10 @@ private void loadcheckboxData(){
             viewMatterModel.setId(jsonObject.getString("id"));
             viewMatterModel.setTitle(jsonObject.getString("title"));
             viewMatterModel.setDocuments(jsonObject.getJSONArray("documents"));
-            viewMatterModel.setCasetype(jsonObject.getString("caseType"));
+            viewMatterModel.setClients(jsonObject.getJSONArray("clients"));
+            viewMatterModel.setMembers(jsonObject.getJSONArray("members"));
+
+//            viewMatterModel.setCasetype(jsonObject.getString("caseType"));
             matterList.add(viewMatterModel);
         }
 //        AndroidUtils.showAlert(matters.toString(),getContext());
@@ -1669,7 +1759,7 @@ private void loadcheckboxData(){
         sp_matter_name.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                selected_matter = matterList.get(adapterView.getSelectedItemPosition()).getCasetype();
+//                selected_matter = matterList.get(adapterView.getSelectedItemPosition()).getCasetype();
                 matter_id = matterList.get(adapterView.getSelectedItemPosition()).getId();
                 matter_name = matterList.get(adapterView.getSelectedItemPosition()).getTitle();
 //                loadProjectData(selected_project);
@@ -1680,7 +1770,7 @@ private void loadcheckboxData(){
 
             }
         });
-        callClientsWebservice();
+//        callClientsWebservice();
 //            callTeamMemberWebservice();
     }
 

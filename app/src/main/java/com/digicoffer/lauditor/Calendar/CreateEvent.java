@@ -397,6 +397,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 
     private void load_documents_Popup() {
         try {
+
 //            documents_list.clear();
             if (documents_list.size() == 0) {
                 for (int i = 0; i < matterList.size(); i++) {
@@ -414,65 +415,70 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                     }
                 }
             }
-
-            for (int i = 0; i < documents_list.size(); i++) {
-                for (int j = 0; j < selected_documents_list.size(); j++) {
-                    if (documents_list.get(i).getDocid().matches(selected_documents_list.get(j).getDocid())) {
-                        DocumentsDo documentsDo = documents_list.get(i);
-                        documentsDo.setChecked(true);
+            if (documents_list.size()==0) {
+                AndroidUtils.showToast("No document to show",getContext());
+            }else {
+                for (int i = 0; i < documents_list.size(); i++) {
+                    for (int j = 0; j < selected_documents_list.size(); j++) {
+                        if (documents_list.get(i).getDocid().matches(selected_documents_list.get(j).getDocid())) {
+                            DocumentsDo documentsDo = documents_list.get(i);
+                            documentsDo.setChecked(true);
 //                        selected_groups_list.set(j,documentsModel);
-                    }
-                }
-            }
-            selected_documents_list.clear();
-//            selected_tm_list.clear();
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
-            LayoutInflater inflater = getActivity().getLayoutInflater();
-            View view = inflater.inflate(R.layout.groups_list_adapter, null);
-            RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
-            ImageView iv_cancel = view.findViewById(R.id.close_groups);
-            AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
-            AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-            rv_groups.setLayoutManager(layoutManager);
-            rv_groups.setHasFixedSize(true);
-            ADAPTER_TAG = "Documents";
-            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list, documents_list);
-            rv_groups.setAdapter(documentsAdapter);
-            AlertDialog dialog = dialogBuilder.create();
-            iv_cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialog.dismiss();
-                }
-            });
-            btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialog.dismiss();
-                }
-            });
-            btn_save_group.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    for (int i = 0; i < documentsAdapter.getDocuments_list().size(); i++) {
-                        DocumentsDo documentsDo = documentsAdapter.getDocuments_list().get(i);
-                        if (documentsDo.isChecked()) {
-                            selected_documents_list.add(documentsDo);
-//                        AndroidUtils.showAlert(selected_individual_list.toString(),getContext());
-//                        new_selected_individual_list.add(teamModel);
-                            //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
                         }
                     }
-
-                    loadSelectedDocuments();
-//                    loadSelectedIndividual();
-                    dialog.dismiss();
                 }
-            });
-            dialog.setCancelable(false);
-            dialog.setView(view);
-            dialog.show();
+                selected_documents_list.clear();
+//            selected_tm_list.clear();
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                View view = inflater.inflate(R.layout.groups_list_adapter, null);
+                TextView tv_header = view.findViewById(R.id.header_name);
+                tv_header.setText("Select Documents");
+                RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
+                ImageView iv_cancel = view.findViewById(R.id.close_groups);
+                AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
+                AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+                rv_groups.setLayoutManager(layoutManager);
+                rv_groups.setHasFixedSize(true);
+                ADAPTER_TAG = "Documents";
+                CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list, documents_list);
+                rv_groups.setAdapter(documentsAdapter);
+                AlertDialog dialog = dialogBuilder.create();
+                iv_cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                btn_save_group.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        for (int i = 0; i < documentsAdapter.getDocuments_list().size(); i++) {
+                            DocumentsDo documentsDo = documentsAdapter.getDocuments_list().get(i);
+                            if (documentsDo.isChecked()) {
+                                selected_documents_list.add(documentsDo);
+//                        AndroidUtils.showAlert(selected_individual_list.toString(),getContext());
+//                        new_selected_individual_list.add(teamModel);
+                                //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
+                            }
+                        }
+
+                        loadSelectedDocuments();
+//                    loadSelectedIndividual();
+                        dialog.dismiss();
+                    }
+                });
+                dialog.setCancelable(false);
+                dialog.setView(view);
+                dialog.show();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             AndroidUtils.showAlert(e.getMessage(), getContext());
@@ -838,64 +844,70 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 
     private void load_individual_Popup() {
         try {
-            for (int i = 0; i < individual_list.size(); i++) {
-                for (int j = 0; j < selected_individual_list.size(); j++) {
-                    if (individual_list.get(i).getId().matches(selected_individual_list.get(j).getId())) {
-                        RelationshipsDO teamModel = individual_list.get(i);
-                        teamModel.setChecked(true);
+            if (individual_list.size()==0){
+                AndroidUtils.showToast("No Individuals to show",getContext());
+            }else {
+                for (int i = 0; i < individual_list.size(); i++) {
+                    for (int j = 0; j < selected_individual_list.size(); j++) {
+                        if (individual_list.get(i).getId().matches(selected_individual_list.get(j).getId())) {
+                            RelationshipsDO teamModel = individual_list.get(i);
+                            teamModel.setChecked(true);
 //                        selected_groups_list.set(j,documentsModel);
-                    }
-                }
-            }
-            selected_individual_list.clear();
-//            selected_tm_list.clear();
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
-            LayoutInflater inflater = getActivity().getLayoutInflater();
-            View view = inflater.inflate(R.layout.groups_list_adapter, null);
-            RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
-            ImageView iv_cancel = view.findViewById(R.id.close_groups);
-            AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
-            AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-            rv_groups.setLayoutManager(layoutManager);
-            rv_groups.setHasFixedSize(true);
-            ADAPTER_TAG = "INDIVIDUAL";
-            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list, documents_list);
-            rv_groups.setAdapter(documentsAdapter);
-            AlertDialog dialog = dialogBuilder.create();
-            iv_cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialog.dismiss();
-                }
-            });
-            btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialog.dismiss();
-                }
-            });
-            btn_save_group.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    for (int i = 0; i < documentsAdapter.getIndividual_List().size(); i++) {
-                        RelationshipsDO teamModel = documentsAdapter.getIndividual_List().get(i);
-                        if (teamModel.isChecked()) {
-                            selected_individual_list.add(teamModel);
-//                        AndroidUtils.showAlert(selected_individual_list.toString(),getContext());
-//                        new_selected_individual_list.add(teamModel);
-                            //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
                         }
                     }
-
-
-                    loadSelectedIndividual();
-                    dialog.dismiss();
                 }
-            });
-            dialog.setCancelable(false);
-            dialog.setView(view);
-            dialog.show();
+                selected_individual_list.clear();
+//            selected_tm_list.clear();
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                View view = inflater.inflate(R.layout.groups_list_adapter, null);
+                RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
+                ImageView iv_cancel = view.findViewById(R.id.close_groups);
+                TextView tv_header = view.findViewById(R.id.header_name);
+                tv_header.setText("Select Individuals");
+                AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
+                AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+                rv_groups.setLayoutManager(layoutManager);
+                rv_groups.setHasFixedSize(true);
+                ADAPTER_TAG = "INDIVIDUAL";
+                CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list, documents_list);
+                rv_groups.setAdapter(documentsAdapter);
+                AlertDialog dialog = dialogBuilder.create();
+                iv_cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                btn_save_group.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        for (int i = 0; i < documentsAdapter.getIndividual_List().size(); i++) {
+                            RelationshipsDO teamModel = documentsAdapter.getIndividual_List().get(i);
+                            if (teamModel.isChecked()) {
+                                selected_individual_list.add(teamModel);
+//                        AndroidUtils.showAlert(selected_individual_list.toString(),getContext());
+//                        new_selected_individual_list.add(teamModel);
+                                //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
+                            }
+                        }
+
+
+                        loadSelectedIndividual();
+                        dialog.dismiss();
+                    }
+                });
+                dialog.setCancelable(false);
+                dialog.setView(view);
+                dialog.show();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             AndroidUtils.showAlert(e.getMessage(), getContext());
@@ -1534,6 +1546,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
                 LayoutInflater inflater = getActivity().getLayoutInflater();
                 View view = inflater.inflate(R.layout.groups_list_adapter, null);
+                TextView tv_header = view.findViewById(R.id.header_name);
+                tv_header.setText("Select Clients");
                 RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
                 ImageView iv_cancel = view.findViewById(R.id.close_groups);
                 AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);

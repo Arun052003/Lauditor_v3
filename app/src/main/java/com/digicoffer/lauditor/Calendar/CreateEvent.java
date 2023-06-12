@@ -378,11 +378,9 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                 load_individual_Popup();
                 break;
             case R.id.btn_assigned_team_members:
-                if(matterList.size()==0){
-                    callClientsWebservice();
-                }else{
+
                     loadEntityClientPopup();
-                }
+
 
                 break;
             case R.id.add_notification:
@@ -1518,62 +1516,67 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 
     private void loadEntityClientPopup() {
         try {
-            for (int i = 0; i < entity_client_list.size(); i++) {
-                for (int j = 0; j < selected_entity_client_list.size(); j++) {
-                    if (entity_client_list.get(i).getId().matches(selected_entity_client_list.get(j).getId())) {
-                        RelationshipsDO teamModel = entity_client_list.get(i);
-                        teamModel.setChecked(true);
-//                        selected_groups_list.set(j,documentsModel);
-                    }
-                }
+            if (entity_client_list.size()==0){
+                AndroidUtils.showToast("No Clients to show",getContext());
             }
-            selected_entity_client_list.clear();
-//            selected_tm_list.clear();
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
-            LayoutInflater inflater = getActivity().getLayoutInflater();
-            View view = inflater.inflate(R.layout.groups_list_adapter, null);
-            RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
-            ImageView iv_cancel = view.findViewById(R.id.close_groups);
-            AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
-            AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-            rv_groups.setLayoutManager(layoutManager);
-            rv_groups.setHasFixedSize(true);
-            ADAPTER_TAG = "ENTITY";
-            CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list, documents_list);
-            rv_groups.setAdapter(documentsAdapter);
-            AlertDialog dialog = dialogBuilder.create();
-            iv_cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialog.dismiss();
-                }
-            });
-            btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialog.dismiss();
-                }
-            });
-            btn_save_group.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    for (int i = 0; i < documentsAdapter.getEntity_client_list().size(); i++) {
-                        RelationshipsDO teamModel = documentsAdapter.getEntity_client_list().get(i);
-                        if (teamModel.isChecked()) {
-                            selected_entity_client_list.add(teamModel);
-//                        AndroidUtils.showAlert(selected_individual_list.toString(),getContext());
-//                        new_selected_client_list.add(teamModel);
-                            //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
+            else {
+                for (int i = 0; i < entity_client_list.size(); i++) {
+                    for (int j = 0; j < selected_entity_client_list.size(); j++) {
+                        if (entity_client_list.get(i).getId().matches(selected_entity_client_list.get(j).getId())) {
+                            RelationshipsDO teamModel = entity_client_list.get(i);
+                            teamModel.setChecked(true);
+//                        selected_groups_list.set(j,documentsModel);
                         }
                     }
-                    loadSelectedClients();
-                    dialog.dismiss();
                 }
-            });
-            dialog.setCancelable(false);
-            dialog.setView(view);
-            dialog.show();
+                selected_entity_client_list.clear();
+//            selected_tm_list.clear();
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                View view = inflater.inflate(R.layout.groups_list_adapter, null);
+                RecyclerView rv_groups = view.findViewById(R.id.rv_relationship_documents);
+                ImageView iv_cancel = view.findViewById(R.id.close_groups);
+                AppCompatButton btn_groups_cancel = view.findViewById(R.id.btn_groups_cancel);
+                AppCompatButton btn_save_group = view.findViewById(R.id.btn_save_group);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+                rv_groups.setLayoutManager(layoutManager);
+                rv_groups.setHasFixedSize(true);
+                ADAPTER_TAG = "ENTITY";
+                CommonRelationshipsAdapter documentsAdapter = new CommonRelationshipsAdapter(teamList, ADAPTER_TAG, individual_list, entity_client_list, documents_list);
+                rv_groups.setAdapter(documentsAdapter);
+                AlertDialog dialog = dialogBuilder.create();
+                iv_cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                btn_groups_cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                btn_save_group.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        for (int i = 0; i < documentsAdapter.getEntity_client_list().size(); i++) {
+                            RelationshipsDO teamModel = documentsAdapter.getEntity_client_list().get(i);
+                            if (teamModel.isChecked()) {
+                                selected_entity_client_list.add(teamModel);
+//                        AndroidUtils.showAlert(selected_individual_list.toString(),getContext());
+//                        new_selected_client_list.add(teamModel);
+                                //                           jsonArray.put(selected_documents_list.get(i).getGroup_name());
+                            }
+                        }
+                        loadSelectedClients();
+                        dialog.dismiss();
+                    }
+                });
+                dialog.setCancelable(false);
+                dialog.setView(view);
+                dialog.show();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             AndroidUtils.showAlert(e.getMessage(), getContext());
@@ -1604,7 +1607,32 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         loadEntitiesSpinnerData();
     }
 
-    private void loadEntitiesSpinnerData() {
+    private void loadEntitiesSpinnerData() throws JSONException{
+        if (entities_list.size() == 0) {
+            for (int i = 0; i < matterList.size(); i++) {
+                if (matter_id.equals(matterList.get(i).getId())) {
+                    JSONArray entities = matterList.get(i).getClients();
+                    for (int j = 0; j < entities.length(); j++) {
+                        RelationshipsDO relationshipsDO = new RelationshipsDO();
+                        JSONObject jsonObject = entities.getJSONObject(j);
+//                String type =   ;
+
+                        if (jsonObject.getString("type").equals("consumer")) {
+                            relationshipsDO.setId(jsonObject.getString("id"));
+                            relationshipsDO.setName(jsonObject.getString("name"));
+                            relationshipsDO.setType(jsonObject.getString("type"));
+                            individual_list.add(relationshipsDO);
+                        } else {
+                            relationshipsDO.setId(jsonObject.getString("id"));
+                            relationshipsDO.setName(jsonObject.getString("name"));
+                            relationshipsDO.setType(jsonObject.getString("type"));
+                            entities_list.add(relationshipsDO);
+                        }
+                    }
+                }
+            }
+        }
+
         final CommonSpinnerAdapter adapter = new CommonSpinnerAdapter(getActivity(), entities_list);
         sp_entities.setAdapter(adapter);
 //        callTimeZoneWebservice();
@@ -1762,6 +1790,11 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 //                selected_matter = matterList.get(adapterView.getSelectedItemPosition()).getCasetype();
                 matter_id = matterList.get(adapterView.getSelectedItemPosition()).getId();
                 matter_name = matterList.get(adapterView.getSelectedItemPosition()).getTitle();
+                try {
+                    loadEntitiesSpinnerData();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 //                loadProjectData(selected_project);
             }
 
@@ -1770,6 +1803,11 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 
             }
         });
+        try {
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 //        callClientsWebservice();
 //            callTeamMemberWebservice();
     }

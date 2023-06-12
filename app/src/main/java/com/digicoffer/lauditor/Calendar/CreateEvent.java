@@ -27,6 +27,7 @@ import android.widget.TimePicker;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -67,6 +68,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     private static String ADAPTER_TAG = "";
     private AlertDialog progressDialog;
     MultiAutoCompleteTextView at_family_members;
+    CardView cv_meeting_details;
     final ArrayList<String> Repetetions = new ArrayList<>();
     JSONArray notification = new JSONArray();
     LinearLayout ll_client_team_members, ll_documents_list, ll_attach_document, ll_selected_entites, selected_individual, ll_individual_list, ll_selected_team_members, selected_tm, selected_groups;
@@ -93,7 +95,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     ArrayList<RelationshipsDO> new_selected_client_list = new ArrayList<>();
     ArrayList<RelationshipsDO> entity_client_list = new ArrayList<>();
     ArrayList<TeamDo> selected_tm_list = new ArrayList<>();
-    private TextView at_add_groups, at_attach_document, at_add_clients, at_assigned_team_members, at_individual;
+    private TextView at_add_groups, tv_message,at_attach_document, at_add_clients, at_assigned_team_members, at_individual;
     private Spinner sp_entities, sp_project, sp_matter_name, sp_task, sp_time_zone, sp_repetetion, sp_add_team_member, sp_add_entity, sp_client_team_members;
     private TextInputEditText tv_event_creation_date, tv_event_start_time, tv_event_end_time, tv_meeting_link, tv_dialing_number, tv_location, tv_description;
     private AppCompatButton add_notification, btn_cancel_timesheet, btn_save_timesheet;
@@ -138,10 +140,11 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         at_add_groups = view.findViewById(R.id.at_add_groups);
         btn_create_event = view.findViewById(R.id.btn_create_event);
         btn_create_event.setOnClickListener(this);
+        tv_message = view.findViewById(R.id.tv_message);
         at_attach_document = view.findViewById(R.id.at_attach_document);
         cb_all_day = view.findViewById(R.id.cb_all_day);
 //       isAllDay = cb_all_day.isChecked();
-
+        cv_meeting_details = view.findViewById(R.id.cv_meeting_details);
         cb_add_to_timesheet = view.findViewById(R.id.cb_add_to_timesheet);
         loadcheckboxData();
 
@@ -374,8 +377,11 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 //
                 break;
             case R.id.btn_individual:
-
-                load_individual_Popup();
+                if (individual_list.size()==0){
+                    callClientsWebservice();
+                }else {
+                    load_individual_Popup();
+                }
                 break;
             case R.id.btn_assigned_team_members:
 
@@ -387,7 +393,37 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                 NotificationPopup();
                 break;
             case R.id.btn_create_event:
-                callCreateEventWebservice();
+                if (!matter_legal.equals("reminders")){
+                    if(tv_event_creation_date.getText().toString().equals("")){
+                        tv_event_creation_date.setError("Date is required");
+                        tv_event_creation_date.requestFocus();
+                    }else if(tv_event_start_time.getText().toString().equals("")){
+                        tv_event_start_time.setError("Start Time is required");
+                        tv_event_start_time.requestFocus();
+                    }else if(tv_event_end_time.getText().toString().equals("")){
+                        tv_event_end_time.setError("End time is required");
+                        tv_event_end_time.requestFocus();
+                    }else{
+                        callCreateEventWebservice();
+                    }
+                }else{
+                    if(tv_event_creation_date.getText().toString().equals("")){
+                        tv_event_creation_date.setError("Date is required");
+                        tv_event_creation_date.requestFocus();
+                    }else if(tv_event_start_time.getText().toString().equals("")){
+                        tv_event_start_time.setError("Start Time is required");
+                        tv_event_start_time.requestFocus();
+                    }else if(tv_event_end_time.getText().toString().equals("")){
+                        tv_event_end_time.setError("End time is required");
+                        tv_event_end_time.requestFocus();
+                    }else if(tv_message.getText().toString().equals("")){
+                        tv_message.setError("Message is required");
+                        tv_message.requestFocus();
+                    }else{
+                        callCreateEventWebservice();
+                    }
+                }
+
                 break;
             case R.id.btn_attach_document:
                 load_documents_Popup();
@@ -661,22 +697,31 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
             postData.put("invitees_external", selected_clients_list);
             postData.put("invitees_consumer_external", individual_array);
             postData.put("title", matter_name + " - " + selected_task);
-            postData.put("dialin", tv_dialing_number.getText().toString());
+            if (!matter_legal.equals("reminders")){
+                postData.put("dialin", tv_dialing_number.getText().toString());
+                postData.put("location", tv_location.getText().toString());
+                postData.put("addtimesheet", isAddTimesheet);
+                postData.put("timesheets", time_sheets);
+                postData.put("description", tv_description.getText().toString());
+            }else{
+                postData.put("description", tv_message.getText().toString());
+            }
+
             postData.put("notifications", added_notification_list);
-            postData.put("description", tv_description.getText().toString());
+//            postData.put("description", tv_description.getText().toString());
             postData.put("timezone_location", timezone_location);
             postData.put("timezone_offset", multiplied_offset);
             postData.put("repeat_interval", repeat_interval.toLowerCase(Locale.ROOT));
             postData.put("meeting_link", tv_meeting_link.getText().toString());
             postData.put("allday", isAllDay);
-            postData.put("location", tv_location.getText().toString());
-            postData.put("addtimesheet", isAddTimesheet);
             postData.put("from_ts", event_starting_date);
             postData.put("to_ts", event_end_time);
-            postData.put("matter_type", matter_legal);
-            postData.put("matter_id", matter_id);
+            if (matter_legal.equals("legal")||matter_legal.equals("general")) {
+                postData.put("matter_type", matter_legal);
+                postData.put("matter_id", matter_id);
+            }
             postData.put("event_type", matter_legal);
-            postData.put("timesheets", time_sheets);
+
             WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/events", "CREATE_EVENT", postData.toString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -1259,6 +1304,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                 hideMatterDetails();
                 loadClearedLists();
                 loadRepetetions();
+                callClientsWebservice();
+                matter_legal = "overhead";
 //                matter_legal = ""
 //                TaskDo conference = new TaskDo("Conference");
 //                TaskDo holidays = new TaskDo("Holidays");
@@ -1277,6 +1324,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                 hideMatterDetails();
                 loadClearedLists();
                 loadRepetetions();
+                callClientsWebservice();
+                matter_legal = "others";
                 TaskDo business_development = new TaskDo("Business Development");
                 TaskDo personal = new TaskDo("Personal");
                 TaskDo doctor_appointment = new TaskDo("Doctor Appointment");
@@ -1294,6 +1343,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                 hideAlldetails();
                 loadRepetetions();
                 loadClearedLists();
+                callClientsWebservice();
+                matter_legal = "reminders";
                 break;
         }
     }
@@ -1335,12 +1386,13 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     private void hideAlldetails() {
         ll_matter_name.setVisibility(View.GONE);
         ll_message.setVisibility(View.VISIBLE);
+        cv_meeting_details.setVisibility(View.GONE);
         ll_task.setVisibility(View.GONE);
         ll_attach_document.setVisibility(View.GONE);
     }
 
     private void hideMatterDetails() {
-
+        cv_meeting_details.setVisibility(View.VISIBLE);
         ll_matter_name.setVisibility(View.GONE);
         ll_message.setVisibility(View.GONE);
         ll_task.setVisibility(View.VISIBLE);
@@ -1348,7 +1400,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     }
 
     private void unHideMatterDetails() {
-
+        cv_meeting_details.setVisibility(View.VISIBLE);
         ll_matter_name.setVisibility(View.VISIBLE);
         ll_message.setVisibility(View.GONE);
         ll_task.setVisibility(View.VISIBLE);
@@ -1486,7 +1538,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                         AndroidUtils.showAlert("Something went wrong", getContext());
                     }
                 }else if(httpResult.getRequestType().equals("CREATE_EVENT")){
-                    loadCreatEvent();
+                    AndroidUtils.showToast(result.getString("msg"),getContext());
+                    loadClearedLists();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

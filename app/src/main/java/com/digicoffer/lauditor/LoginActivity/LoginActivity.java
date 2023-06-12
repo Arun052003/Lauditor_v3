@@ -2,11 +2,6 @@ package com.digicoffer.lauditor.LoginActivity;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatSpinner;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -17,6 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatSpinner;
 
 import com.digicoffer.lauditor.MainActivity;
 import com.digicoffer.lauditor.R;
@@ -54,8 +54,8 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskComplet
         tet_password = findViewById(R.id.et_login_password);
         tv_forgot_password = findViewById(R.id.tv_forgotPassword);
        bt_login = findViewById(R.id.bt_login);
-        tet_email.setText("rajendra.sai@digicoffer.com");
-        tet_password.setText("Test@123");
+//        tet_email.setText("rajendra.sai@digicoffer.com");
+//        tet_password.setText("Test@123");
         Login();
        bt_login.setPressed(true);
         bt_login.setOnClickListener(new View.OnClickListener() {

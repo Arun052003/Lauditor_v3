@@ -495,7 +495,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:text="Duration:"
+                        android:text=""
                         android:textColor="@color/Blue_text_color"
                         android:textSize="@dimen/Fifteen_dp">
 
@@ -1162,7 +1162,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-condensed-medium"
-                                android:text="@string/assign_team_member"
+                                android:text="Selected Clients"
                                 android:textColor="@color/Blue_text_color"
                                 android:textSize="@dimen/Fifteen_dp">
 

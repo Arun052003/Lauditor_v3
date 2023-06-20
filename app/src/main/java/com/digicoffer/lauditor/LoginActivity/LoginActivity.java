@@ -54,8 +54,8 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskComplet
         tet_password = findViewById(R.id.et_login_password);
         tv_forgot_password = findViewById(R.id.tv_forgotPassword);
        bt_login = findViewById(R.id.bt_login);
-//        tet_email.setText("rajendra.sai@digicoffer.com");
-//        tet_password.setText("Test@123");
+        tet_email.setText("rajendra.sai@digicoffer.com");
+        tet_password.setText("Test@123");
         Login();
        bt_login.setPressed(true);
         bt_login.setOnClickListener(new View.OnClickListener() {

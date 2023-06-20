@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,10 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.digicoffer.lauditor.R;
-import com.digicoffer.lauditor.TimeSheets.NonSubmittedTimesheets;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
-import com.tuyenmonkey.mkloader.model.Line;
 
 public class Calendar extends Fragment implements AsyncTaskCompleteListener,View.OnClickListener {
     LinearLayoutCompat ll_view_type;
@@ -37,7 +34,7 @@ public class Calendar extends Fragment implements AsyncTaskCompleteListener,View
         tv_view_calendar = view.findViewById(R.id.tv_view_calendar);
         tv_day_view = view.findViewById(R.id.tv_day_view);
         tv_month_view = view.findViewById(R.id.tv_month_view);
-        loadView();
+        loadCreateEvent();
         tv_view_calendar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,7 +56,7 @@ public class Calendar extends Fragment implements AsyncTaskCompleteListener,View
         tv_view_calendar.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         tv_create_event.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-        CreateEvent nonSubmittedTimesheets = new CreateEvent();
+        ViewCalendar nonSubmittedTimesheets = new ViewCalendar();
         ft.replace(R.id.child_container_timesheets, nonSubmittedTimesheets);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(null);
@@ -69,7 +66,12 @@ public class Calendar extends Fragment implements AsyncTaskCompleteListener,View
     private void loadCreateEvent(){
         tv_view_calendar.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
         tv_create_event.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
-
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        CreateEvent nonSubmittedTimesheets = new CreateEvent();
+        ft.replace(R.id.child_container_timesheets, nonSubmittedTimesheets);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     @Override

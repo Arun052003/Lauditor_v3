@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/events_cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3sp"
+        android:clickable="true"
+        android:background="@color/white"
+        app:cardBackgroundColor="@color/white"
+        android:padding="10dp"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="0dp" >
+        <LinearLayout
+            android:id="@+id/ll_events"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="0"
+            android:background="@drawable/rectangular_white_background"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/events_names"
+                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textColor="@color/Blue_text_color"
+                    android:layout_height="wrap_content"
+                    android:text="Meeting with Vijay"
+                    android:padding="5dp"
+                    android:textStyle="bold"
+                    >
+
+                </TextView>
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textColor="@color/Blue_text_color"
+                    android:text="Meeting with vijay"
+                    android:padding="5dp"
+                    android:textStyle="bold"
+                    >
+
+                </TextView>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="250dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+                <ImageButton
+                    android:id="@+id/ib_view_events"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_title"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_weight="0"
+                    android:background="@drawable/view_document"
+                    android:layout_gravity="center"
+                    android:gravity="start"
+                    android:padding="10dp"
+                    android:text=""
+                    android:textColor="@color/cardview_dark_background"
+                    android:textStyle="normal" />
+
+                <ImageButton
+                    android:id="@+id/ib_delete_events"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_title"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+
+                    android:layout_weight="0"
+                    android:background="@drawable/delete_icon_relationships"
+                    android:gravity="start"
+                    android:padding="10dp"
+                    android:text=""
+                    android:textColor="@color/cardview_dark_background"
+                    android:textStyle="normal" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

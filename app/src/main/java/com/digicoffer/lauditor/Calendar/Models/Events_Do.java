@@ -1,5 +1,7 @@
 package com.digicoffer.lauditor.Calendar.Models;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 
 public class Events_Do {
@@ -13,6 +15,195 @@ public class Events_Do {
     String Event_clients;
     String Event_team;
     boolean all_day;
+    String description;
+    String dialin;
+    String event_type;
+    JSONArray invitees_consumer_external;
+    JSONArray invitees_external;
+    JSONArray invitees_internal;
+    boolean isrecurring;
+    String location;
+    String matter_id;
+    String matter_type;
+    String matter_name;
+    String meeting_link;
+    String notes;
+    JSONArray notifications;
+    boolean owner;
+    String owner_name;
+    String repeat_interval;
+    String timezone_location;
+    String timezone_offset;
+    String title;
+    JSONArray attachments;
+
+    public String getTimezone_offset() {
+        return timezone_offset;
+    }
+
+    public void setTimezone_offset(String timezone_offset) {
+        this.timezone_offset = timezone_offset;
+    }
+
+    public JSONArray getNotifications() {
+        return notifications;
+    }
+
+    public JSONArray getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(JSONArray attachments) {
+        this.attachments = attachments;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDialin() {
+        return dialin;
+    }
+
+    public void setDialin(String dialin) {
+        this.dialin = dialin;
+    }
+
+    public String getEvent_type() {
+        return event_type;
+    }
+
+    public void setEvent_type(String event_type) {
+        this.event_type = event_type;
+    }
+
+    public JSONArray getInvitees_consumer_external() {
+        return invitees_consumer_external;
+    }
+
+    public void setInvitees_consumer_external(JSONArray invitees_consumer_external) {
+        this.invitees_consumer_external = invitees_consumer_external;
+    }
+
+    public JSONArray getInvitees_external() {
+        return invitees_external;
+    }
+
+    public void setInvitees_external(JSONArray invitees_external) {
+        this.invitees_external = invitees_external;
+    }
+
+    public JSONArray getInvitees_internal() {
+        return invitees_internal;
+    }
+
+    public void setInvitees_internal(JSONArray invitees_internal) {
+        this.invitees_internal = invitees_internal;
+    }
+
+    public boolean isIsrecurring() {
+        return isrecurring;
+    }
+
+    public void setIsrecurring(boolean isrecurring) {
+        this.isrecurring = isrecurring;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getMatter_id() {
+        return matter_id;
+    }
+
+    public void setMatter_id(String matter_id) {
+        this.matter_id = matter_id;
+    }
+
+    public String getMatter_type() {
+        return matter_type;
+    }
+
+    public void setMatter_type(String matter_type) {
+        this.matter_type = matter_type;
+    }
+
+    public String getMatter_name() {
+        return matter_name;
+    }
+
+    public void setMatter_name(String matter_name) {
+        this.matter_name = matter_name;
+    }
+
+    public String getMeeting_link() {
+        return meeting_link;
+    }
+
+    public void setMeeting_link(String meeting_link) {
+        this.meeting_link = meeting_link;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public void setNotifications(JSONArray notifications) {
+        this.notifications = notifications;
+    }
+
+    public boolean isOwner() {
+        return owner;
+    }
+
+    public void setOwner(boolean owner) {
+        this.owner = owner;
+    }
+
+    public String getOwner_name() {
+        return owner_name;
+    }
+
+    public void setOwner_name(String owner_name) {
+        this.owner_name = owner_name;
+    }
+
+    public String getRepeat_interval() {
+        return repeat_interval;
+    }
+
+    public void setRepeat_interval(String repeat_interval) {
+        this.repeat_interval = repeat_interval;
+    }
+
+    public String getTimezone_location() {
+        return timezone_location;
+    }
+
+    public void setTimezone_location(String timezone_location) {
+        this.timezone_location = timezone_location;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public boolean isAll_day() {
         return all_day;
@@ -22,7 +213,7 @@ public class Events_Do {
         this.all_day = all_day;
     }
 
-    ArrayList<String> notifications;
+//    ArrayList<String> notifications;
     ArrayList<String> Team_name;
     ArrayList<String> Tm_name;
 
@@ -42,13 +233,13 @@ public class Events_Do {
         Tm_name = tm_name;
     }
 
-    public ArrayList<String> getNotifications() {
-        return notifications;
-    }
+//    public ArrayList<String> getNotifications() {
+//        return notifications;
+//    }
 
-    public void setNotifications(ArrayList<String> notifications) {
-        this.notifications = notifications;
-    }
+//    public void setNotifications(ArrayList<String> notifications) {
+//        this.notifications = notifications;
+//    }
 
     boolean isRecurring;
     ArrayList<String> attachment_name;

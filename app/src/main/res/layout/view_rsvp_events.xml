@@ -87,42 +87,42 @@
                 >
 
                 <TextView
-                    android:id="@+id/tv_high_priority"
+                    android:id="@+id/tv_yes"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@drawable/button_left_green_round_background"
                     android:fontFamily="sans-serif-condensed-medium"
                     android:padding="10dp"
-                    android:text="@string/high"
+                    android:text="Yes"
                     android:textColor="@color/black"
                     android:textSize="@dimen/Fifteen_dp">
 
                 </TextView>
 
                 <TextView
-                    android:id="@+id/tv_medium_priority"
+                    android:id="@+id/tv_no"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@drawable/radiobutton_centre_background"
                     android:fontFamily="sans-serif-condensed-medium"
                     android:padding="10dp"
-                    android:text="@string/medium"
+                    android:text="No"
                     android:textColor="@color/black"
                     android:textSize="@dimen/Fifteen_dp">
 
                 </TextView>
 
                 <TextView
-                    android:id="@+id/tv_low_priority"
+                    android:id="@+id/tv_maybe"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@drawable/button_right_round_background"
                     android:fontFamily="sans-serif-condensed-medium"
                     android:padding="10dp"
-                    android:text="@string/low"
+                    android:text="Maybe"
                     android:textColor="@color/black"
                     android:textSize="@dimen/Fifteen_dp">
 

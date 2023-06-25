@@ -6,9 +6,11 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -57,11 +59,30 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
     @Override
     public void onBindViewHolder(@NonNull Events_Adapter.MyViewHolder holder, int position) {
         final Events_Do events_do = filtered_list.get(position);
-        holder.event_name.setText(events_do.getEvent_Name());
-        final boolean recur = events_do.isRecurring();
+
         final String from_ts = events_do.getEvent_start_time();
         Date event_date = AndroidUtils.stringToDateTimeDefault(from_ts, "yyyy-MM-dd'T'HH:mm:ss");
         final String converted_date  = AndroidUtils.getDateToString(event_date, "yyyy-MM-dd");
+        final String to_ts = events_do.getEvent_end_time();
+        Date end_date = AndroidUtils.stringToDateTimeDefault(to_ts,"yyyy-MM-dd'T'HH:mm:ss");
+        final String converted_end_date = AndroidUtils.getDateToString(end_date, "yyyy-MM-dd");
+
+        holder.events_names.setText(converted_date);
+        if (events_do.isOwner()){
+            holder.ib_view_events.setVisibility(View.VISIBLE);
+            holder.ll_rsvp.setVisibility(View.GONE);
+        }else{
+            holder.ib_view_events.setVisibility(View.GONE);
+            holder.ll_rsvp.setVisibility(View.VISIBLE);
+        }
+        holder.event_title.setText(events_do.getTitle());
+        holder.event_time.setText(converted_date+"-"+converted_end_date);
+        holder.event_timezone.setText(events_do.getTimezone_location());
+        holder.event_description.setText(events_do.getDescription());
+        holder.tv_meeting_link.setText(events_do.getMeeting_link());
+        holder.tv_phone_dialin.setText(events_do.getDialin());
+        holder.tv_location.setText(events_do.getLocation());
+        final boolean recur = events_do.isRecurring();
         if(events_do.isAll_day()){
             holder.time.setText("All Day");
         }
@@ -90,19 +111,37 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView event_name;
+        TextView events_names,tv_meeting_link,tv_phone_dialin,tv_location,tv_yes,tv_no,tv_maybe,event_title,event_time,event_description,event_timezone;
         TextView time;
-        ImageButton ib_edit;
+        ImageButton ib_view_events,ib_delete_events;
         ImageButton ib_view;
         ImageButton ib_delete;
+        AppCompatButton bt_hide_details;
+        LinearLayout ll_notifications,ll_view_more,ll_rsvp,ll_documents,ll_team_members,ll_clients;
         public MyViewHolder(@NonNull View itemView) {
 
             super(itemView);
-            event_name = (TextView)itemView.findViewById(R.id.events_names);
+            events_names = (TextView)itemView.findViewById(R.id.events_names);
             time = (TextView)itemView.findViewById(R.id.time);
-            ib_view = (ImageButton) itemView.findViewById(R.id.ib_view_events);
-
-            ib_delete = (ImageButton)itemView.findViewById(R.id.ib_delete_events);
+            event_title = (TextView)itemView.findViewById(R.id.event_title);
+            ib_view_events = (ImageButton) itemView.findViewById(R.id.ib_view_events);
+            tv_yes = (TextView) itemView.findViewById(R.id.tv_yes) ;
+            tv_no = (TextView) itemView.findViewById(R.id.tv_no);
+            tv_maybe = (TextView) itemView.findViewById(R.id.tv_maybe);
+            event_time = (TextView) itemView.findViewById(R.id.event_time);
+            event_timezone = (TextView) itemView.findViewById(R.id.event_timezone);
+            ib_delete_events = (ImageButton)itemView.findViewById(R.id.ib_delete_events);
+            event_description = (TextView) itemView.findViewById(R.id.event_description);
+            tv_meeting_link = (TextView) itemView.findViewById(R.id.tv_meeting_link);
+            tv_phone_dialin = (TextView) itemView.findViewById(R.id.tv_phone_dialin);
+            tv_location = (TextView) itemView.findViewById(R.id.tv_location);
+            bt_hide_details = (AppCompatButton) itemView.findViewById(R.id.bt_hide_details);
+            ll_notifications = (LinearLayout) itemView.findViewById(R.id.ll_notifications);
+            ll_view_more = (LinearLayout) itemView.findViewById(R.id.ll_view_more);
+            ll_documents = (LinearLayout) itemView.findViewById(R.id.ll_documents);
+            ll_team_members = (LinearLayout) itemView.findViewById(R.id.ll_team_members);
+            ll_clients = (LinearLayout) itemView.findViewById(R.id.ll_clients);
+            ll_rsvp = (LinearLayout) itemView.findViewById(R.id.ll_rsvp);
         }
     }
 }

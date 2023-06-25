@@ -62,10 +62,12 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
 
         final String from_ts = events_do.getEvent_start_time();
         Date event_date = AndroidUtils.stringToDateTimeDefault(from_ts, "yyyy-MM-dd'T'HH:mm:ss");
+
         final String converted_date  = AndroidUtils.getDateToString(event_date, "yyyy-MM-dd");
+        final String converted_time = AndroidUtils.getDateToString(event_date, "HH:mm");
         final String to_ts = events_do.getEvent_end_time();
         Date end_date = AndroidUtils.stringToDateTimeDefault(to_ts,"yyyy-MM-dd'T'HH:mm:ss");
-        final String converted_end_date = AndroidUtils.getDateToString(end_date, "yyyy-MM-dd");
+        final String converted_end_date = AndroidUtils.getDateToString(end_date, "HH:mm");
 
         holder.events_names.setText(converted_date);
         if (events_do.isOwner()){
@@ -76,32 +78,38 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             holder.ll_rsvp.setVisibility(View.VISIBLE);
         }
         holder.event_title.setText(events_do.getTitle());
-        holder.event_time.setText(converted_date+"-"+converted_end_date);
+        holder.event_time.setText(converted_time+"-"+converted_end_date);
         holder.event_timezone.setText(events_do.getTimezone_location());
         holder.event_description.setText(events_do.getDescription());
         holder.tv_meeting_link.setText(events_do.getMeeting_link());
         holder.tv_phone_dialin.setText(events_do.getDialin());
         holder.tv_location.setText(events_do.getLocation());
-        final boolean recur = events_do.isRecurring();
-        if(events_do.isAll_day()){
-            holder.time.setText("All Day");
-        }
-        else {
-            holder.time.setText(events_do.getConverted_Start_time() + " " + "To" + " " + events_do.getCOnverted_End_time());
-        }
-        holder.ib_view.setOnClickListener(new View.OnClickListener() {
+        holder.bt_hide_details.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                context.view_events(events_do.getEvent_id(),events_do);
-            }
-        });
-        holder.ib_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
 
-                context.delete(events_do.getEvent_id(),recur);
             }
         });
+//        final boolean recur = events_do.isRecurring();
+//        if(events_do.isAll_day()){
+//            holder.time.setText("All Day");
+//        }
+//        else {
+//            holder.time.setText(events_do.getConverted_Start_time() + " " + "To" + " " + events_do.getCOnverted_End_time());
+//        }
+//        holder.ib_view.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                context.view_events(events_do.getEvent_id(),events_do);
+//            }
+//        });
+//        holder.ib_delete.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                context.delete(events_do.getEvent_id(),recur);
+//            }
+//        });
 
     }
 

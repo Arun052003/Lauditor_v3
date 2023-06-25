@@ -221,7 +221,9 @@ public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener,
                 events_do.setAll_day(jsonObject.getBoolean("allday"));
                 events_do.setEvent_id(jsonObject.getString("id"));
                 events_do.setAttachments(jsonObject.getJSONArray("attachments"));
-                events_do.setInvitees_consumer_external(jsonObject.getJSONArray("invitees_consumer_external"));
+                if(jsonObject.has("invitees_consumer_external")) {
+                    events_do.setInvitees_consumer_external(jsonObject.getJSONArray("invitees_consumer_external"));
+                }
                 events_do.setInvitees_external(jsonObject.getJSONArray("invitees_external"));
                 events_do.setInvitees_internal(jsonObject.getJSONArray("invitees_internal"));
                 events_do.setNotifications(jsonObject.getJSONArray("notifications"));
@@ -270,12 +272,13 @@ public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener,
             e.printStackTrace();
         }
     }
-    private void loadRecyclerView() {
+    private void loadRecyclerView() throws Exception {
         try {
             rv_displayEvents.setLayoutManager(new GridLayoutManager(getContext(), 1));
             events_adapter = new Events_Adapter(events_list, this);
             rv_displayEvents.setAdapter(events_adapter);
         } catch (Exception e) {
+            AndroidUtils.showToast(e.getMessage(),getContext());
             e.printStackTrace();
         }
     }

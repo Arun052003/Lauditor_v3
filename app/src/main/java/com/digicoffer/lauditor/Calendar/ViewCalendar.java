@@ -3,6 +3,7 @@ package com.digicoffer.lauditor.Calendar;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -172,7 +173,8 @@ public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener,
                         } else {
                             AndroidUtils.showAlert(result.getString("msg"), getContext());
                         }
-                    }else if (httpResult.getRequestType().equals("EVENT DETAILS")) {
+                    }
+                    else if (httpResult.getRequestType().equals("EVENT DETAILS")) {
                         if (!result.getBoolean("error")) {
                             event_details_list.clear();
 //                            load_event_details(result.getJSONObject("event"), event_id);
@@ -196,37 +198,10 @@ public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener,
                 events_do = new Events_Do();
 
                 events_do.setEvent_Name(jsonObject.getString("title"));
-                events_do.setTitle(jsonObject.getString("title"));
-                events_do.setDescription(jsonObject.getString("description"));
-                events_do.setDialin(jsonObject.getString("dialin"));
-                events_do.setEvent_type(jsonObject.getString("event_type"));
-                events_do.setRecurring(jsonObject.getBoolean("isrecurring"));
-                events_do.setLocation(jsonObject.getString("location"));
-                events_do.setMatter_id(jsonObject.getString("matter_id"));
-                if (jsonObject.has("matter_name")){
-                    events_do.setMatter_name(jsonObject.getString("matter_name"));
-                }
-                events_do.setMatter_type(jsonObject.getString("matter_type"));
-                events_do.setMeeting_link(jsonObject.getString("meeting_link"));
-                events_do.setNotes(jsonObject.getString("notes"));
-                events_do.setOwner(jsonObject.getBoolean("owner"));
-                if (jsonObject.has("owner_name")) {
-                    events_do.setOwner_name(jsonObject.getString("owner_name"));
-                }
-                events_do.setRepeat_interval(jsonObject.getString("repeat_interval"));
-                events_do.setTimezone_location(jsonObject.getString("timezone_location"));
-                events_do.setTimezone_offset(jsonObject.getString("timezone_offset"));
                 events_do.setEvent_start_time(jsonObject.getString("from_ts"));
                 events_do.setEvent_end_time(jsonObject.getString("to_ts"));
                 events_do.setAll_day(jsonObject.getBoolean("allday"));
                 events_do.setEvent_id(jsonObject.getString("id"));
-                events_do.setAttachments(jsonObject.getJSONArray("attachments"));
-                if(jsonObject.has("invitees_consumer_external")) {
-                    events_do.setInvitees_consumer_external(jsonObject.getJSONArray("invitees_consumer_external"));
-                }
-                events_do.setInvitees_external(jsonObject.getJSONArray("invitees_external"));
-                events_do.setInvitees_internal(jsonObject.getJSONArray("invitees_internal"));
-                events_do.setNotifications(jsonObject.getJSONArray("notifications"));
                 String from_ts = events_do.getEvent_start_time();
                 String to_ts = events_do.getEvent_end_time();
                 Date event_date = AndroidUtils.stringToDateTimeDefault(from_ts, "yyyy-MM-dd'T'HH:mm:ss");
@@ -243,15 +218,19 @@ public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener,
                 calendar.set(year,event_date.getMonth(),event_date.getDate());
                 events.add(new EventDay(calendar, DrawableUtils.getThreeDots(getContext())));
 //                events.add(new EventDay(calendar,DrawableUtils.getDayCircle(getContext(), R.color.blue,R.color.green )));
+//                Log.d("From Start Date", converted_from_ts);
+//                Log.d("Current Date",Currenr_date);
                 if (converted_from_ts.toString().contains(Currenr_date)) {
-                    events_do.setRecurring(jsonObject.getBoolean("isrecurring"));
-                    if (events_do.isRecurring()) {
+//                    events_do.setRecurring(jsonObject.getBoolean("isrecurring"));
+//                    if (events_do.isRecurring()) {
+//                        events_list.add(events_do);
+//                    } else {
                         events_list.add(events_do);
-                    } else {
-                        events_list.add(events_do);
-                    }
+
+//                    }
                 }
             }
+
             Collections.sort(events_list, new Comparator<Events_Do>() {
                 @Override
                 public int compare(Events_Do eventDay, Events_Do t1) {
@@ -260,12 +239,9 @@ public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener,
                     return eventDay.getConverted_Start_time().compareTo(t1.getConverted_Start_time());
                 }
             });
+
             calendarView.setEvents(events);
-            StringBuilder message = new StringBuilder();
-            for (Events_Do event : events_list) {
-                message.append(event.getEvent_Name()).append("\n");
-            }
-            AndroidUtils.showAlert(Currenr_date.toString(),getContext());
+
             loadRecyclerView();
         } catch (Exception e) {
             AndroidUtils.showToast(e.getMessage().toString(),getContext());
@@ -275,7 +251,10 @@ public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener,
     private void loadRecyclerView() throws Exception {
         try {
             rv_displayEvents.setLayoutManager(new GridLayoutManager(getContext(), 1));
-            events_adapter = new Events_Adapter(events_list, this);
+            for (Events_Do event : events_list) {
+                Log.d("Event List",event.getEvent_Name());
+            }
+            events_adapter = new Events_Adapter(events_list, this,getContext());
             rv_displayEvents.setAdapter(events_adapter);
         } catch (Exception e) {
             AndroidUtils.showToast(e.getMessage(),getContext());

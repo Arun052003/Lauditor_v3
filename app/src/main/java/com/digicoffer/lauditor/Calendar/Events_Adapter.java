@@ -1,5 +1,7 @@
 package com.digicoffer.lauditor.Calendar;
 
+import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,21 +18,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Calendar.Models.Events_Do;
 import com.digicoffer.lauditor.R;
-import com.digicoffer.lauditor.common.AndroidUtils;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHolder> implements Filterable, View.OnClickListener {
 
     ArrayList<Events_Do> list_item = new ArrayList<Events_Do>();
     ArrayList<Events_Do> filtered_list = new ArrayList<Events_Do>();
     private Events_Adapter.EventListener context;
+    Context mcontext;
 
-    public Events_Adapter(ArrayList<Events_Do> events_list, EventListener mcontext) {
+    public Events_Adapter(ArrayList<Events_Do> events_list, EventListener mcontext, Context context) {
         this.list_item = events_list;
         this.filtered_list = events_list;
         this.context = mcontext;
+        this.mcontext =context;
     }
     public interface EventListener {
         void onEvent(int layout, Fragment fragment);
@@ -58,7 +60,12 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull Events_Adapter.MyViewHolder holder, int position) {
+
+        for (Events_Do event : filtered_list) {
+            Log.d("Event List",event.getEvent_Name());
+        }
         final Events_Do events_do = filtered_list.get(position);
+        AndroidUtils.showToast(events_do.toString(),mcontext);
 
         final String from_ts = events_do.getEvent_start_time();
         Date event_date = AndroidUtils.stringToDateTimeDefault(from_ts, "yyyy-MM-dd'T'HH:mm:ss");
@@ -90,26 +97,26 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
 
             }
         });
-//        final boolean recur = events_do.isRecurring();
-//        if(events_do.isAll_day()){
-//            holder.time.setText("All Day");
-//        }
-//        else {
-//            holder.time.setText(events_do.getConverted_Start_time() + " " + "To" + " " + events_do.getCOnverted_End_time());
-//        }
-//        holder.ib_view.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                context.view_events(events_do.getEvent_id(),events_do);
-//            }
-//        });
-//        holder.ib_delete.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                context.delete(events_do.getEvent_id(),recur);
-//            }
-//        });
+        final boolean recur = events_do.isRecurring();
+        if(events_do.isAll_day()){
+            holder.time.setText("All Day");
+        }
+        else {
+            holder.time.setText(events_do.getConverted_Start_time() + " " + "To" + " " + events_do.getCOnverted_End_time());
+        }
+        holder.ib_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                context.view_events(events_do.getEvent_id(),events_do);
+            }
+        });
+        holder.ib_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                context.delete(events_do.getEvent_id(),recur);
+            }
+        });
 
     }
 

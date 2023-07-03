@@ -1,5 +1,7 @@
 package com.digicoffer.lauditor.Calendar;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,23 +18,46 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.Calendar.Models.Event_Details_DO;
 import com.digicoffer.lauditor.Calendar.Models.Events_Do;
 import com.digicoffer.lauditor.R;
+import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
+import com.digicoffer.lauditor.Webservice.HttpResultDo;
+import com.digicoffer.lauditor.Webservice.WebServiceHelper;
+import com.digicoffer.lauditor.common.AndroidUtils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
-public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHolder> implements Filterable, View.OnClickListener {
+public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHolder> implements Filterable, View.OnClickListener, AsyncTaskCompleteListener {
 
     ArrayList<Events_Do> list_item = new ArrayList<Events_Do>();
     ArrayList<Events_Do> filtered_list = new ArrayList<Events_Do>();
     private Events_Adapter.EventListener context;
+    private boolean isDetailsVisible = false;
+    AlertDialog progress_dialog;
+    ArrayList<Event_Details_DO> event_details_list = new ArrayList<Event_Details_DO>();
     Context mcontext;
+    String event_id;
+    Activity activity;
+    MyViewHolder my_view_holder;
 
-    public Events_Adapter(ArrayList<Events_Do> events_list, EventListener mcontext, Context context) {
+    public Events_Adapter(ArrayList<Events_Do> events_list, EventListener mcontext, Context context, Activity activity) {
         this.list_item = events_list;
         this.filtered_list = events_list;
         this.context = mcontext;
         this.mcontext =context;
+        this.activity = activity;
     }
     public interface EventListener {
         void onEvent(int layout, Fragment fragment);
@@ -47,8 +72,120 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
     }
 
     @Override
+    public void onAsyncTaskComplete(HttpResultDo httpResult) {
+        if (progress_dialog != null && progress_dialog.isShowing())
+            AndroidUtils.dismiss_dialog(progress_dialog);
+        try {
+            if (httpResult.getResult() == WebServiceHelper.ServiceCallStatus.Success) {
+                try {
+                    JSONObject result = new JSONObject(httpResult.getResponseContent());
+                     if (httpResult.getRequestType().equals("EVENT DETAILS")) {
+                        if (!result.getBoolean("error")) {
+                            event_details_list.clear();
+                            load_event_details(result.getJSONObject("event"), event_id);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
     public Filter getFilter() {
         return null;
+    }
+    private void load_event_details(JSONObject event_details, String event_id) {
+        Event_Details_DO event_details_do;
+        event_details_list.clear();
+//        notification_list.clear();
+//        attachments_list.clear();
+//        tm_list.clear();
+//        clients_list.clear();
+        try {
+            event_details_do = new Event_Details_DO();
+            event_details_do.setTitle(event_details.getString("title"));
+            event_details_do.setDescription(event_details.getString("description"));
+            event_details_do.setFrom_ts(event_details.getString("from_ts"));
+            event_details_do.setAll_day(event_details.getBoolean("allday"));
+            String from_ts = event_details_do.getFrom_ts();
+            Date event_date = AndroidUtils.stringToDateTimeDefault(from_ts, "yyyy-MM-dd'T'HH:mm:ss");
+            String event_start_time = AndroidUtils.getDateToString(event_date, "HH:mm a");
+            String event_date_forevents = AndroidUtils.getDateToString(event_date, "EEEE, MMM dd,yyyy");
+            event_details_do.setDate(event_date_forevents);
+            event_details_do.setTo_ts(event_details.getString("to_ts"));
+            event_details_do.setOffset(event_details.getString("timezone_offset"));
+            event_details_do.setOffset_location(event_details.getString("timezone_location"));
+            event_details_do.setConverted_Start_time(event_start_time);
+            event_details_do.setOwner(event_details.getBoolean("owner"));
+            String to_ts = event_details_do.getTo_ts();
+            Date event_date2 = AndroidUtils.stringToDateTimeDefault(to_ts, "yyyy-MM-dd'T'HH:mm:ss");
+            String event_end_time = AndroidUtils.getDateToString(event_date2, "HH:mm a");
+            event_details_do.setConverted_End_time(event_end_time);
+            event_details_do.setRepeat_interval(event_details.getString("repeat_interval"));
+            event_details_do.setNotifications(event_details.getJSONArray("notifications"));
+            event_details_do.setOwner_name(event_details.getString("owner_name"));
+            event_details_do.setAttachments(event_details.getJSONArray("attachments"));
+            event_details_do.setTeam_name(event_details.getJSONArray("invitees_internal"));
+            event_details_do.setTm_name(event_details.getJSONArray("invitees_external"));
+            event_details_list.add(event_details_do);
+            load_more_details();
+//            if (event_details_do.isOwner()) {
+//                Edit_events(event_details_do, event_id);
+//            } else {
+//                edit_participant_events(event_details_do, event_id);
+//            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void load_more_details() {
+        for (int i=0;i<event_details_list.size();i++){
+            JSONArray message = event_details_list.get(i).getTeam_name();
+            Log.d("Event details",message.toString());
+        }
+
+        for (int i=0;i<event_details_list.size();i++) {
+            Event_Details_DO events_do = event_details_list.get(i);
+            for (int a = 0; a < events_do.getAttachments().length(); a++) {
+                try {
+                    JSONObject att_obj = events_do.getAttachments().getJSONObject(a);
+                    View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
+                    final TextView attchment_list = (TextView) view.findViewById(R.id.tv_event_notifications);
+                    attchment_list.setText(att_obj.getString("name"));
+                    my_view_holder.ll_documents.addView(view);
+//                    Log.d("View Details",att_obj.getString())
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                for (int a = 0; a < events_do.getTeam_name().length(); a++) {
+                    JSONObject att_team_obj = events_do.getTeam_name().getJSONObject(a);
+                    View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
+                    final TextView team_list = (TextView) view.findViewById(R.id.tv_event_notifications);
+                    team_list.setText(att_team_obj.getString("name"));
+                    my_view_holder.ll_team_members.addView(view);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                for (int c = 0; c < events_do.getTm_name().length(); c++) {
+                    JSONObject att_client_obj = events_do.getTm_name().getJSONObject(c);
+                    View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
+                    final TextView clien_list = (TextView) view.findViewById(R.id.tv_event_notifications);
+                    clien_list.setText(att_client_obj.getString("tmName"));
+                    my_view_holder.ll_clients.addView(view);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @NonNull
@@ -60,22 +197,74 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull Events_Adapter.MyViewHolder holder, int position) {
-
+        my_view_holder = holder;
         for (Events_Do event : filtered_list) {
             Log.d("Event List",event.getEvent_Name());
         }
         final Events_Do events_do = filtered_list.get(position);
-        AndroidUtils.showToast(events_do.toString(),mcontext);
+//        AndroidUtils.showToast(events_do.toString(),mcontext);
 
         final String from_ts = events_do.getEvent_start_time();
         Date event_date = AndroidUtils.stringToDateTimeDefault(from_ts, "yyyy-MM-dd'T'HH:mm:ss");
-
+        SimpleDateFormat amPmFormat = new SimpleDateFormat("a", Locale.US);
+        String amPm_from_ts = amPmFormat.format(event_date);
+        for (int j = 0; j < events_do.getNotifications().length(); j++) {
+            View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
+            final TextView tv_notifications = (TextView) view.findViewById(R.id.tv_event_notifications);
+            try {
+                tv_notifications.setText(events_do.getNotifications().get(j).toString() );
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            holder.ll_notifications.addView(view);
+        }
+//        for (int a = 0; a < events_do.getAttachments().length(); a++) {
+//            try {
+//               JSONObject  att_obj = events_do.getAttachments().getJSONObject(a);
+//                View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
+//                final TextView attchment_list = (TextView) view.findViewById(R.id.tv_event_notifications);
+//                attchment_list.setText(att_obj.getString("name"));
+//                holder.ll_documents.addView(view);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
+//        try {
+//            for (int a = 0; a < events_do.getInvitees_internal().length(); a++) {
+//                JSONObject att_team_obj = events_do.getInvitees_internal().getJSONObject(a);
+//                View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
+//                final TextView team_list = (TextView) view.findViewById(R.id.tv_event_notifications);
+//                team_list.setText(att_team_obj.getString("name"));
+//                holder.ll_team_members.addView(view);
+//            }
+//        }
+//        catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            for (int c = 0; c < events_do.getInvitees_external().length(); c++) {
+//                JSONObject att_client_obj = events_do.getInvitees_external().getJSONObject(c);
+//                View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
+//                final TextView clien_list = (TextView) view.findViewById(R.id.tv_event_notifications);
+//                clien_list.setText(att_client_obj.getString("tmName"));
+//                holder.ll_clients.addView(view);
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
         final String converted_date  = AndroidUtils.getDateToString(event_date, "yyyy-MM-dd");
-        final String converted_time = AndroidUtils.getDateToString(event_date, "HH:mm");
+         String converted_time = AndroidUtils.getDateToString(event_date, "hh:mm");
         final String to_ts = events_do.getEvent_end_time();
         Date end_date = AndroidUtils.stringToDateTimeDefault(to_ts,"yyyy-MM-dd'T'HH:mm:ss");
-        final String converted_end_date = AndroidUtils.getDateToString(end_date, "HH:mm");
-
+        String converted_end_time = AndroidUtils.getDateToString(end_date, "hh:mm");
+        SimpleDateFormat amPmFormat_to_ts = new SimpleDateFormat("a", Locale.US);
+        String amPm_to_ts = amPmFormat_to_ts.format(end_date);
+        if (converted_time.equals("00:00")){
+            converted_time ="12:00";
+        }else if(converted_end_time.equals("00:00")){
+            converted_end_time="12:00";
+        }
         holder.events_names.setText(converted_date);
         if (events_do.isOwner()){
             holder.ib_view_events.setVisibility(View.VISIBLE);
@@ -84,8 +273,13 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             holder.ib_view_events.setVisibility(View.GONE);
             holder.ll_rsvp.setVisibility(View.VISIBLE);
         }
-        holder.event_title.setText(events_do.getTitle());
-        holder.event_time.setText(converted_time+"-"+converted_end_date);
+        holder.event_title.setText(events_do.getEvent_Name());
+        if (events_do.isAll_day()){
+            holder.event_time.setText("All Day");
+        }else{
+            holder.event_time.setText(converted_time+amPm_from_ts+"-"+converted_end_time+amPm_to_ts);
+        }
+
         holder.event_timezone.setText(events_do.getTimezone_location());
         holder.event_description.setText(events_do.getDescription());
         holder.tv_meeting_link.setText(events_do.getMeeting_link());
@@ -94,32 +288,50 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
         holder.bt_hide_details.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isDetailsVisible = !isDetailsVisible;
 
+                // Set the visibility of the view based on the state
+                holder.ll_view_more.setVisibility(isDetailsVisible ? View.VISIBLE : View.GONE);
+                callEventDetailsWebservice(events_do.getEvent_id());
             }
         });
-        final boolean recur = events_do.isRecurring();
-        if(events_do.isAll_day()){
-            holder.time.setText("All Day");
-        }
-        else {
-            holder.time.setText(events_do.getConverted_Start_time() + " " + "To" + " " + events_do.getCOnverted_End_time());
-        }
-        holder.ib_view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                context.view_events(events_do.getEvent_id(),events_do);
-            }
-        });
-        holder.ib_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                context.delete(events_do.getEvent_id(),recur);
-            }
-        });
+        holder.ll_view_more.setVisibility(isDetailsVisible ? View.VISIBLE : View.GONE);
+        holder.bt_hide_details.setText(isDetailsVisible ? "View less":"View More");
+//        final boolean recur = events_do.isRecurring();
+//        if(events_do.isAll_day()){
+//            holder.time.setText("All Day");
+//        }
+//        else {
+//            holder.time.setText(events_do.getConverted_Start_time() + " " + "To" + " " + events_do.getCOnverted_End_time());
+//        }
+//        holder.ib_view.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                context.view_events(events_do.getEvent_id(),events_do);
+//            }
+//        });
+//        holder.ib_delete.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                context.delete(events_do.getEvent_id(),recur);
+//            }
+//        });
 
     }
 
+    private void callEventDetailsWebservice(String id) {
+        progress_dialog = AndroidUtils.get_progress(activity);
+        JSONObject postData = new JSONObject();
+        Calendar calendar = new GregorianCalendar();
+        TimeZone timeZone = calendar.getTimeZone();
+        int offset = timeZone.getRawOffset();
+        long hours = TimeUnit.MILLISECONDS.toMinutes(offset);
+        long timezoneoffset = (-1) * (hours);
+        event_id = id;
+        WebServiceHelper.callHttpWebService(this, mcontext, WebServiceHelper.RestMethodType.GET, "event/details/" + event_id + "/" + timezoneoffset, "EVENT DETAILS", postData.toString());
+
+    }
     @Override
     public int getItemCount() {
         return filtered_list.size() ;

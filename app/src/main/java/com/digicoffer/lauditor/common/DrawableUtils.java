@@ -16,7 +16,7 @@ import com.digicoffer.lauditor.R;
 public class DrawableUtils {
     public static Drawable getCircleDrawableWithText(Context context, String string) {
         Drawable background = ContextCompat.getDrawable(context, R.drawable.sample_circle);
-        Drawable text = CalendarUtils.getDrawableText(context, string, null, android.R.color.white, 12);
+        Drawable text = CalendarUtils.getDrawableText(context, string, null, android.R.color.holo_blue_dark, 12);
         Drawable[] layers = {background, text};
         return new LayerDrawable(layers);
     }

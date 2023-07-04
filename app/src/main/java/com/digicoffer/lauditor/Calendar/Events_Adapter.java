@@ -170,6 +170,7 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
                     final TextView team_list = (TextView) view.findViewById(R.id.tv_event_notifications);
                     team_list.setText(att_team_obj.getString("name"));
                     my_view_holder.ll_team_members.addView(view);
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

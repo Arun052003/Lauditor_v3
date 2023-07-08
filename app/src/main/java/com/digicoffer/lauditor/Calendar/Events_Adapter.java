@@ -26,7 +26,6 @@ import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.digicoffer.lauditor.Webservice.WebServiceHelper;
 import com.digicoffer.lauditor.common.AndroidUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,14 +55,16 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
         this.list_item = events_list;
         this.filtered_list = events_list;
         this.context = mcontext;
-        this.mcontext =context;
+        this.mcontext = context;
         this.activity = activity;
     }
+
     public interface EventListener {
         void onEvent(int layout, Fragment fragment);
 
-        void view_events(String id,Events_Do events_do);
-        void delete(String event_id,boolean recur);
+        void view_events(String id, Events_Do events_do);
+
+        void delete(String event_id, boolean recur);
     }
 
     @Override
@@ -79,7 +80,7 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             if (httpResult.getResult() == WebServiceHelper.ServiceCallStatus.Success) {
                 try {
                     JSONObject result = new JSONObject(httpResult.getResponseContent());
-                     if (httpResult.getRequestType().equals("EVENT DETAILS")) {
+                    if (httpResult.getRequestType().equals("EVENT DETAILS")) {
                         if (!result.getBoolean("error")) {
                             event_details_list.clear();
                             load_event_details(result.getJSONObject("event"), event_id);
@@ -93,10 +94,12 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             e.printStackTrace();
         }
     }
+
     @Override
     public Filter getFilter() {
         return null;
     }
+
     private void load_event_details(JSONObject event_details, String event_id) {
         Event_Details_DO event_details_do;
         event_details_list.clear();
@@ -131,6 +134,7 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             event_details_do.setTeam_name(event_details.getJSONArray("invitees_internal"));
             event_details_do.setTm_name(event_details.getJSONArray("invitees_external"));
             event_details_list.add(event_details_do);
+
             load_more_details();
 //            if (event_details_do.isOwner()) {
 //                Edit_events(event_details_do, event_id);
@@ -144,15 +148,14 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
     }
 
     private void load_more_details() {
-        for (int i=0;i<event_details_list.size();i++){
-            JSONArray message = event_details_list.get(i).getTeam_name();
-            Log.d("Event details",message.toString());
-        }
 
-        for (int i=0;i<event_details_list.size();i++) {
+
+        for (int i = 0; i < event_details_list.size(); i++) {
             Event_Details_DO events_do = event_details_list.get(i);
             for (int a = 0; a < events_do.getAttachments().length(); a++) {
                 try {
+
+                    Log.d("Attachments", events_do.getAttachments().toString());
                     JSONObject att_obj = events_do.getAttachments().getJSONObject(a);
                     View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
                     final TextView attchment_list = (TextView) view.findViewById(R.id.tv_event_notifications);
@@ -164,19 +167,21 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
                 }
             }
             try {
+
                 for (int a = 0; a < events_do.getTeam_name().length(); a++) {
+                    Log.d("Team Members", events_do.getTeam_name().toString());
                     JSONObject att_team_obj = events_do.getTeam_name().getJSONObject(a);
                     View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
                     final TextView team_list = (TextView) view.findViewById(R.id.tv_event_notifications);
                     team_list.setText(att_team_obj.getString("name"));
                     my_view_holder.ll_team_members.addView(view);
-
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             try {
                 for (int c = 0; c < events_do.getTm_name().length(); c++) {
+                    Log.d("Tm Name", events_do.getTeam_name().toString());
                     JSONObject att_client_obj = events_do.getTm_name().getJSONObject(c);
                     View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
                     final TextView clien_list = (TextView) view.findViewById(R.id.tv_event_notifications);
@@ -200,7 +205,7 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
     public void onBindViewHolder(@NonNull Events_Adapter.MyViewHolder holder, int position) {
         my_view_holder = holder;
         for (Events_Do event : filtered_list) {
-            Log.d("Event List",event.getEvent_Name());
+            Log.d("Event List", event.getEvent_Name());
         }
         final Events_Do events_do = filtered_list.get(position);
 //        AndroidUtils.showToast(events_do.toString(),mcontext);
@@ -213,72 +218,38 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
             final TextView tv_notifications = (TextView) view.findViewById(R.id.tv_event_notifications);
             try {
-                tv_notifications.setText(events_do.getNotifications().get(j).toString() );
+                tv_notifications.setText(events_do.getNotifications().get(j).toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             holder.ll_notifications.addView(view);
         }
-//        for (int a = 0; a < events_do.getAttachments().length(); a++) {
-//            try {
-//               JSONObject  att_obj = events_do.getAttachments().getJSONObject(a);
-//                View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
-//                final TextView attchment_list = (TextView) view.findViewById(R.id.tv_event_notifications);
-//                attchment_list.setText(att_obj.getString("name"));
-//                holder.ll_documents.addView(view);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
-//        try {
-//            for (int a = 0; a < events_do.getInvitees_internal().length(); a++) {
-//                JSONObject att_team_obj = events_do.getInvitees_internal().getJSONObject(a);
-//                View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
-//                final TextView team_list = (TextView) view.findViewById(R.id.tv_event_notifications);
-//                team_list.setText(att_team_obj.getString("name"));
-//                holder.ll_team_members.addView(view);
-//            }
-//        }
-//        catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            for (int c = 0; c < events_do.getInvitees_external().length(); c++) {
-//                JSONObject att_client_obj = events_do.getInvitees_external().getJSONObject(c);
-//                View view = LayoutInflater.from(mcontext).inflate(R.layout.event_details_notifications, null);
-//                final TextView clien_list = (TextView) view.findViewById(R.id.tv_event_notifications);
-//                clien_list.setText(att_client_obj.getString("tmName"));
-//                holder.ll_clients.addView(view);
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-        final String converted_date  = AndroidUtils.getDateToString(event_date, "yyyy-MM-dd");
-         String converted_time = AndroidUtils.getDateToString(event_date, "hh:mm");
+
+        final String converted_date = AndroidUtils.getDateToString(event_date, "yyyy-MM-dd");
+        String converted_time = AndroidUtils.getDateToString(event_date, "hh:mm");
         final String to_ts = events_do.getEvent_end_time();
-        Date end_date = AndroidUtils.stringToDateTimeDefault(to_ts,"yyyy-MM-dd'T'HH:mm:ss");
+        Date end_date = AndroidUtils.stringToDateTimeDefault(to_ts, "yyyy-MM-dd'T'HH:mm:ss");
         String converted_end_time = AndroidUtils.getDateToString(end_date, "hh:mm");
         SimpleDateFormat amPmFormat_to_ts = new SimpleDateFormat("a", Locale.US);
         String amPm_to_ts = amPmFormat_to_ts.format(end_date);
-        if (converted_time.equals("00:00")){
-            converted_time ="12:00";
-        }else if(converted_end_time.equals("00:00")){
-            converted_end_time="12:00";
+        if (converted_time.equals("00:00")) {
+            converted_time = "12:00";
+        } else if (converted_end_time.equals("00:00")) {
+            converted_end_time = "12:00";
         }
         holder.events_names.setText(converted_date);
-        if (events_do.isOwner()){
+        if (events_do.isOwner()) {
             holder.ib_view_events.setVisibility(View.VISIBLE);
             holder.ll_rsvp.setVisibility(View.GONE);
-        }else{
+        } else {
             holder.ib_view_events.setVisibility(View.GONE);
             holder.ll_rsvp.setVisibility(View.VISIBLE);
         }
         holder.event_title.setText(events_do.getEvent_Name());
-        if (events_do.isAll_day()){
+        if (events_do.isAll_day()) {
             holder.event_time.setText("All Day");
-        }else{
-            holder.event_time.setText(converted_time+amPm_from_ts+"-"+converted_end_time+amPm_to_ts);
+        } else {
+            holder.event_time.setText(converted_time + amPm_from_ts + "-" + converted_end_time + amPm_to_ts);
         }
 
         holder.event_timezone.setText(events_do.getTimezone_location());
@@ -290,14 +261,21 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             @Override
             public void onClick(View v) {
                 isDetailsVisible = !isDetailsVisible;
-
                 // Set the visibility of the view based on the state
                 holder.ll_view_more.setVisibility(isDetailsVisible ? View.VISIBLE : View.GONE);
+                if (!isDetailsVisible) {
+                    // Clear the ArrayList here
+                    event_details_list.clear();
+                    my_view_holder.ll_documents.removeAllViews();
+                    my_view_holder.ll_team_members.removeAllViews();
+                    my_view_holder.ll_clients.removeAllViews();
+                }
+
                 callEventDetailsWebservice(events_do.getEvent_id());
             }
         });
         holder.ll_view_more.setVisibility(isDetailsVisible ? View.VISIBLE : View.GONE);
-        holder.bt_hide_details.setText(isDetailsVisible ? "View less":"View More");
+        holder.bt_hide_details.setText(isDetailsVisible ? "View less" : "View More");
 //        final boolean recur = events_do.isRecurring();
 //        if(events_do.isAll_day()){
 //            holder.time.setText("All Day");
@@ -333,32 +311,34 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
         WebServiceHelper.callHttpWebService(this, mcontext, WebServiceHelper.RestMethodType.GET, "event/details/" + event_id + "/" + timezoneoffset, "EVENT DETAILS", postData.toString());
 
     }
+
     @Override
     public int getItemCount() {
-        return filtered_list.size() ;
+        return filtered_list.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView events_names,tv_meeting_link,tv_phone_dialin,tv_location,tv_yes,tv_no,tv_maybe,event_title,event_time,event_description,event_timezone;
+        TextView events_names, tv_meeting_link, tv_phone_dialin, tv_location, tv_yes, tv_no, tv_maybe, event_title, event_time, event_description, event_timezone;
         TextView time;
-        ImageButton ib_view_events,ib_delete_events;
+        ImageButton ib_view_events, ib_delete_events;
         ImageButton ib_view;
         ImageButton ib_delete;
         AppCompatButton bt_hide_details;
-        LinearLayout ll_notifications,ll_view_more,ll_rsvp,ll_documents,ll_team_members,ll_clients;
+        LinearLayout ll_notifications, ll_view_more, ll_rsvp, ll_documents, ll_team_members, ll_clients;
+
         public MyViewHolder(@NonNull View itemView) {
 
             super(itemView);
-            events_names = (TextView)itemView.findViewById(R.id.events_names);
-            time = (TextView)itemView.findViewById(R.id.time);
-            event_title = (TextView)itemView.findViewById(R.id.event_title);
+            events_names = (TextView) itemView.findViewById(R.id.events_names);
+            time = (TextView) itemView.findViewById(R.id.time);
+            event_title = (TextView) itemView.findViewById(R.id.event_title);
             ib_view_events = (ImageButton) itemView.findViewById(R.id.ib_view_events);
-            tv_yes = (TextView) itemView.findViewById(R.id.tv_yes) ;
+            tv_yes = (TextView) itemView.findViewById(R.id.tv_yes);
             tv_no = (TextView) itemView.findViewById(R.id.tv_no);
             tv_maybe = (TextView) itemView.findViewById(R.id.tv_maybe);
             event_time = (TextView) itemView.findViewById(R.id.event_time);
             event_timezone = (TextView) itemView.findViewById(R.id.event_timezone);
-            ib_delete_events = (ImageButton)itemView.findViewById(R.id.ib_delete_events);
+            ib_delete_events = (ImageButton) itemView.findViewById(R.id.ib_delete_events);
             event_description = (TextView) itemView.findViewById(R.id.event_description);
             tv_meeting_link = (TextView) itemView.findViewById(R.id.tv_meeting_link);
             tv_phone_dialin = (TextView) itemView.findViewById(R.id.tv_phone_dialin);

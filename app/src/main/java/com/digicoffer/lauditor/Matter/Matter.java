@@ -16,18 +16,16 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.digicoffer.lauditor.Matter.Models.MatterModel;
 import com.digicoffer.lauditor.R;
-import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common.Constants;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Matter extends Fragment {
 
-    com.google.android.material.imageview.ShapeableImageView siv_matter_icon,siv_groups,siv_documents;
+    com.google.android.material.imageview.ShapeableImageView siv_matter_icon, siv_groups, siv_documents;
     private HorizontalScrollView scrollView;
-    private  TextView tv_legal_matter,tv_general_matter;
-    private  TextView tv_create,tv_view;
+    private TextView tv_legal_matter, tv_general_matter;
+    private TextView tv_create, tv_view;
     public ArrayList<MatterModel> matter_arraylist;
     public LinearLayoutCompat create_matter_view;
 
@@ -74,7 +72,7 @@ public class Matter extends Fragment {
         siv_matter_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (matter_arraylist.size()!=0){
+                if (matter_arraylist.size() != 0) {
                     loadMatterInformation();
                 }
 
@@ -85,7 +83,7 @@ public class Matter extends Fragment {
         siv_groups.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (matter_arraylist.size()!=0) {
+                if (matter_arraylist.size() != 0) {
                     loadGCT();
                 }
             }
@@ -93,7 +91,7 @@ public class Matter extends Fragment {
         siv_documents.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (matter_arraylist.size()!=0) {
+                if (matter_arraylist.size() != 0) {
                     loadDocuments();
                 }
             }
@@ -102,10 +100,12 @@ public class Matter extends Fragment {
 
         return view;
     }
-    public ArrayList<MatterModel> getMatter_arraylist(){
-        return matter_arraylist;
+
+    public ArrayList<MatterModel> getMatter_arraylist() {
+        return  matter_arraylist;
     }
-//    public MatterModel matterModel
+
+    //    public MatterModel matterModel
     private void loadViewUI() {
         tv_create.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
@@ -116,7 +116,7 @@ public class Matter extends Fragment {
     private void viewMatter() {
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         ViewMatter matterInformation = new ViewMatter();
-        ft.replace(R.id.child_container,matterInformation);
+        ft.replace(R.id.child_container, matterInformation);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(null);
         ft.commit();
@@ -130,13 +130,14 @@ public class Matter extends Fragment {
     }
 
     private void loadLegalMatter() {
-        Constants.MATTER_TYPE="Legal";
+        Constants.MATTER_TYPE = "Legal";
         tv_legal_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_general_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
         loadMatterInformation();
     }
-    private void loadGeneralMatter(){
-        Constants.MATTER_TYPE="General";
+
+    private void loadGeneralMatter() {
+        Constants.MATTER_TYPE = "General";
         tv_legal_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_general_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         loadMatterInformation();
@@ -148,7 +149,7 @@ public class Matter extends Fragment {
         siv_documents.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.documents_copy_white));
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         MatterDocuments matterInformation = new MatterDocuments();
-        ft.replace(R.id.child_container,matterInformation);
+        ft.replace(R.id.child_container, matterInformation);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(null);
         ft.commit();
@@ -158,7 +159,7 @@ public class Matter extends Fragment {
         siv_matter_icon.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.single_document_icon));
         siv_groups.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.groups_material_icon_white));
         siv_documents.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.documents_copy));
-       Fragment childFragment = new GCT();
+        Fragment childFragment = new GCT();
         FragmentManager childFragmentManager = getChildFragmentManager();
         childFragmentManager.beginTransaction().add(R.id.child_container, childFragment).commit();
     }
@@ -169,7 +170,7 @@ public class Matter extends Fragment {
         siv_documents.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.documents_copy));
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         MatterInformation matterInformation = new MatterInformation();
-        ft.replace(R.id.child_container,matterInformation);
+        ft.replace(R.id.child_container, matterInformation);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(null);
         ft.commit();

@@ -122,7 +122,6 @@
                 android:id="@+id/child_container_timesheets"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-
                 android:paddingBottom="250dp"
 
                 />

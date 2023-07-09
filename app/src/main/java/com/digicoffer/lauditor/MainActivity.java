@@ -1,53 +1,43 @@
 package com.digicoffer.lauditor;
 
-import static java.security.AccessController.getContext;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.Group;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.digicoffer.lauditor.Calendar.Calendar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.digicoffer.lauditor.Calendar.Meetings;
+import com.digicoffer.lauditor.Calendar.Models.Event_Details_DO;
+import com.digicoffer.lauditor.Calendar.ViewCalendar;
 import com.digicoffer.lauditor.ClientRelationships.ClientRelationship;
 import com.digicoffer.lauditor.Dashboard.Dashboard;
 import com.digicoffer.lauditor.Documents.Documents;
-import com.digicoffer.lauditor.Groups.Groups;
 import com.digicoffer.lauditor.Matter.Matter;
-import com.digicoffer.lauditor.Members.Members;
 import com.digicoffer.lauditor.TimeSheets.TimeSheets;
-import com.digicoffer.lauditor.common.Constants;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ViewCalendar.EventDetailsListener {
     ExtendedFloatingActionButton mAddFab;
     ImageView iv_logo_dashboard;
     ImageButton iv_open_menu,iv_close_menu;
     private NewModel viewModel;
     TextView tv_pageName;
     Animation fabOpen, fabClose, rotateForward, rotateBackward;
+
     FloatingActionButton fab_relationships,fab_documents,fab_timesheet,fab_matter,fab_more;
     TextView tv_relations,tv_documents,tv_timesheet,tv_matter,tv_more;
   public   androidx.appcompat.widget.LinearLayoutCompat ll_bottom_menu;
@@ -103,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
             fab_more.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Fragment fragment = new Calendar();
+                    Fragment fragment = new Meetings();
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.id_framelayout, fragment);
                     ft.addToBackStack("current_fragment").commit();
@@ -300,4 +290,8 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
+    @Override
+    public void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list) {
+
+    }
 }

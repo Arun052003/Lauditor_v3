@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -32,6 +34,7 @@ import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common.DrawableUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -56,14 +59,19 @@ public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener,
     String event_creation_date = "";
     Events_Adapter events_adapter;
     String Currenr_date = "";
+    private EventDetailsListener eventDetailsListener;
+    AlertDialog ad_dialog;
     String Current_day = "";
+    String recurring_edit_choice;
     TextView tv_event_name, tv_event_description, tv_event_time, tv_event_repetetion, tv_event_date;
     Button btn_event_save;
     String Current_month = "";
     RecyclerView rv_displayEvents;
     ArrayList<Events_Do> events_list = new ArrayList<Events_Do>();
     List<EventDay> events = new ArrayList<>();
+    Meetings meetings;
     ArrayList<Event_Details_DO> event_details_list = new ArrayList<Event_Details_DO>();
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -117,6 +125,7 @@ public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener,
         });
         rv_displayEvents = (RecyclerView) v.findViewById(R.id.rv_events);
         callEventListwebservice(filter);
+        meetings = (Meetings) getParentFragment();
         return v;
     }
 
@@ -124,14 +133,30 @@ public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener,
     public void onClick(View view) {
 
     }
-
+    public interface EventDetailsListener {
+        void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list);
+    }
     private void Updatelabel(Calendar myCalendar) {
         String myFormat = "MMM dd, yyyy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
         filter = sdf.format(myCalendar.getTime());
         callEventListwebservice(filter);
     }
-
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+//        if (context instanceof EventDetailsListener) {
+        try {
+            Log.d("Interface","Interface Called");
+            eventDetailsListener = (EventDetailsListener) getParentFragment();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        } else {
+//            throw new RuntimeException(context.toString()
+//                    + " must implement EventDetailsListener");
+//        }
+    }
     private void callEventListwebservice(String filter) {
         progress_dialog = AndroidUtils.get_progress(getActivity());
         JSONObject postData = new JSONObject();
@@ -179,6 +204,20 @@ public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener,
                             event_details_list.clear();
 //                            load_event_details(result.getJSONObject("event"), event_id);
                         }
+                    } else if (httpResult.getRequestType().equals("EVENT_DELETE")) {
+//                        if (!result.getBoolean("error")) {
+                            AndroidUtils.showToast("Event Deleted Successfully", getContext());
+//                            if (!(ad_dialog == null)) {
+                                ad_dialog.dismiss();
+
+//                            }
+                            event_details_list.clear();
+                            events.clear();
+//                            rv_displayEvents.clea/
+                            callEventListwebservice(filter);
+//                        } else {
+//                            AndroidUtils.showValidationALert("Alert", result.getString("msg"), getContext());
+//                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -484,15 +523,85 @@ public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener,
     }
 
     @Override
-    public void onEvent(int layout, Fragment fragment) {
+    public void onEvent(ArrayList<Event_Details_DO> event_details_list) {
 
+        if (eventDetailsListener != null) {
+            Log.d("EventsList",event_details_list.toString());
+            eventDetailsListener.onEventDetailsPassed(event_details_list);
+        }
     }
 
     @Override
-    public void view_events(String id, Events_Do events_do) {
-        callEventDetailsWebservice(id);
+    public void delete_events(String event_id, boolean recur) {
+        if (recur) {
+            delete_event(event_id);
+        } else {
+            callDeleteEventwebservice(event_id, recurring_edit_choice);
+        }
     }
 
+    private void delete_event(final String event_id) {
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getLayoutInflater();
+            final View dialogLayout = inflater.inflate(R.layout.delete_events, null);
+            final RadioGroup radioGroup = (RadioGroup) dialogLayout.findViewById(R.id.radioGroup);
+            final RadioButton delete_only_this = (RadioButton) dialogLayout.findViewById(R.id.radio_delete_only_this);
+            final RadioButton delete_all = (RadioButton) dialogLayout.findViewById(R.id.radio_delete_all);
+            final RadioButton delete_following = (RadioButton) dialogLayout.findViewById(R.id.radio_delete_ts_fe);
+            radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                    if (delete_only_this.isChecked()) {
+                        recurring_edit_choice = "this";
+                    } else if (delete_all.isChecked()) {
+                        recurring_edit_choice = String.valueOf("all");
+                    } else if (delete_following.isChecked()) {
+                        recurring_edit_choice = String.valueOf("forward");
+                    }
+                }
+            });
+            final AlertDialog dialog = builder.create();
+            ad_dialog = dialog;
+            Button delete = (Button) dialogLayout.findViewById(R.id.delete_event);
+
+                ImageButton btn_close_event = (ImageButton)dialogLayout.findViewById(R.id.btn_close_event);
+                btn_close_event.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ad_dialog.dismiss();
+                    }
+                });
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    callDeleteEventwebservice(event_id, recurring_edit_choice);
+                }
+            });
+
+            dialog.setView(dialogLayout);
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void callDeleteEventwebservice(String id, String recurring_choice) {
+        progress_dialog = AndroidUtils.get_progress(getActivity());
+        JSONObject postData = new JSONObject();
+        try {
+            if (!(recurring_choice == null)) {
+                postData.put("choice", recurring_choice);
+            }
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.DELETE, "v3/event/" + id, "EVENT_DELETE", postData.toString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+    }
     @Override
     public void delete(String event_id, boolean recur) {
 

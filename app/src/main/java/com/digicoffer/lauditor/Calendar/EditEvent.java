@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Calendar.Models.CalendarDo;
 import com.digicoffer.lauditor.Calendar.Models.DocumentsDo;
+import com.digicoffer.lauditor.Calendar.Models.Event_Details_DO;
 import com.digicoffer.lauditor.Calendar.Models.MinutesDO;
 import com.digicoffer.lauditor.Calendar.Models.RelationshipsDO;
 import com.digicoffer.lauditor.Calendar.Models.TaskDo;
@@ -64,7 +65,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, View.OnClickListener {
+public class EditEvent extends Fragment implements AsyncTaskCompleteListener,View.OnClickListener {
     private static String ADAPTER_TAG = "";
     private AlertDialog progressDialog;
     MultiAutoCompleteTextView at_family_members;
@@ -119,6 +120,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     private String matter_id;
     private String matter_name;
     private String matter_legal;
+    private ArrayList<Event_Details_DO> existing_events_list = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -204,23 +206,24 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         }
 
         legalTaksList.clear();
-
+            ll_project.setVisibility(View.GONE);
 //        callTimeZoneWebservice();
-        final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) getContext(), projectList);
+//        final CommonSpinnerAdapter spinner_adapter = new CommonSpinnerAdapter((Activity) getContext(), projectList);
+//
+//        sp_project.setAdapter(spinner_adapter);
+//        sp_project.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                selected_project = projectList.get(adapterView.getSelectedItemPosition()).getProjectName();
+//                loadProjectData(selected_project);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
 
-        sp_project.setAdapter(spinner_adapter);
-        sp_project.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                selected_project = projectList.get(adapterView.getSelectedItemPosition()).getProjectName();
-                loadProjectData(selected_project);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
         return view;
     }
 
@@ -369,7 +372,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                 break;
             case R.id.btn_assigned_team_members:
 
-                    loadEntityClientPopup();
+                loadEntityClientPopup();
 
 
                 break;
@@ -1021,6 +1024,9 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
             e.printStackTrace();
         }
     }
+    public void setEventDetailsList(ArrayList<Event_Details_DO> eventDetailsList) {
+        this.existing_events_list = eventDetailsList;
+    }
 
     private void TeamMembersPopup() {
         try {
@@ -1099,8 +1105,8 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                         }
 
                         if(selected_tm_list.size()==0){
-                                selected_groups.setVisibility(View.GONE);
-                                at_add_groups.setText("Select Team Members");
+                            selected_groups.setVisibility(View.GONE);
+                            at_add_groups.setText("Select Team Members");
 
                         }else {
                             loadSelectedTM();
@@ -1112,10 +1118,10 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                 dialog.setView(view);
                 dialog.show();
             }
-            } catch(Exception e){
-                e.printStackTrace();
-                AndroidUtils.showAlert(e.getMessage(), getContext());
-            }
+        } catch(Exception e){
+            e.printStackTrace();
+            AndroidUtils.showAlert(e.getMessage(), getContext());
+        }
 
     }
 
@@ -1215,19 +1221,19 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                             selected_tm_list.remove(position);
 
 //                                ll_selected_team_members.setVisibility(View.GONE);
-                                if (selected_tm_list.size() == 0) {
-                                    selected_groups.setVisibility(View.GONE);
-                                    at_add_groups.setText("Select Team Members");
-                                }else {
+                            if (selected_tm_list.size() == 0) {
+                                selected_groups.setVisibility(View.GONE);
+                                at_add_groups.setText("Select Team Members");
+                            }else {
 //                            selected_groups_list.set(position, groupsModel);
-                                    String[] value = new String[selected_tm_list.size()];
-                                    for (int i = 0; i < selected_tm_list.size(); i++) {
-                                        value[i] = selected_tm_list.get(i).getName();
-                                    }
-
-                                    String str = String.join(",", value);
-                                    at_add_groups.setText(str);
+                                String[] value = new String[selected_tm_list.size()];
+                                for (int i = 0; i < selected_tm_list.size(); i++) {
+                                    value[i] = selected_tm_list.get(i).getName();
                                 }
+
+                                String str = String.join(",", value);
+                                at_add_groups.setText(str);
+                            }
 
                         }
                     } catch (Exception e) {
@@ -1243,7 +1249,7 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
 
     private void loadProjectData(String selected_project) {
         switch (selected_project) {
-            case "Legal Matter":
+            case "legal":
 
                 loadClearedLists();
 
@@ -1468,6 +1474,14 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                         load_timezones(jsonArray);
 //                        Thre
                         timeZonesTaskCompleted = true;
+                        if (timeZonesTaskCompleted){
+                            for (int i=0;i<existing_events_list.size();i++){
+                                Event_Details_DO event_details_do = existing_events_list.get(i);
+                                matter_legal = event_details_do.getMatter_type();
+                            }
+                            loadProjectData(matter_legal);
+//                            callProjectWebservice(matter_legal);
+                        }
                     } else {
                         AndroidUtils.showAlert("Something went wrong", getContext());
                     }

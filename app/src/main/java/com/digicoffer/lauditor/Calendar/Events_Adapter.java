@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Calendar.Models.Event_Details_DO;
@@ -40,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHolder> implements Filterable, View.OnClickListener, AsyncTaskCompleteListener {
 
+    private static  String FLAG = "";
     ArrayList<Events_Do> list_item = new ArrayList<Events_Do>();
     ArrayList<Events_Do> filtered_list = new ArrayList<Events_Do>();
     private Events_Adapter.EventListener context;
@@ -60,9 +60,9 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
     }
 
     public interface EventListener {
-        void onEvent(int layout, Fragment fragment);
+        void onEvent(ArrayList<Event_Details_DO> event_details_list);
 
-        void view_events(String id, Events_Do events_do);
+        void delete_events(String id,boolean isrecurring);
 
         void delete(String event_id, boolean recur);
     }
@@ -133,9 +133,21 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             event_details_do.setAttachments(event_details.getJSONArray("attachments"));
             event_details_do.setTeam_name(event_details.getJSONArray("invitees_internal"));
             event_details_do.setTm_name(event_details.getJSONArray("invitees_external"));
+            if (event_details.has("matter_name")) {
+                event_details_do.setMatter_name(event_details.getString("matter_name"));
+            }
+            if(event_details.has("matter_id")) {
+                event_details_do.setMatter_id(event_details.getString("matter_id"));
+            }
+            if (event_details.has("matter_type")) {
+                event_details_do.setMatter_type(event_details.getString("matter_type"));
+            }
             event_details_list.add(event_details_do);
-
-            load_more_details();
+            if(FLAG=="MORE") {
+                load_more_details();
+            }else {
+                context.onEvent(event_details_list);
+            }
 //            if (event_details_do.isOwner()) {
 //                Edit_events(event_details_do, event_id);
 //            } else {
@@ -239,11 +251,11 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
         }
         holder.events_names.setText(converted_date);
         if (events_do.isOwner()) {
-            holder.ib_view_events.setVisibility(View.VISIBLE);
-            holder.ll_rsvp.setVisibility(View.GONE);
-        } else {
             holder.ib_view_events.setVisibility(View.GONE);
             holder.ll_rsvp.setVisibility(View.VISIBLE);
+        } else {
+            holder.ib_view_events.setVisibility(View.VISIBLE);
+            holder.ll_rsvp.setVisibility(View.GONE);
         }
         holder.event_title.setText(events_do.getEvent_Name());
         if (events_do.isAll_day()) {
@@ -270,33 +282,26 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
                     my_view_holder.ll_team_members.removeAllViews();
                     my_view_holder.ll_clients.removeAllViews();
                 }
-
+                FLAG = "MORE";
                 callEventDetailsWebservice(events_do.getEvent_id());
             }
         });
         holder.ll_view_more.setVisibility(isDetailsVisible ? View.VISIBLE : View.GONE);
         holder.bt_hide_details.setText(isDetailsVisible ? "View less" : "View More");
-//        final boolean recur = events_do.isRecurring();
-//        if(events_do.isAll_day()){
-//            holder.time.setText("All Day");
-//        }
-//        else {
-//            holder.time.setText(events_do.getConverted_Start_time() + " " + "To" + " " + events_do.getCOnverted_End_time());
-//        }
-//        holder.ib_view.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                context.view_events(events_do.getEvent_id(),events_do);
-//            }
-//        });
-//        holder.ib_delete.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                context.delete(events_do.getEvent_id(),recur);
-//            }
-//        });
-
+        holder.ib_delete_events.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.delete_events(events_do.getEvent_id(),events_do.isRecurring());
+            }
+        });
+        holder.ib_view_events.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FLAG = "VIEW";
+                callEventDetailsWebservice(events_do.getEvent_id());
+//                context.onEvent(filtered_list,events_do);
+            }
+        });
     }
 
     private void callEventDetailsWebservice(String id) {

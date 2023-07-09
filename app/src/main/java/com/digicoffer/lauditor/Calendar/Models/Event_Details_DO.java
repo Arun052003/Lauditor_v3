@@ -14,6 +14,61 @@ public class Event_Details_DO {
     String offset_location;
     String matter_name;
     String owner_name;
+    String repeat_interval;
+    String team_members;
+    String clients;
+    boolean isRecurring;
+    String from_ts;
+    String to_ts;
+    boolean owner;
+    String display_time;
+    String entity_name;
+    JSONArray attachments;
+    ArrayList<String> doc_id;
+    String date;
+    boolean all_day;
+    ArrayList<String> doc_type;
+    JSONArray Tm_name;
+    JSONArray notifications;
+    String Converted_Start_time;
+    String Converted_End_time;
+    String tmid;
+    String matter_id;
+    String matter_type;
+    String meeting_link;
+    String timezone_location;
+
+    public String getMatter_id() {
+        return matter_id;
+    }
+
+    public void setMatter_id(String matter_id) {
+        this.matter_id = matter_id;
+    }
+
+    public String getMatter_type() {
+        return matter_type;
+    }
+
+    public void setMatter_type(String matter_type) {
+        this.matter_type = matter_type;
+    }
+
+    public String getMeeting_link() {
+        return meeting_link;
+    }
+
+    public void setMeeting_link(String meeting_link) {
+        this.meeting_link = meeting_link;
+    }
+
+    public String getTimezone_location() {
+        return timezone_location;
+    }
+
+    public void setTimezone_location(String timezone_location) {
+        this.timezone_location = timezone_location;
+    }
 
     public String getOwner_name() {
         return owner_name;
@@ -31,7 +86,7 @@ public class Event_Details_DO {
         this.matter_name = matter_name;
     }
 
-    boolean owner;
+
 
     public boolean isOwner() {
         return owner;
@@ -81,7 +136,6 @@ public class Event_Details_DO {
         this.display_time = display_time;
     }
 
-    String display_time;
 
     public JSONArray getTeam_name() {
         return team_name;
@@ -91,10 +145,7 @@ public class Event_Details_DO {
         this.team_name = team_name;
     }
 
-    String entity_name;
 
-    String date;
-    boolean all_day;
 
     public boolean isAll_day() {
         return all_day;
@@ -121,8 +172,7 @@ public class Event_Details_DO {
         this.attachments = attachments;
     }
 
-    JSONArray attachments;
-    ArrayList<String> doc_id;
+
 
     public ArrayList<String> getDoc_id() {
         return doc_id;
@@ -140,9 +190,7 @@ public class Event_Details_DO {
         this.doc_type = doc_type;
     }
 
-    ArrayList<String> doc_type;
 
-    JSONArray notifications;
 
     public JSONArray getNotifications() {
         return notifications;
@@ -152,7 +200,7 @@ public class Event_Details_DO {
         this.notifications = notifications;
     }
 
-    JSONArray Tm_name;
+
 
     public JSONArray getTm_name() {
         return Tm_name;
@@ -162,8 +210,6 @@ public class Event_Details_DO {
         Tm_name = tm_name;
     }
 
-    String Converted_Start_time;
-    String Converted_End_time;
 
     public String getConverted_End_time() {
         return Converted_End_time;
@@ -199,7 +245,6 @@ public class Event_Details_DO {
         this.tmid = tmid;
     }
 
-    String tmid;
 
 
 
@@ -271,12 +316,7 @@ public class Event_Details_DO {
         this.to_ts = to_ts;
     }
 
-    String repeat_interval;
-    String team_members;
-    String clients;
-    boolean isRecurring;
-    String from_ts;
-    String to_ts;
+
 
 
 }

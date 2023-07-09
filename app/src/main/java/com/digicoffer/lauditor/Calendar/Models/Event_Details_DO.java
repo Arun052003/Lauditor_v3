@@ -11,6 +11,7 @@ public class Event_Details_DO {
     String time;
     String format;
     String offset;
+    String dialin;
     String offset_location;
     String matter_name;
     String owner_name;
@@ -37,6 +38,23 @@ public class Event_Details_DO {
     String matter_type;
     String meeting_link;
     String timezone_location;
+    String location;
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getDialin() {
+        return dialin;
+    }
+
+    public void setDialin(String dialin) {
+        this.dialin = dialin;
+    }
 
     public String getMatter_id() {
         return matter_id;

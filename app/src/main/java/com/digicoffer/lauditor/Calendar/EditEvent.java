@@ -120,6 +120,19 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener,Vie
     private String matter_id;
     private String matter_name;
     private String matter_legal;
+    private String existing_task;
+    private boolean isTimesheet;
+    private String existing_date;
+    private String existing_start_time;
+    private String existing_end_time;
+    private boolean isExistingAllday;
+    private String existing_time_zone;
+    private String existing_repetetion;
+    private String existing_meeting_link;
+    private String existing_dialin;
+    private String existing_location;
+    private String existing_description;
+
     private ArrayList<Event_Details_DO> existing_events_list = new ArrayList<>();
 
     @Override
@@ -1257,6 +1270,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener,Vie
                 loadRepetetions();
                 matter_legal = "legal";
                 callProjectWebservice(matter_legal);
+//                loadExistingData();
 //                callClientsWebservice();
 //                TaskDo caseFilling = new TaskDo("Case Filling");
 //                TaskDo consultation = new TaskDo("Consultation");
@@ -1337,6 +1351,38 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener,Vie
                 matter_legal = "reminders";
                 break;
         }
+    }
+
+    private void loadExistingData() {
+        if (isExistingAllday){
+            cb_add_to_timesheet.setChecked(true);
+        }
+        if (isAllDay){
+            cb_all_day.setChecked(true);
+        }
+        for (int i=0;i<legalTaksList.size();i++){
+            if (existing_task.equals(legalTaksList.get(i).getTaskName())){
+                sp_task.setSelection(i);
+            }
+        }
+        tv_event_creation_date.setText(existing_date);
+        tv_event_start_time.setText(existing_start_time);
+        tv_event_end_time.setText(existing_end_time);
+        for (int i=0;i<timeZonesList.size();i++){
+            if (existing_time_zone.equals(timeZonesList.get(i).getGMT())){
+                sp_time_zone.setSelection(i);
+            }
+        }
+        for (int i=0;i<Repetetions.size();i++){
+            if (existing_repetetion.equals(Repetetions.get(i))){
+                sp_repetetion.setSelection(i);
+            }
+        }
+        tv_meeting_link.setText(existing_meeting_link);
+        tv_description.setText(existing_description);
+        tv_dialing_number.setText(existing_dialin);
+        tv_location.setText(existing_location);
+
     }
 
     private void loadClearedLists() {
@@ -1478,6 +1524,25 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener,Vie
                             for (int i=0;i<existing_events_list.size();i++){
                                 Event_Details_DO event_details_do = existing_events_list.get(i);
                                 matter_legal = event_details_do.getMatter_type();
+                                existing_description = event_details_do.getDescription();
+                                existing_date = event_details_do.getDate();
+                                existing_dialin = event_details_do.getDialin();
+                                existing_date = event_details_do.getDate();
+                                existing_location = event_details_do.getLocation();
+                                existing_end_time = event_details_do.getTo_ts();
+                                existing_start_time = event_details_do.getFrom_ts();
+                                existing_meeting_link = event_details_do.getMeeting_link();
+                                existing_repetetion = event_details_do.getRepeat_interval();
+                                String title = event_details_do.getTitle();
+                                String[] splitStrings = title.split(" - ");
+
+                                String firstString = splitStrings[0];
+                                String secondString = splitStrings[1];
+                                existing_task = secondString;
+                                existing_time_zone = event_details_do.getOffset_location();
+                                isAddTimesheet = event_details_do.isRecurring();
+                                isExistingAllday = event_details_do.isAll_day();
+                                loadExistingData();
                             }
                             loadProjectData(matter_legal);
 //                            callProjectWebservice(matter_legal);

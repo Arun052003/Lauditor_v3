@@ -118,6 +118,9 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             String event_start_time = AndroidUtils.getDateToString(event_date, "HH:mm a");
             String event_date_forevents = AndroidUtils.getDateToString(event_date, "EEEE, MMM dd,yyyy");
             event_details_do.setDate(event_date_forevents);
+            event_details_do.setRecurring(event_details.getBoolean("isrecurring"));
+            event_details_do.setLocation(event_details.getString("location"));
+            event_details_do.setDialin(event_details.getString("dialin"));
             event_details_do.setTo_ts(event_details.getString("to_ts"));
             event_details_do.setOffset(event_details.getString("timezone_offset"));
             event_details_do.setOffset_location(event_details.getString("timezone_location"));

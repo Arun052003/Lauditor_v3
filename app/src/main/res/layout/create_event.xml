@@ -914,9 +914,9 @@
                         android:id="@+id/btn_add_groups"
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="right"
                         android:text="@string/add"
-                        android:textAllCaps="false"
-                        android:layout_gravity="right">
+                        android:textAllCaps="false">
 
                     </Button>
                 </LinearLayout>

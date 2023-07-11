@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -366,7 +367,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener,Vie
                 timePickerDialog_end_time.show();
                 break;
             case R.id.btn_add_groups:
-                if(matterList.size()==0){
+                if(teamList.size()==0){
                     callTeamMemberWebservice();
                 }
                 else{
@@ -1374,7 +1375,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener,Vie
             }
         }
         for (int i=0;i<Repetetions.size();i++){
-            if (existing_repetetion.equals(Repetetions.get(i))){
+            if (existing_repetetion.equals(Repetetions.get(i).toLowerCase(Locale.ROOT))){
                 sp_repetetion.setSelection(i);
             }
         }
@@ -1382,6 +1383,59 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener,Vie
         tv_description.setText(existing_description);
         tv_dialing_number.setText(existing_dialin);
         tv_location.setText(existing_location);
+        try {
+            for (int i = 0; i < existing_events_list.size(); i++) {
+                JSONArray documents = existing_events_list.get(i).getAttachments();
+                for (int j = 0; j < documents.length(); j++) {
+                    DocumentsDo documentsDo = new DocumentsDo();
+                    JSONObject jsonObject = documents.getJSONObject(j);
+                    documentsDo.setDocid(jsonObject.getString("docid"));
+                    documentsDo.setDoctype(jsonObject.getString("doctype"));
+                    documentsDo.setName(jsonObject.getString("name"));
+//                    documentsDo.setUser_id(jsonObject.getString("user_id"));
+                    selected_documents_list.add(documentsDo);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (selected_documents_list.size()!=0){
+            loadSelectedDocuments();
+        }
+
+        try{
+            for (int i = 0; i < existing_events_list.size(); i++) {
+                JSONArray team_members = existing_events_list.get(i).getTeam_name();
+                for (int j = 0; j < team_members.length(); j++) {
+                    TeamDo teamModel = new TeamDo();
+                    JSONObject jsonObject = team_members.getJSONObject(j);
+                    teamModel.setId(jsonObject.getString("id"));
+                    teamModel.setName(jsonObject.getString("name"));
+                    selected_tm_list.add(teamModel);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (selected_tm_list.size()!=0){
+            loadSelectedTM();
+        }
+
+//        try{
+//            for (int i = 0; i < existing_events_list.size(); i++) {
+//                JSONArray team_members = existing_events_list.get(i).getConsumer_external();
+//                for (int j = 0; j < team_members.length(); j++) {
+//                    RelationshipsDO relationshipsDO = new RelationshipsDO();
+//                    JSONObject jsonObject = team_members.getJSONObject(j);
+//                    relationshipsDO.setId(jsonObject.getString("entityId"));
+//                    relationshipsDO.setName(jsonObject.getString("tmName"));
+//                    relationshipsDO.setType(jsonObject.getString("entityId"));
+//                    individual_list.add(relationshipsDO);
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -1417,6 +1471,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener,Vie
 
             }
         });
+        loadExistingData();
     }
 
     private void hideAlldetails() {
@@ -1529,20 +1584,19 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener,Vie
                                 existing_dialin = event_details_do.getDialin();
                                 existing_date = event_details_do.getDate();
                                 existing_location = event_details_do.getLocation();
-                                existing_end_time = event_details_do.getTo_ts();
-                                existing_start_time = event_details_do.getFrom_ts();
+                                existing_end_time = event_details_do.getConverted_End_time();
+                                existing_start_time = event_details_do.getConverted_Start_time();
                                 existing_meeting_link = event_details_do.getMeeting_link();
                                 existing_repetetion = event_details_do.getRepeat_interval();
                                 String title = event_details_do.getTitle();
                                 String[] splitStrings = title.split(" - ");
-
                                 String firstString = splitStrings[0];
                                 String secondString = splitStrings[1];
                                 existing_task = secondString;
                                 existing_time_zone = event_details_do.getOffset_location();
                                 isAddTimesheet = event_details_do.isRecurring();
                                 isExistingAllday = event_details_do.isAll_day();
-                                loadExistingData();
+//                                loadExistingData();
                             }
                             loadProjectData(matter_legal);
 //                            callProjectWebservice(matter_legal);
@@ -1804,6 +1858,11 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener,Vie
             teamDo.setName(jsonObject.getString("name"));
             teamList.add(teamDo);
         }
+        String Message = "";
+        for (int i=0;i<teamList.size();i++){
+            Message = teamList.get(i).getName();
+        }
+        Log.d("Team_List",Message);
         TeamMembersPopup();
     }
 

@@ -116,7 +116,7 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             String from_ts = event_details_do.getFrom_ts();
             Date event_date = AndroidUtils.stringToDateTimeDefault(from_ts, "yyyy-MM-dd'T'HH:mm:ss");
             String event_start_time = AndroidUtils.getDateToString(event_date, "HH:mm a");
-            String event_date_forevents = AndroidUtils.getDateToString(event_date, "EEEE, MMM dd,yyyy");
+            String event_date_forevents = AndroidUtils.getDateToString(event_date, "MMM dd,yyyy");
             event_details_do.setDate(event_date_forevents);
             event_details_do.setRecurring(event_details.getBoolean("isrecurring"));
             event_details_do.setLocation(event_details.getString("location"));
@@ -127,6 +127,7 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             event_details_do.setConverted_Start_time(event_start_time);
             event_details_do.setOwner(event_details.getBoolean("owner"));
             String to_ts = event_details_do.getTo_ts();
+            event_details_do.setMeeting_link(event_details.getString("meeting_link"));
             Date event_date2 = AndroidUtils.stringToDateTimeDefault(to_ts, "yyyy-MM-dd'T'HH:mm:ss");
             String event_end_time = AndroidUtils.getDateToString(event_date2, "HH:mm a");
             event_details_do.setConverted_End_time(event_end_time);
@@ -136,6 +137,9 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             event_details_do.setAttachments(event_details.getJSONArray("attachments"));
             event_details_do.setTeam_name(event_details.getJSONArray("invitees_internal"));
             event_details_do.setTm_name(event_details.getJSONArray("invitees_external"));
+            if (event_details.has("invitees_consumer_external")){
+                event_details_do.setConsumer_external(event_details.getJSONArray("invitees_consumer_external"));
+            }
             if (event_details.has("matter_name")) {
                 event_details_do.setMatter_name(event_details.getString("matter_name"));
             }
@@ -145,6 +149,7 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             if (event_details.has("matter_type")) {
                 event_details_do.setMatter_type(event_details.getString("matter_type"));
             }
+
             event_details_list.add(event_details_do);
             if(FLAG=="MORE") {
                 load_more_details();

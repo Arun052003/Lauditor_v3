@@ -8,6 +8,7 @@ public class Event_Details_DO {
     String title;
     String description;
     JSONArray team_name;
+    JSONArray consumer_external;
     String time;
     String format;
     String offset;
@@ -39,6 +40,14 @@ public class Event_Details_DO {
     String meeting_link;
     String timezone_location;
     String location;
+
+    public JSONArray getConsumer_external() {
+        return consumer_external;
+    }
+
+    public void setConsumer_external(JSONArray consumer_external) {
+        this.consumer_external = consumer_external;
+    }
 
     public String getLocation() {
         return location;

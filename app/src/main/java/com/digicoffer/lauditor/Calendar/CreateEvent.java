@@ -276,7 +276,6 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_event_creation_date:
-
                 final Calendar myCalendar = Calendar.getInstance();
                 final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
                     @Override
@@ -298,7 +297,6 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
                 datePickerDialog.show();
                 break;
             case R.id.tv_event_start_time:
-
                 final Calendar c = Calendar.getInstance();
                 int hour = c.get(Calendar.HOUR_OF_DAY);
                 int minute = c.get(Calendar.MINUTE);
@@ -961,7 +959,6 @@ public class CreateEvent extends Fragment implements AsyncTaskCompleteListener, 
         } else {
             selected_individual.setVisibility(View.VISIBLE);
         }
-
         ll_individual_list.removeAllViews();
         for (int i = 0; i < selected_individual_list.size(); i++) {
             View view_opponents = LayoutInflater.from(getContext()).inflate(R.layout.edit_opponent_advocate, null);

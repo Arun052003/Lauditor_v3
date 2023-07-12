@@ -18,9 +18,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -71,6 +74,9 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
     private AlertDialog progressDialog;
     MultiAutoCompleteTextView at_family_members;
     CardView cv_meeting_details;
+    Meetings meetings;
+    String recurring_edit_choice;
+    AlertDialog ad_dialog;
     final ArrayList<String> Repetetions = new ArrayList<>();
     JSONArray notification = new JSONArray();
     LinearLayout ll_client_team_members, ll_documents_list, ll_attach_document, ll_selected_entites, selected_individual, ll_individual_list, ll_selected_team_members, selected_tm, selected_groups;
@@ -133,7 +139,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
     private String existing_dialin;
     private String existing_location;
     private String existing_description;
-
+    private String event_id;
     private ArrayList<Event_Details_DO> existing_events_list = new ArrayList<>();
 
     @Override
@@ -169,6 +175,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
         sp_entities = view.findViewById(R.id.sp_entities);
         add_notification = view.findViewById(R.id.add_notification);
         add_notification.setOnClickListener(this);
+        meetings = (Meetings) getParentFragment();
         ll_documents_list = view.findViewById(R.id.ll_documents_list);
         at_assigned_team_members = view.findViewById(R.id.at_assigned_team_members);
         btn_add_groups = view.findViewById(R.id.btn_add_groups);
@@ -404,7 +411,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
                         tv_event_end_time.setError("End time is required");
                         tv_event_end_time.requestFocus();
                     } else {
-                        callCreateEventWebservice();
+                        update_event(event_id);
                     }
                 } else {
                     if (tv_event_creation_date.getText().toString().equals("")) {
@@ -420,7 +427,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
                         tv_message.setError("Message is required");
                         tv_message.requestFocus();
                     } else {
-                        callCreateEventWebservice();
+                        update_event(event_id);
                     }
                 }
 
@@ -583,8 +590,53 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
             ll_documents_list.addView(view_opponents);
         }
     }
+    private void update_event(final String event_id) {
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getLayoutInflater();
+            final View dialogLayout = inflater.inflate(R.layout.edit_recurring_choice, null);
+            final RadioGroup radioGroup = (RadioGroup) dialogLayout.findViewById(R.id.radioGroup);
+            final RadioButton delete_only_this = (RadioButton) dialogLayout.findViewById(R.id.radio_delete_only_this);
+            final RadioButton delete_all = (RadioButton) dialogLayout.findViewById(R.id.radio_delete_all);
+            final RadioButton delete_following = (RadioButton) dialogLayout.findViewById(R.id.radio_delete_ts_fe);
+            radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                    if (delete_only_this.isChecked()) {
+                        recurring_edit_choice = "this";
+                    } else if (delete_all.isChecked()) {
+                        recurring_edit_choice = String.valueOf("all");
+                    } else if (delete_following.isChecked()) {
+                        recurring_edit_choice = String.valueOf("forward");
+                    }
+                }
+            });
+            final AlertDialog dialog = builder.create();
+            ad_dialog = dialog;
+            Button delete = (Button) dialogLayout.findViewById(R.id.delete_event);
 
-    private void callCreateEventWebservice() {
+            ImageButton btn_close_event = (ImageButton)dialogLayout.findViewById(R.id.btn_close_event);
+            btn_close_event.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ad_dialog.dismiss();
+                }
+            });
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    callCreateEventWebservice(event_id, recurring_edit_choice);
+                }
+            });
+
+            dialog.setView(dialogLayout);
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void callCreateEventWebservice(String event_id, String recurring_edit_choice) {
         try {
 
             String doctype = "doctype";
@@ -714,6 +766,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
             postData.put("repeat_interval", repeat_interval.toLowerCase(Locale.ROOT));
             postData.put("meeting_link", tv_meeting_link.getText().toString());
             postData.put("allday", isAllDay);
+            postData.put("recurrent_edit_choice",recurring_edit_choice);
             postData.put("from_ts", event_starting_date);
             postData.put("to_ts", event_end_time);
             if (matter_legal.equals("legal") || matter_legal.equals("general")) {
@@ -722,7 +775,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
             }
             postData.put("event_type", matter_legal);
 
-            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.POST, "v3/events", "CREATE_EVENT", postData.toString());
+            WebServiceHelper.callHttpWebService(this, getContext(), WebServiceHelper.RestMethodType.PUT, "v3/event/"+ this.event_id +"/"+multiplied_offset, "CREATE_EVENT", postData.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1467,6 +1520,19 @@ try{
 } catch (Exception e) {
     e.printStackTrace();
 }
+try{
+    for(int i=0;i<existing_events_list.size();i++){
+        JSONArray notification = existing_events_list.get(i).getNotifications();
+        for (int j=0;j<notification.length();j++){
+            selectedValues.add(notification.get(j).toString());
+            NotificationPopup();
+        }
+
+    }
+//    NotificationPopup();
+} catch (Exception e) {
+    e.printStackTrace();
+}
 //        try {
 //            for (int i = 0; i < existing_events_list.size(); i++) {
 //                JSONArray team_members = existing_events_list.get(i).getConsumer_external();
@@ -1639,12 +1705,13 @@ try{
                                 existing_description = event_details_do.getDescription();
                                 existing_date = event_details_do.getDate();
                                 existing_dialin = event_details_do.getDialin();
-                                existing_date = event_details_do.getDate();
+//                                existing_date = event_details_do.getDate();
                                 existing_location = event_details_do.getLocation();
                                 existing_end_time = event_details_do.getConverted_End_time();
                                 existing_start_time = event_details_do.getConverted_Start_time();
                                 existing_meeting_link = event_details_do.getMeeting_link();
                                 existing_repetetion = event_details_do.getRepeat_interval();
+                                event_id = event_details_do.getId();
                                 String title = event_details_do.getTitle();
                                 String[] splitStrings = title.split(" - ");
                                 String firstString = splitStrings[0];
@@ -1714,6 +1781,8 @@ try{
                 } else if (httpResult.getRequestType().equals("CREATE_EVENT")) {
                     AndroidUtils.showToast(result.getString("msg"), getContext());
                     loadClearedLists();
+                    ad_dialog.dismiss();
+                    meetings.loadViewEvent();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

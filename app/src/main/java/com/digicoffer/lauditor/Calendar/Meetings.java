@@ -1,7 +1,6 @@
 package com.digicoffer.lauditor.Calendar;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -111,12 +110,15 @@ public class Meetings extends Fragment implements AsyncTaskCompleteListener,View
     @Override
     public void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list) {
         EditEvent editEventFragment = new EditEvent();
-        for (int i=0;i<event_details_list.size();i++){
-            Event_Details_DO event_details_do = event_details_list.get(i);
-            Log.d("EventDetails2",event_details_list.toString());
-        }
-
         editEventFragment.setEventDetailsList(event_details_list);
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.child_container_timesheets, editEventFragment)
+                .commit();
+    }
+    public void loadViewEvent(){
+        ViewCalendar editEventFragment = new ViewCalendar();
+//        editEventFragment.setEventDetailsList(event_details_list);
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.child_container_timesheets, editEventFragment)

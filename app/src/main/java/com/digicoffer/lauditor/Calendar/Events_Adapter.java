@@ -109,6 +109,7 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
 //        clients_list.clear();
         try {
             event_details_do = new Event_Details_DO();
+            event_details_do.setId(event_details.getString("id"));
             event_details_do.setTitle(event_details.getString("title"));
             event_details_do.setDescription(event_details.getString("description"));
             event_details_do.setFrom_ts(event_details.getString("from_ts"));
@@ -116,8 +117,9 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             String from_ts = event_details_do.getFrom_ts();
             Date event_date = AndroidUtils.stringToDateTimeDefault(from_ts, "yyyy-MM-dd'T'HH:mm:ss");
             String event_start_time = AndroidUtils.getDateToString(event_date, "HH:mm a");
-            String event_date_forevents = AndroidUtils.getDateToString(event_date, "MMM dd,yyyy");
+            String event_date_forevents = AndroidUtils.getDateToString(event_date, "MM-dd-yyyy");
             event_details_do.setDate(event_date_forevents);
+
             event_details_do.setRecurring(event_details.getBoolean("isrecurring"));
             event_details_do.setLocation(event_details.getString("location"));
             event_details_do.setDialin(event_details.getString("dialin"));

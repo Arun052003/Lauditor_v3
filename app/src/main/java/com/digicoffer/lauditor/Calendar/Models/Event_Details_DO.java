@@ -10,6 +10,7 @@ public class Event_Details_DO {
     JSONArray team_name;
     JSONArray consumer_external;
     String time;
+    String id;
     String format;
     String offset;
     String dialin;
@@ -40,6 +41,14 @@ public class Event_Details_DO {
     String meeting_link;
     String timezone_location;
     String location;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public JSONArray getConsumer_external() {
         return consumer_external;

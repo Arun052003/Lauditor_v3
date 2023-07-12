@@ -149,7 +149,6 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             if (event_details.has("matter_type")) {
                 event_details_do.setMatter_type(event_details.getString("matter_type"));
             }
-
             event_details_list.add(event_details_do);
             if(FLAG=="MORE") {
                 load_more_details();

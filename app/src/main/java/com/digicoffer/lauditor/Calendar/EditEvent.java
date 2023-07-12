@@ -1385,23 +1385,26 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
         tv_location.setText(existing_location);
         try {
             for (int i = 0; i < existing_events_list.size(); i++) {
+                Log.d("Selected_Documents", existing_events_list.get(i).getAttachments().toString());
                 JSONArray documents = existing_events_list.get(i).getAttachments();
                 for (int j = 0; j < documents.length(); j++) {
                     DocumentsDo documentsDo = new DocumentsDo();
                     JSONObject jsonObject = documents.getJSONObject(j);
-                    documentsDo.setDocid(jsonObject.getString("docid"));
+                    documentsDo.setDocid(jsonObject.getString("id"));
                     documentsDo.setDoctype(jsonObject.getString("doctype"));
                     documentsDo.setName(jsonObject.getString("name"));
 //                    documentsDo.setUser_id(jsonObject.getString("user_id"));
                     selected_documents_list.add(documentsDo);
                 }
             }
+
+            if (selected_documents_list.size() != 0) {
+                loadSelectedDocuments();
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if (selected_documents_list.size() != 0) {
-            loadSelectedDocuments();
-        }
+
 
         try {
             for (int i = 0; i < existing_events_list.size(); i++) {
@@ -1414,38 +1417,56 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
                     selected_tm_list.add(teamModel);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (selected_tm_list.size() != 0) {
-            loadSelectedTM();
-        }
-
-        try {
-            for (int i = 0; i < existing_events_list.size(); i++) {
-                JSONArray team_members = existing_events_list.get(i).getConsumer_external();
-                for (int j = 0; j < team_members.length(); j++) {
-                    RelationshipsDO relationshipsDO = new RelationshipsDO();
-                    JSONObject jsonObject = team_members.getJSONObject(i);
-//                String type =   ;
-
-//                    if (jsonObject.getString("type").equals("consumer")) {
-                        relationshipsDO.setId(jsonObject.getString("entityId"));
-                        relationshipsDO.setName(jsonObject.getString("tmName"));
-                        relationshipsDO.setType(jsonObject.getString("tmId"));
-                        individual_list.add(relationshipsDO);
-//                    } else {
-//                        relationshipsDO.setId(jsonObject.getString("id"));
-//                        relationshipsDO.setName(jsonObject.getString("name"));
-//                        relationshipsDO.setType(jsonObject.getString("type"));
-//                        selected_entity_client_list.add(relationshipsDO);
-//                    }
-                }
+            if (selected_tm_list.size() != 0) {
+                loadSelectedTM();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        loadSelectedIndividual();
+
+try{
+    for(int i=0;i<existing_events_list.size();i++){
+        JSONArray clients = existing_events_list.get(i).getTm_name();
+        for(int j=0;j<clients.length();j++){
+            RelationshipsDO relationshipsDO = new RelationshipsDO();
+            JSONObject jsonObject = clients.getJSONObject(j);
+            relationshipsDO.setId(jsonObject.getString("entityId") + "_" + jsonObject.getString("tmId"));
+            relationshipsDO.setName(jsonObject.getString("tmName"));
+            selected_entity_client_list.add(relationshipsDO);
+        }
+    }
+    if (selected_entity_client_list.size()!=0) {
+        loadSelectedClients();
+    }
+} catch (Exception e) {
+    e.printStackTrace();
+}
+//        try {
+//            for (int i = 0; i < existing_events_list.size(); i++) {
+//                JSONArray team_members = existing_events_list.get(i).getConsumer_external();
+//                for (int j = 0; j < team_members.length(); j++) {
+//                    RelationshipsDO relationshipsDO = new RelationshipsDO();
+//                    JSONObject jsonObject = team_members.getJSONObject(j);
+////                String type =   ;
+//
+////                    if (jsonObject.getString("type").equals("consumer")) {
+//                        relationshipsDO.setId(jsonObject.getString("entityId"));
+//                        relationshipsDO.setName(jsonObject.getString("tmName"));
+//                        relationshipsDO.setType(jsonObject.getString("tmId"));
+//                        individual_list.add(relationshipsDO);
+////                    } else {
+////                        relationshipsDO.setId(jsonObject.getString("id"));
+////                        relationshipsDO.setName(jsonObject.getString("name"));
+////                        relationshipsDO.setType(jsonObject.getString("type"));
+////                        selected_entity_client_list.add(relationshipsDO);
+////                    }
+//                }
+//            }
+//            loadSelectedIndividual();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
 //        loadSelectedClients();
     }
 
@@ -1969,7 +1990,6 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
             viewMatterModel.setDocuments(jsonObject.getJSONArray("documents"));
             viewMatterModel.setClients(jsonObject.getJSONArray("clients"));
             viewMatterModel.setMembers(jsonObject.getJSONArray("members"));
-
 //            viewMatterModel.setCasetype(jsonObject.getString("caseType"));
             matterList.add(viewMatterModel);
         }

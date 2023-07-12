@@ -138,6 +138,7 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             event_details_do.setTeam_name(event_details.getJSONArray("invitees_internal"));
             event_details_do.setTm_name(event_details.getJSONArray("invitees_external"));
             if (event_details.has("invitees_consumer_external")){
+                Log.d("ArrayListLog", event_details.getJSONArray("invitees_consumer_external").toString());
                 event_details_do.setConsumer_external(event_details.getJSONArray("invitees_consumer_external"));
             }
             if (event_details.has("matter_name")) {
@@ -150,6 +151,11 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
                 event_details_do.setMatter_type(event_details.getString("matter_type"));
             }
             event_details_list.add(event_details_do);
+            // Assuming you have created and populated the list
+
+//            for (Event_Details_DO event : event_details_list) {
+//                Log.d("ArrayListLog", event.toString());
+//            }
             if(FLAG=="MORE") {
                 load_more_details();
             }else {
@@ -320,7 +326,7 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
         long hours = TimeUnit.MILLISECONDS.toMinutes(offset);
         long timezoneoffset = (-1) * (hours);
         event_id = id;
-        WebServiceHelper.callHttpWebService(this, mcontext, WebServiceHelper.RestMethodType.GET, "event/details/" + event_id + "/" + timezoneoffset, "EVENT DETAILS", postData.toString());
+        WebServiceHelper.callHttpWebService(this, mcontext, WebServiceHelper.RestMethodType.GET, "v3/event/" + event_id + "/" + timezoneoffset, "EVENT DETAILS", postData.toString());
 
     }
 

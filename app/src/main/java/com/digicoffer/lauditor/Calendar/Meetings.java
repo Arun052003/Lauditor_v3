@@ -111,7 +111,11 @@ public class Meetings extends Fragment implements AsyncTaskCompleteListener,View
     @Override
     public void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list) {
         EditEvent editEventFragment = new EditEvent();
-        Log.d("EventDetails2",event_details_list.toString());
+        for (int i=0;i<event_details_list.size();i++){
+            Event_Details_DO event_details_do = event_details_list.get(i);
+            Log.d("EventDetails2",event_details_list.toString());
+        }
+
         editEventFragment.setEventDetailsList(event_details_list);
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction()

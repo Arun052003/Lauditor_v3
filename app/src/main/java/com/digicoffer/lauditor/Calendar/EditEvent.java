@@ -1040,6 +1040,11 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
 
     public void setEventDetailsList(ArrayList<Event_Details_DO> eventDetailsList) {
         this.existing_events_list = eventDetailsList;
+//        for (int i=0;i< existing_events_list.size();i++){
+//            Event_Details_DO event_details_do = existing_events_list.get(i);
+////            JSONObject jsonObject = existing_events_list.get(i);
+//
+//        }
     }
 
     private void TeamMembersPopup() {
@@ -1385,12 +1390,12 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
         tv_location.setText(existing_location);
         try {
             for (int i = 0; i < existing_events_list.size(); i++) {
-                Log.d("Selected_Documents", existing_events_list.get(i).getAttachments().toString());
+
                 JSONArray documents = existing_events_list.get(i).getAttachments();
                 for (int j = 0; j < documents.length(); j++) {
                     DocumentsDo documentsDo = new DocumentsDo();
                     JSONObject jsonObject = documents.getJSONObject(j);
-                    documentsDo.setDocid(jsonObject.getString("id"));
+                    documentsDo.setDocid(jsonObject.getString("docid"));
                     documentsDo.setDoctype(jsonObject.getString("doctype"));
                     documentsDo.setName(jsonObject.getString("name"));
 //                    documentsDo.setUser_id(jsonObject.getString("user_id"));
@@ -1427,6 +1432,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
 try{
     for(int i=0;i<existing_events_list.size();i++){
         JSONArray clients = existing_events_list.get(i).getTm_name();
+
         for(int j=0;j<clients.length();j++){
             RelationshipsDO relationshipsDO = new RelationshipsDO();
             JSONObject jsonObject = clients.getJSONObject(j);
@@ -1435,9 +1441,29 @@ try{
             selected_entity_client_list.add(relationshipsDO);
         }
     }
+
     if (selected_entity_client_list.size()!=0) {
         loadSelectedClients();
     }
+} catch (Exception e) {
+    e.printStackTrace();
+}
+try{
+
+    for(int i=0;i<existing_events_list.size();i++){
+        Log.d("Selected_Documents", existing_events_list.get(i).getConsumer_external().toString());
+        JSONArray individuals = existing_events_list.get(i).getConsumer_external();
+
+        for(int j=0;j<individuals.length();j++){
+            RelationshipsDO relationshipsDO = new RelationshipsDO();
+            JSONObject jsonObject = individuals.getJSONObject(j);
+            relationshipsDO.setId(jsonObject.getString("entityId"));
+            relationshipsDO.setName(jsonObject.getString("tmName"));
+            relationshipsDO.setType(jsonObject.getString("tmId"));
+            selected_individual_list.add(relationshipsDO);
+        }
+    }
+    loadSelectedIndividual();
 } catch (Exception e) {
     e.printStackTrace();
 }

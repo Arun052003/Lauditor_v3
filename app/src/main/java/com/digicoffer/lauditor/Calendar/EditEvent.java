@@ -141,6 +141,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
     private String existing_description;
     private String event_id;
     private ArrayList<Event_Details_DO> existing_events_list = new ArrayList<>();
+    String Calendar_type = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -215,7 +216,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
         btn_cancel_timesheet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                meetings.loadViewEvent();
+                meetings.loadViewEvent(Calendar_type);
             }
         });
         if (Constants.ROLE.equals("AAM")) {
@@ -1096,8 +1097,9 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
         }
     }
 
-    public void setEventDetailsList(ArrayList<Event_Details_DO> eventDetailsList) {
+    public void setEventDetailsList(ArrayList<Event_Details_DO> eventDetailsList, String calendar_Type) {
         this.existing_events_list = eventDetailsList;
+        this.Calendar_type = calendar_Type;
 //        for (int i=0;i< existing_events_list.size();i++){
 //            Event_Details_DO event_details_do = existing_events_list.get(i);
 ////            JSONObject jsonObject = existing_events_list.get(i);
@@ -1425,7 +1427,7 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
             cb_all_day.setChecked(true);
         }
         for (int i = 0; i < legalTaksList.size(); i++) {
-            if (existing_task.equals(legalTaksList.get(i).getTaskName())) {
+            if (existing_task.equalsIgnoreCase(legalTaksList.get(i).getTaskName())) {
                 sp_task.setSelection(i);
             }
         }
@@ -1787,7 +1789,7 @@ try{
                     AndroidUtils.showToast(result.getString("msg"), getContext());
                     loadClearedLists();
                     ad_dialog.dismiss();
-                    meetings.loadViewEvent();
+                    meetings.loadViewEvent(Calendar_type);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

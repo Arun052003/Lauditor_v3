@@ -254,7 +254,7 @@ public class WeeklyCalendar extends Fragment implements View.OnClickListener, As
         tv_to_date_timesheet.setText(toDate);
     }
     public interface EventDetailsListener {
-        void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list);
+        void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list, String calendar_Type);
     }
     @Override
     public void onAttach(Context context) {
@@ -262,7 +262,7 @@ public class WeeklyCalendar extends Fragment implements View.OnClickListener, As
 //        if (context instanceof EventDetailsListener) {
         try {
             Log.d("Interface","Interface Called");
-            eventDetailsListener = (WeeklyCalendar.EventDetailsListener) getParentFragment();
+            eventDetailsListener = (EventDetailsListener) getParentFragment();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -455,7 +455,8 @@ public class WeeklyCalendar extends Fragment implements View.OnClickListener, As
     public void onEvent(ArrayList<Event_Details_DO> event_details_list) {
         if (eventDetailsListener != null) {
             Log.d("EventsList",event_details_list.toString());
-            eventDetailsListener.onEventDetailsPassed(event_details_list);
+            String Calendar_Type ="Weekly";
+            eventDetailsListener.onEventDetailsPassed(event_details_list,Calendar_Type);
         }
     }
 

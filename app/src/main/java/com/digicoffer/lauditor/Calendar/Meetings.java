@@ -108,20 +108,27 @@ public class Meetings extends Fragment implements AsyncTaskCompleteListener,View
     }
 
     @Override
-    public void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list) {
+    public void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list, String calendar_Type) {
         EditEvent editEventFragment = new EditEvent();
-        editEventFragment.setEventDetailsList(event_details_list);
+        editEventFragment.setEventDetailsList(event_details_list,calendar_Type);
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.child_container_timesheets, editEventFragment)
                 .commit();
     }
-    public void loadViewEvent(){
-        MonthlyCalendar editEventFragment = new MonthlyCalendar();
+    public void loadViewEvent(String calendar_type){
+        Fragment fragment = new Fragment();
+        if (calendar_type=="Monthly") {
+            fragment= new MonthlyCalendar();
+        }else if (calendar_type=="Weekly"){
+            fragment = new WeeklyCalendar();
+        }else{
+            fragment= new MonthlyCalendar();
+        }
 //        editEventFragment.setEventDetailsList(event_details_list);
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.child_container_timesheets, editEventFragment)
+                .replace(R.id.child_container_timesheets, fragment)
                 .commit();
     }
 }

@@ -135,7 +135,7 @@ public class MonthlyCalendar extends Fragment implements AsyncTaskCompleteListen
 
     }
     public interface EventDetailsListener {
-        void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list);
+        void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list, String calendar_Type);
     }
     private void Updatelabel(Calendar myCalendar) {
         String myFormat = "MMM dd, yyyy";
@@ -527,8 +527,9 @@ public class MonthlyCalendar extends Fragment implements AsyncTaskCompleteListen
     public void onEvent(ArrayList<Event_Details_DO> event_details_list) {
 
         if (eventDetailsListener != null) {
+            String Calendar_Type ="Monthly";
             Log.d("EventsList",event_details_list.toString());
-            eventDetailsListener.onEventDetailsPassed(event_details_list);
+            eventDetailsListener.onEventDetailsPassed(event_details_list,Calendar_Type);
         }
     }
 

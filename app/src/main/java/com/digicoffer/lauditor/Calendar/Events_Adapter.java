@@ -133,6 +133,7 @@ public class Events_Adapter extends RecyclerView.Adapter<Events_Adapter.MyViewHo
             Date event_date2 = AndroidUtils.stringToDateTimeDefault(to_ts, "yyyy-MM-dd'T'HH:mm:ss");
             String event_end_time = AndroidUtils.getDateToString(event_date2, "HH:mm a");
             event_details_do.setConverted_End_time(event_end_time);
+
             event_details_do.setRepeat_interval(event_details.getString("repeat_interval"));
             event_details_do.setNotifications(event_details.getJSONArray("notifications"));
             event_details_do.setOwner_name(event_details.getString("owner_name"));

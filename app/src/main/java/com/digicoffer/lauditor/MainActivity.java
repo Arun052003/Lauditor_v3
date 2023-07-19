@@ -292,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements MonthlyCalendar.E
     }
 
     @Override
-    public void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list) {
+    public void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list, String calendar_Type) {
 
     }
 }

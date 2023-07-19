@@ -20,7 +20,7 @@ import com.digicoffer.lauditor.Webservice.HttpResultDo;
 
 import java.util.ArrayList;
 
-public class Meetings extends Fragment implements AsyncTaskCompleteListener,View.OnClickListener, MonthlyCalendar.EventDetailsListener {
+public class Meetings extends Fragment implements AsyncTaskCompleteListener,View.OnClickListener, MonthlyCalendar.EventDetailsListener,WeeklyCalendar.EventDetailsListener {
     LinearLayoutCompat ll_view_type;
     TextView tv_create_event,tv_view_calendar,tv_day_view,tv_month_view;
     ArrayList<Event_Details_DO> existingList = new ArrayList<>();

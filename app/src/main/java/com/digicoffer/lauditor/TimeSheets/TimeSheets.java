@@ -352,7 +352,6 @@ public class TimeSheets extends Fragment {
         }
         calendar.add(Calendar.DATE, -1);
         String endDate = format.format(calendar.getTime());
-
         WeekDateInfo weekDateInfo = new WeekDateInfo(startDate + " - " + endDate, weekDates);
         return weekDateInfo;
     }

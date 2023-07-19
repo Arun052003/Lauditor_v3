@@ -19,7 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.digicoffer.lauditor.Calendar.Meetings;
 import com.digicoffer.lauditor.Calendar.Models.Event_Details_DO;
-import com.digicoffer.lauditor.Calendar.ViewCalendar;
+import com.digicoffer.lauditor.Calendar.MonthlyCalendar;
 import com.digicoffer.lauditor.ClientRelationships.ClientRelationship;
 import com.digicoffer.lauditor.Dashboard.Dashboard;
 import com.digicoffer.lauditor.Documents.Documents;
@@ -30,7 +30,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements ViewCalendar.EventDetailsListener {
+public class MainActivity extends AppCompatActivity implements MonthlyCalendar.EventDetailsListener {
     ExtendedFloatingActionButton mAddFab;
     ImageView iv_logo_dashboard;
     ImageButton iv_open_menu,iv_close_menu;

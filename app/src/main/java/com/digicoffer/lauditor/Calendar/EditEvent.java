@@ -161,6 +161,8 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
         at_add_groups = view.findViewById(R.id.at_add_groups);
         btn_create_event = view.findViewById(R.id.btn_create_event);
         btn_create_event.setOnClickListener(this);
+        btn_cancel_timesheet = view.findViewById(R.id.btn_cancel_timesheet);
+
         tv_message = view.findViewById(R.id.tv_message);
         at_attach_document = view.findViewById(R.id.at_attach_document);
         cb_all_day = view.findViewById(R.id.cb_all_day);
@@ -210,14 +212,17 @@ public class EditEvent extends Fragment implements AsyncTaskCompleteListener, Vi
         ll_message = view.findViewById(R.id.ll_message);
         ll_task = view.findViewById(R.id.ll_task);
         projectList.clear();
-
+        btn_cancel_timesheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                meetings.loadViewEvent();
+            }
+        });
         if (Constants.ROLE.equals("AAM")) {
 
             projectList.add(new CalendarDo("Overhead"));
             projectList.add(new CalendarDo("Others"));
             projectList.add(new CalendarDo("Reminders"));
-
-
         } else {
             projectList.add(new CalendarDo("Legal Matter"));
             projectList.add(new CalendarDo("General Matter"));

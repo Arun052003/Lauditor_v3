@@ -49,7 +49,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener, View.OnClickListener,Events_Adapter.EventListener {
+public class MonthlyCalendar extends Fragment implements AsyncTaskCompleteListener, View.OnClickListener,Events_Adapter.EventListener {
 
     com.applandeo.materialcalendarview.CalendarView calendarView;
     Context thiscontext;
@@ -67,6 +67,7 @@ public class ViewCalendar extends Fragment implements AsyncTaskCompleteListener,
     Button btn_event_save;
     String Current_month = "";
     RecyclerView rv_displayEvents;
+
     ArrayList<Events_Do> events_list = new ArrayList<Events_Do>();
     List<EventDay> events = new ArrayList<>();
     Meetings meetings;

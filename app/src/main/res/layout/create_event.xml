@@ -1425,90 +1425,96 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintVertical_bias="0.0">
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:orientation="vertical">
-            <LinearLayout
+
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textColor="@color/Blue_text_color"
-                    android:text="Notify Me"
-                    android:textSize="@dimen/Fifteen_dp">
+                android:layout_margin="10dp"
+                android:orientation="vertical">
 
-                </TextView>
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/add_notification"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Add Notificaiton"
-                    android:layout_weight="1"
-                    android:textColor="@color/white"
-                    android:backgroundTint="@color/Blue_text_color"
-                    android:background="@drawable/save_button_background"
-                    android:textSize="@dimen/Fifteen_dp"
-                    android:textAllCaps="false"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Notify Me"
+                        android:textColor="@color/Blue_text_color"
+                        android:textSize="@dimen/Fifteen_dp">
+
+                    </TextView>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/add_notification"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/save_button_background"
+                        android:backgroundTint="@color/Blue_text_color"
+                        android:text="Add Notificaiton"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/Fifteen_dp">
+
+                    </androidx.appcompat.widget.AppCompatButton>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_add_notification"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+
                     >
 
-                </androidx.appcompat.widget.AppCompatButton>
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/ll_add_notification"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+                </LinearLayout>
 
-                >
-
-            </LinearLayout>
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/ll_activity_buttons"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:visibility="visible"
-                android:orientation="horizontal"
-
-                >
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btn_cancel_timesheet"
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/ll_activity_buttons"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="20dp"
-                    android:elevation="20dp"
-                    android:layout_marginRight="20dp"
-                    android:background="@drawable/cancel_button_background"
-                    android:textAllCaps="false"
-                    android:text="@string/cancel">
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:orientation="horizontal"
+                    android:visibility="visible"
 
-                </androidx.appcompat.widget.AppCompatButton>
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btn_create_event"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:elevation="@dimen/Fifteen_dp"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:background="@drawable/save_button_background"
-                    android:textColor="@color/white"
-                    android:textAllCaps="false"
-                    android:backgroundTint="@color/Blue_text_color"
-                    android:text="Save">
+                    >
 
-                </androidx.appcompat.widget.AppCompatButton>
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_cancel_timesheet"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/cancel_button_background"
+                        android:elevation="20dp"
+                        android:text="@string/cancel"
+                        android:textAllCaps="false">
+
+                    </androidx.appcompat.widget.AppCompatButton>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_create_event"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/save_button_background"
+                        android:backgroundTint="@color/Blue_text_color"
+                        android:elevation="@dimen/Fifteen_dp"
+                        android:gravity="center"
+                        android:text="Save"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white">
+
+                    </androidx.appcompat.widget.AppCompatButton>
+                </androidx.appcompat.widget.LinearLayoutCompat>
             </androidx.appcompat.widget.LinearLayoutCompat>
-        </androidx.appcompat.widget.LinearLayoutCompat>
 
 
         </androidx.cardview.widget.CardView>

@@ -234,7 +234,8 @@ public class TimeSheets extends Fragment {
             ft.addToBackStack(null);
             ft.commit();
 //            loadSubmittedFragment(s,weekDateInfo);
-        }else{
+        }
+        else{
             loadProjectFragment(s,weekDateInfo);
         }
     }
@@ -245,7 +246,6 @@ public class TimeSheets extends Fragment {
         }else{
             loadMyTimeSheets(s,weekDateInfo);
         }
-
 
     }
 

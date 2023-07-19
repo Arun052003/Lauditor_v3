@@ -51,12 +51,17 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
         }
 
         // Set a background drawable to indicate that the day has events
-        if (day.hasEvents()) {
-            holder.textDay.setBackgroundResource(R.drawable.dot_background);
-        } else {
-            // Reset the background drawable for other days
-            holder.textDay.setBackgroundResource(0);
-        }
+//        if (day.getEvents().size() > 0) {
+//            holder.dot.setVisibility(View.VISIBLE); // Show the dot
+//        } else {
+//            holder.dot.setVisibility(View.INVISIBLE); // Hide the dot
+//        }
+//        if (day.getEvents().size() > 0) {
+//            holder.textDay.setBackgroundResource(R.drawable.dot_background);
+//        } else {
+//            // Reset the background drawable for other days
+//            holder.textDay.setBackgroundResource(0);
+//        }
 
         // Change the background color to blue if it is today's date
         if (day.isToday()) {
@@ -90,10 +95,12 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
 
     public static class DayViewHolder extends RecyclerView.ViewHolder {
         public TextView textDay;
+        public View dot;
 
         public DayViewHolder(View itemView) {
             super(itemView);
             textDay = itemView.findViewById(R.id.textDay);
+            dot = itemView.findViewById(R.id.dot);
         }
     }
 

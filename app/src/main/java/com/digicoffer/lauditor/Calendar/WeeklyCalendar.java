@@ -409,6 +409,12 @@ public class WeeklyCalendar extends Fragment implements View.OnClickListener, As
 //                events.add(new EventDay(calendar,DrawableUtils.getDayCircle(getContext(), R.color.blue,R.color.green )));
 //                Log.d("From Start Date", converted_from_ts);
 //                Log.d("Current Date",Currenr_date);
+                for (Day day : days) {
+                    if (day.getDate().equals(Currenr_date)) {
+                        day.setEvents(events);
+                        break;
+                    }
+                }
                 if (converted_from_ts.toString().contains(Currenr_date)||converted_to_ts.toString().contains(Currenr_date)) {
 //                    events_do.setRecurring(jsonObject.getBoolean("isrecurring"));
 //                    if (events_do.isRecurring()) {

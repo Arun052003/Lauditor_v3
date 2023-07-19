@@ -1,6 +1,8 @@
 package com.digicoffer.lauditor.Calendar.Models;
 
 
+import com.applandeo.materialcalendarview.EventDay;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,7 +12,7 @@ import java.util.Locale;
 
 public class Day {
     private String date;
-    private List<Event> events;
+    private List<EventDay> events;
     private boolean hasEvents;
     private boolean isToday;
     private Calendar calendar;
@@ -35,16 +37,17 @@ public class Day {
         return date;
     }
 
-    public void addEvent(Event event) {
-        events.add(event);
-    }
-
-    public List<Event> getEvents() {
-        return events;
-    }
 
     public boolean hasEvents() {
         return hasEvents;
+    }
+
+    public List<EventDay> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<EventDay> events) {
+        this.events = events;
     }
 
     public void setHasEvents(boolean hasEvents) {
@@ -63,9 +66,9 @@ public class Day {
             return "No events";
         } else {
             StringBuilder builder = new StringBuilder();
-            for (Event event : events) {
-                builder.append(event.getName()).append(": ").append(event.getTime()).append("\n");
-            }
+//            for (EventDay event : events) {
+//                builder.append(event.getName()).append(": ").append(event.getTime()).append("\n");
+//            }
             return builder.toString();
         }
     }

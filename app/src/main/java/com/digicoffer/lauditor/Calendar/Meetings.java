@@ -28,11 +28,6 @@ public class Meetings extends Fragment implements AsyncTaskCompleteListener,View
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
      View view = inflater.inflate(R.layout.calendar,container,false);
-     return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ll_view_type= view.findViewById(R.id.ll_view_type);
         tv_create_event = view.findViewById(R.id.tv_create_event);
         tv_view_calendar = view.findViewById(R.id.tv_view_calendar);
@@ -42,7 +37,27 @@ public class Meetings extends Fragment implements AsyncTaskCompleteListener,View
         tv_view_calendar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadView();
+                if (ll_view_type.getVisibility() == View.VISIBLE) {
+                    // If it is already visible, you can handle the click to hide the view here
+                    ll_view_type.setVisibility(View.GONE);
+                } else {
+                    ll_view_type.setVisibility(View.VISIBLE);
+                    loadMonthView();
+                }
+            }
+        });
+        tv_day_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ll_view_type.setVisibility(View.VISIBLE);
+                loadWeekView();
+            }
+        });
+        tv_month_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ll_view_type.setVisibility(View.VISIBLE);
+                loadMonthView();
             }
         });
         tv_create_event.setOnClickListener(new View.OnClickListener() {
@@ -53,9 +68,36 @@ public class Meetings extends Fragment implements AsyncTaskCompleteListener,View
         });
         tv_view_calendar.setOnClickListener(this);
         tv_create_event.setOnClickListener(this);
-        super.onViewCreated(view, savedInstanceState);
+     return view;
     }
-//    public ArrayList<Event_Details_DO> getExcisitingArryaList() {
+
+
+
+    private void loadMonthView() {
+
+        tv_month_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+        tv_day_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        MonthlyCalendar nonSubmittedTimesheets = new MonthlyCalendar();
+        ft.replace(R.id.child_container_timesheets, nonSubmittedTimesheets);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    private void loadWeekView() {
+
+        tv_month_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
+        tv_day_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        WeeklyCalendar nonSubmittedTimesheets = new WeeklyCalendar();
+        ft.replace(R.id.child_container_timesheets, nonSubmittedTimesheets);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    //    public ArrayList<Event_Details_DO> getExcisitingArryaList() {
 //        return  existingList;
 //    }
 //    public void loadEditEvent(ArrayList<Event_Details_DO> event_details_list) {
@@ -71,12 +113,7 @@ public class Meetings extends Fragment implements AsyncTaskCompleteListener,View
     private void loadView() {
         tv_view_calendar.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         tv_create_event.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
-        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-        WeeklyCalendar nonSubmittedTimesheets = new WeeklyCalendar();
-        ft.replace(R.id.child_container_timesheets, nonSubmittedTimesheets);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        ft.addToBackStack(null);
-        ft.commit();
+
 
     }
     private void loadCreateEvent(){
@@ -87,6 +124,8 @@ public class Meetings extends Fragment implements AsyncTaskCompleteListener,View
         ft.replace(R.id.child_container_timesheets, nonSubmittedTimesheets);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(null);
+
+        ll_view_type.setVisibility(View.GONE);
         ft.commit();
     }
 
@@ -94,9 +133,13 @@ public class Meetings extends Fragment implements AsyncTaskCompleteListener,View
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.tv_view_calendar:
-                loadView();
+                tv_month_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
+                tv_day_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
+                ll_view_type.setVisibility(View.VISIBLE);
+                loadMonthView();
                 break;
             case R.id.tv_create_event:
+                ll_view_type.setVisibility(View.GONE);
                 loadCreateEvent();
                 break;
         }

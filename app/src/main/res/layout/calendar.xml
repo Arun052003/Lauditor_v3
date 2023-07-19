@@ -59,13 +59,14 @@
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:gravity="center"
-        android:visibility="gone"
+        android:visibility="visible"
         android:orientation="horizontal"
         android:padding="5dp"
         android:paddingTop="@dimen/twenty_dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ll_timesheet_type"
         app:layout_constraintVertical_bias="0.03">
 
@@ -78,7 +79,7 @@
             android:padding="10dp"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="Days"
+            android:text="Week"
             android:textColor="@color/black"
             android:textSize="@dimen/Fifteen_dp">
 

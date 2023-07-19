@@ -1,6 +1,7 @@
 package com.digicoffer.lauditor.Calendar;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,6 +53,7 @@ public class WeeklyCalendar extends Fragment implements View.OnClickListener, As
     Calendar calendar = Calendar.getInstance();
     WeekDateInfo weekDateInfo;
     String filter = "";
+    Calendar cal;
     String recurring_edit_choice;
     private WeeklyCalendarAdapter adapter;
     private List<Day> days = new ArrayList<>();
@@ -129,20 +131,34 @@ public class WeeklyCalendar extends Fragment implements View.OnClickListener, As
 //                callEventListwebservice(filter);
 //            }
 //        });
+        callEventListwebservice(filter);
         return v;
     }
 
     private void CurrentWeek() {
-        Calendar cal = Calendar.getInstance();
+        cal = Calendar.getInstance();
+        int firstDayOfWeek = cal.getFirstDayOfWeek();
+
+        // Find the start date (first day) of the current week
+        while (cal.get(Calendar.DAY_OF_WEEK) != firstDayOfWeek) {
+            cal.add(Calendar.DATE, -1);
+        }
+
+        // Update the 'days' list with dates of the current week
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         String fromDate = dateFormat.format(cal.getTime());
-        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+        days.clear();
         for (int i = 0; i < 7; i++) {
-            String date = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(cal.getTime());
+            String date = dateFormat.format(cal.getTime());
             days.add(new Day(date));
             cal.add(Calendar.DATE, 1);
         }
+
+        // Find the end date (last day) of the current week
+        cal.add(Calendar.DATE, -1);
         String toDate = dateFormat.format(cal.getTime());
+
+        // Update the 'tv_from_date_timesheet' and 'tv_to_date_timesheet' TextViews
         tv_from_date_timesheet.setText(fromDate);
         tv_to_date_timesheet.setText(toDate);
     }
@@ -152,68 +168,108 @@ public class WeeklyCalendar extends Fragment implements View.OnClickListener, As
 
     }
     private void showPreviousWeek() {
-        // Calculate the first date of the previous week
-
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        Calendar cal = Calendar.getInstance();
-        String fromDate = dateFormat.format(cal.getTime());
+        cal = Calendar.getInstance();
+        String fromDate;
+        String toDate;
         try {
             Date currentDate = dateFormat.parse(days.get(0).getDate());
             cal.setTime(currentDate);
             cal.add(Calendar.WEEK_OF_YEAR, -1);
+
+            // Update the 'days' list with dates of the previous week
+            days.clear();
+            for (int i = 0; i < 7; i++) {
+                String date = dateFormat.format(cal.getTime());
+                days.add(new Day(date));
+                cal.add(Calendar.DATE, 1);
+            }
+
+            // Calculate the new 'fromDate' and 'toDate' for the TextViews
+            fromDate = days.get(0).getDate();
+            toDate = days.get(days.size() - 1).getDate();
+
+            // Notify the adapter of the data changes
+            adapter.notifyDataSetChanged();
+            events_list.clear();
+
+            // Fetch events for the current week from the REST API
+            String myFormat = "MMM dd, yyyy";
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+            filter = sdf.format(cal.getTime());
+            callEventListwebservice(filter);
+
         } catch (ParseException e) {
             e.printStackTrace();
+            return;
         }
 
-        // Update the 'days' list with dates of the previous week
-        days.clear();
-        for (int i = 0; i < 7; i++) {
-            String date = dateFormat.format(cal.getTime());
-            days.add(new Day(date));
-            cal.add(Calendar.DATE, 1);
-        }
-        String toDate = dateFormat.format(cal.getTime());
+        // Update the 'tv_from_date_timesheet' and 'tv_to_date_timesheet' TextViews
         tv_from_date_timesheet.setText(fromDate);
         tv_to_date_timesheet.setText(toDate);
-        // Notify the adapter of the data changes
-        adapter.notifyDataSetChanged();
-
-        // Fetch events for the current week from the REST API
-//        fetchEventsForCurrentWeek();
     }
+
+
 
     private void showNextWeek() {
         // Calculate the first date of the next week
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-
-        Calendar cal = Calendar.getInstance();
-        String fromDate = dateFormat.format(cal.getTime());
+        cal = Calendar.getInstance();
+        String fromDate;
+        String toDate;
         try {
             Date currentDate = dateFormat.parse(days.get(0).getDate());
             cal.setTime(currentDate);
             cal.add(Calendar.WEEK_OF_YEAR, 1);
+
+            // Update the 'days' list with dates of the next week
+            days.clear();
+            for (int i = 0; i < 7; i++) {
+                String date = dateFormat.format(cal.getTime());
+                days.add(new Day(date));
+                cal.add(Calendar.DATE, 1);
+            }
+
+            // Calculate the new 'fromDate' and 'toDate' for the TextViews
+            fromDate = days.get(0).getDate();
+            toDate = days.get(days.size() - 1).getDate();
+
+            // Notify the adapter of the data changes
+            adapter.notifyDataSetChanged();
+            events_list.clear();
+
+            // Fetch events for the current week from the REST API
+            String myFormat = "MMM dd, yyyy";
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+            filter = sdf.format(cal.getTime());
+            callEventListwebservice(filter);
+
         } catch (ParseException e) {
             e.printStackTrace();
+            return;
         }
 
-        // Update the 'days' list with dates of the next week
-        days.clear();
-        for (int i = 0; i < 7; i++) {
-            String date = dateFormat.format(cal.getTime());
-            days.add(new Day(date));
-            cal.add(Calendar.DATE, 1);
-        }
-        String toDate = dateFormat.format(cal.getTime());
+        // Update the 'tv_from_date_timesheet' and 'tv_to_date_timesheet' TextViews
         tv_from_date_timesheet.setText(fromDate);
         tv_to_date_timesheet.setText(toDate);
-        // Notify the adapter of the data changes
-        adapter.notifyDataSetChanged();
-
-        // Fetch events for the current week from the REST API
-//        fetchEventsForCurrentWeek();
     }
     public interface EventDetailsListener {
         void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list);
+    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+//        if (context instanceof EventDetailsListener) {
+        try {
+            Log.d("Interface","Interface Called");
+            eventDetailsListener = (WeeklyCalendar.EventDetailsListener) getParentFragment();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        } else {
+//            throw new RuntimeException(context.toString()
+//                    + " must implement EventDetailsListener");
+//        }
     }
     private void callEventListwebservice(String filter) {
         progress_dialog = AndroidUtils.get_progress(getActivity());
@@ -480,6 +536,30 @@ public class WeeklyCalendar extends Fragment implements View.OnClickListener, As
 
     @Override
     public void onDaySelected(Day day) {
+        String selectedDate = day.getDate();
 
+        // Update the calendar's date with the selected date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        try {
+            cal = Calendar.getInstance();
+            Date selectedDateObj = dateFormat.parse(selectedDate);
+            cal.setTime(selectedDateObj);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        events_list.clear();
+//        cal = day.get
+//        cal = Calendar.getInstance();
+//        mCalendar.set(mCalendar.MONTH, mCalendar.get(mCalendar.MONTH) - 1);
+        String myFormat = "MMM dd, yyyy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+        filter = sdf.format(cal.getTime());
+        try {
+            callEventListwebservice(filter);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
     }
 }

@@ -25,7 +25,7 @@ public class Constants {
     public static String UID ="";
     public static String ROLE = "";
     public static String COUNT = "";
-    public static String VERSION = ISPRODUCTION? "1.0.2" : "1.0.8";
+    public static String VERSION = ISPRODUCTION? "1.0.2" : "1.0.24";
     //    public static String XMPP_DOMAIN = "dev.chat.digisecitus.com";
     public static String XMPP_DOMAIN = ISPRODUCTION ? "chat.digicoffer.com" : "devchat.digicoffer.com";
     public static String DOWNLOAD_VIEWFILE_TAG = "DOWNLOAD_VIEWFILE";

@@ -14,9 +14,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.digicoffer.lauditor.NewModel;
 import com.digicoffer.lauditor.Notifications.Models.NotificationsDo;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
@@ -32,6 +34,7 @@ import java.util.ArrayList;
 
 public class Notifications extends Fragment implements AsyncTaskCompleteListener, View.OnClickListener, NotificationsAdapter.EventListener {
     RecyclerView rv_notifications;
+    private NewModel mViewModel;
     ArrayList<NotificationsDo> notificationList = new ArrayList<NotificationsDo>();
     AlertDialog progress_dialog;
     private CheckBox chk_select_all;
@@ -44,6 +47,8 @@ public class Notifications extends Fragment implements AsyncTaskCompleteListener
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.notifications, container, false);
+        mViewModel = new ViewModelProvider(requireActivity()).get(NewModel.class);
+        mViewModel.setData("Notifications");
         chk_select_all = (CheckBox) v.findViewById(R.id.chk_select_all);
         delete_all = (ImageView) v.findViewById(R.id.btn_delete_all);
         ib_read = (ImageView) v.findViewById(R.id.ib_read);

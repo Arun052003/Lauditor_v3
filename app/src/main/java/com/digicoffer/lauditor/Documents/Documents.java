@@ -35,6 +35,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,6 +48,7 @@ import com.digicoffer.lauditor.Documents.models.ClientsModel;
 import com.digicoffer.lauditor.Documents.models.DocumentsModel;
 import com.digicoffer.lauditor.Documents.models.MattersModel;
 import com.digicoffer.lauditor.Documents.models.ViewDocumentsModel;
+import com.digicoffer.lauditor.NewModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
@@ -84,6 +86,7 @@ import java.util.Locale;
 
 public class Documents extends Fragment implements BottomSheetUploadFile.OnPhotoSelectedListner, AsyncTaskCompleteListener, DocumentsListAdapter.EventListener,View_documents_adapter.Eventlistner {
     Button btn_browse;
+    private NewModel mViewModel;
     BottomSheetUploadFile bottommSheetUploadDocument;
     private Bitmap mSelectedBitmap;
     LinearLayout ll_added_tags, ll_matter, ll_category, ll_groups, ll_client_name,ll_view_docs,ll_upload_docs;
@@ -134,6 +137,8 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
             View v = inflater.inflate(R.layout.upload_document, container, false);
         try {
+            mViewModel = new ViewModelProvider(requireActivity()).get(NewModel.class);
+            mViewModel.setData("Documents");
             btn_browse = v.findViewById(R.id.btn_browse);
             tv_selected_file = v.findViewById(R.id.tv_selected_file);
             tl_selected_file = v.findViewById(R.id.tl_selected_file);
@@ -311,6 +316,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
 
         callViewDocumentWebservice();
         clearListData();
+        mViewModel.setData("View Documents");
     }
 
     private void callViewDocumentWebservice() {
@@ -343,6 +349,7 @@ public class Documents extends Fragment implements BottomSheetUploadFile.OnPhoto
         ll_upload_docs.setVisibility(View.VISIBLE);
         ll_view_docs.setVisibility(View.GONE);
         callClientWebservice();
+        mViewModel.setData("Upload Documents");
     }
 
     private void callGroupsWebservice() {

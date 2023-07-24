@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,6 +37,7 @@ import com.digicoffer.lauditor.ClientRelationships.Model.RelationshipsModel;
 import com.digicoffer.lauditor.ClientRelationships.Model.SearchModel;
 import com.digicoffer.lauditor.Groups.GroupModels.ViewGroupModel;
 import com.digicoffer.lauditor.Members.GroupsAdapter;
+import com.digicoffer.lauditor.NewModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
@@ -48,7 +50,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.pgpainless.key.selection.key.util.And;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,6 +62,7 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     ArrayList<ViewGroupModel> updatedMembersList = new ArrayList<>();
     ArrayList<RelationshipsModel> relationshipsList = new ArrayList<>();
     String TAG = "";
+    private NewModel mViewModel;
     String value = "";
     String Relationship_Type = "";
     EntitySearchModel entitySearchModel;
@@ -163,6 +165,9 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mViewModel = new ViewModelProvider(requireActivity()).get(NewModel.class);
+        String data = "Relationships";
+        setViewModelData(data);
         rg_add_relationships = view.findViewById(R.id.rgTask);
         rg_relationship = view.findViewById(R.id.relationship);
         sv_relationships = (ScrollView) view.findViewById(R.id.sv_relationships);
@@ -327,7 +332,9 @@ public class ClientRelationship extends Fragment implements AsyncTaskCompleteLis
         JSONObject postdata = new JSONObject();
         WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.GET,"v2/relationship/"+Relationship_Type,"View Relationships",postdata.toString());
     }
-
+    private void setViewModelData(String data) {
+        mViewModel.setData(data);
+    }
     private void callEntityWebService() {
         JSONObject postdata = new JSONObject();
         WebServiceHelper.callHttpWebService(this,getContext(), WebServiceHelper.RestMethodType.GET,"v2/relationship/search/entity","Entities List",postdata.toString());

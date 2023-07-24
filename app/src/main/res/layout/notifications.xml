@@ -19,9 +19,11 @@
 
 
         <TextView
+            android:id="@+id/tv_notification_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_weight="1"
@@ -33,6 +35,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="5dp"
             android:background="@color/Blue_text_color"
             android:orientation="horizontal">
             <com.google.android.material.textfield.TextInputEditText
@@ -56,6 +59,7 @@
         android:layout_height="wrap_content"
         android:gravity="right"
         android:layout_gravity="right"
+        android:padding="5dp"
         android:background="@color/Blue_text_color"
         android:orientation="horizontal">
         <ImageView
@@ -88,9 +92,14 @@ android:layout_weight="1"
             android:layout_width="40dp"
             android:layout_height="40dp"
            android:layout_weight="1"
-            android:shadowColor="@color/white"
+            android:outlineSpotShadowColor="@color/Blue_text_color"
+            android:buttonTint="@color/white"
+            android:buttonTintMode="src_atop"
+            android:bufferType="spannable"
 
-            android:background="@color/white"
+            android:shadowColor="@color/white"
+android:outlineAmbientShadowColor="@color/Blue_text_color"
+            android:background="@color/Blue_text_color"
             android:layout_marginRight="10dp"
             android:visibility="visible"
             android:textSize="22dp"
@@ -108,19 +117,19 @@ android:layout_weight="1"
         android:orientation="horizontal">
 
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_list1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_sub_header"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintVertical_bias="0.2"
+            android:scrollbars="vertical" />
 
 
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_list1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ll_sub_header"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintVertical_bias="0.1"
-        android:scrollbars="vertical" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

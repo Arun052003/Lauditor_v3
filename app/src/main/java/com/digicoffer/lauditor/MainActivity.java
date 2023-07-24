@@ -31,7 +31,9 @@ import com.digicoffer.lauditor.Calendar.WeeklyCalendar;
 import com.digicoffer.lauditor.ClientRelationships.ClientRelationship;
 import com.digicoffer.lauditor.Dashboard.Dashboard;
 import com.digicoffer.lauditor.Documents.Documents;
+import com.digicoffer.lauditor.Groups.Groups;
 import com.digicoffer.lauditor.Matter.Matter;
+import com.digicoffer.lauditor.Members.Members;
 import com.digicoffer.lauditor.Notifications.Notifications;
 import com.digicoffer.lauditor.TimeSheets.TimeSheets;
 import com.digicoffer.lauditor.common.Constants;
@@ -278,6 +280,27 @@ public class MainActivity extends AppCompatActivity implements MonthlyCalendar.E
                 }else if(itemId == R.id.notifications){
                     ll_bottom_menu.setVisibility(View.VISIBLE);
                     frag = new Notifications();
+                }else if(itemId == R.id.matter){
+                    ll_bottom_menu.setVisibility(View.VISIBLE);
+                    frag = new Matter();
+                }else if(itemId == R.id.documents){
+                    ll_bottom_menu.setVisibility(View.VISIBLE);
+                    frag = new Documents();
+                }else if(itemId == R.id.calendar){
+                    ll_bottom_menu.setVisibility(View.VISIBLE);
+                    frag = new Meetings();
+                }else if(itemId == R.id.relationships){
+                    ll_bottom_menu.setVisibility(View.VISIBLE);
+                    frag = new ClientRelationship();
+                }else if(itemId == R.id.groups){
+                    ll_bottom_menu.setVisibility(View.VISIBLE);
+                    frag = new Groups();
+                }else if(itemId == R.id.timesheets){
+                    ll_bottom_menu.setVisibility(View.VISIBLE);
+                    frag = new TimeSheets();
+                }else if(itemId == R.id.members){
+                    ll_bottom_menu.setVisibility(View.VISIBLE);
+                    frag = new Members();
                 }
 //                else if (itemId == R.id.CredentialDocuments) {
 //                    frag = new Credential_Docs();

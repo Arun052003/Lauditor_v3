@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -36,7 +37,7 @@ public class Notifications extends Fragment implements AsyncTaskCompleteListener
     private CheckBox chk_select_all;
     private ImageView delete_all, ib_read;
     TextInputEditText et_Search;
-
+    TextView tv_notification_count;
     public Notifications() {
 
     }
@@ -48,6 +49,7 @@ public class Notifications extends Fragment implements AsyncTaskCompleteListener
         ib_read = (ImageView) v.findViewById(R.id.ib_read);
         rv_notifications = v.findViewById(R.id.rv_list1);
         rv_notifications.setHasFixedSize(true);
+        tv_notification_count = v.findViewById(R.id.tv_notification_count);
         callWebservice();
         et_Search = v.findViewById(R.id.et_Search);
         loadRecycleView();
@@ -77,7 +79,7 @@ public class Notifications extends Fragment implements AsyncTaskCompleteListener
         chk_select_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                adapter.selectOrDeselectAll(isChecked);
+                adapter.selectAllItems(isChecked); // Notify the adapter to select/deselect all items
             }
         });
 
@@ -124,6 +126,7 @@ public class Notifications extends Fragment implements AsyncTaskCompleteListener
                 Notifications.setStatus(obj.getString("status"));
                 notificationList.add(Notifications);
             }
+            tv_notification_count.setText("Notifications:"+"("+"Total "+notificationList.size()+")");
             final NotificationsAdapter adapter = new NotificationsAdapter(notificationList, this);
 
             delete_all.setOnClickListener(new View.OnClickListener() {

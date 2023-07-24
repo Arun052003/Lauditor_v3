@@ -8,6 +8,42 @@
 
             android:title="Dashboard" />
         <item
+            android:id="@+id/matter"
+            android:title="Matter">
+
+        </item>
+        <item
+            android:id="@+id/documents"
+            android:title="Documents">
+
+        </item>
+        <item
+            android:id="@+id/calendar"
+            android:title="Meetings">
+
+
+        </item>
+        <item
+            android:id="@+id/relationships"
+
+            android:title="Relationships">
+        </item>
+        <item
+            android:id="@+id/groups"
+            android:title="Groups">
+
+        </item>
+        <item
+            android:id="@+id/timesheets"
+            android:title="Timesheets">
+
+        </item>
+        <item
+            android:id="@+id/members"
+            android:title="Members">
+
+        </item>
+        <item
             android:id="@+id/notifications"
             android:title="Notifications">
 

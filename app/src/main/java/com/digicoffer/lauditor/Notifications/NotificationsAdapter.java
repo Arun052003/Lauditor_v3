@@ -117,16 +117,20 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
             }
         };
     }
-
+    public void selectAllItems(boolean isSelected) {
+        for (NotificationsDo notification : list_item) {
+            notification.setChecked(isSelected);
+        }
+        // Notify the adapter of the data change
+        notifyDataSetChanged();
+    }
     public ArrayList<NotificationsDo> getList_item() {
         return list_item;
     }
 
     public void selectOrDeselectAll(boolean isChecked) {
-        for (int i = 0; i < list_item.size(); i++) {
-            list_item.get(i).setChecked(isChecked);
-            filtered_list.get(i).setChecked(isChecked);
-
+        for (NotificationsDo notification : filtered_list) {
+            notification.setChecked(isChecked);
         }
         notifyDataSetChanged();
     }

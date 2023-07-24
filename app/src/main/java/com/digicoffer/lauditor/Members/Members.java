@@ -41,7 +41,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.pgpainless.key.selection.key.util.And;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -150,7 +149,7 @@ public class Members extends Fragment implements AsyncTaskCompleteListener, Memb
         tv_view_members.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
         ll_confirm_email.setVisibility(View.VISIBLE);
         ll_new_buttons.setVisibility(View.GONE);
-        String data = "Create Members";
+        String data = "Members";
         setViewModelData(data);
         tv_create_members.setOnClickListener(new View.OnClickListener() {
             @Override

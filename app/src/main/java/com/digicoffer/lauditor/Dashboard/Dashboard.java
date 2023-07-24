@@ -66,7 +66,7 @@ public class Dashboard extends Fragment {
         super.onViewCreated(v, savedInstanceState);
         try {
             mViewModel = new ViewModelProvider(requireActivity()).get(NewModel.class);
-            mViewModel.setData("Lauditor");
+            mViewModel.setData("Dashboard");
             calendar = Calendar.getInstance();
             dateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
             date = dateFormat.format(calendar.getTime());
@@ -216,6 +216,10 @@ public class Dashboard extends Fragment {
         itemArrayList.add(new Item(4,practiceModel_ts));
         KPI_DATA = "Admin";
         loadRecyclerview(KPI_DATA);
+    }
+
+    private void setViewModelData(String data) {
+        mViewModel.setData(data);
     }
     private void loadRecyclerview(String data) {
         //Meetings

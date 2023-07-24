@@ -12,8 +12,10 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.digicoffer.lauditor.Calendar.Models.Event_Details_DO;
+import com.digicoffer.lauditor.NewModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
@@ -22,17 +24,21 @@ import java.util.ArrayList;
 
 public class Meetings extends Fragment implements AsyncTaskCompleteListener,View.OnClickListener, MonthlyCalendar.EventDetailsListener,WeeklyCalendar.EventDetailsListener {
     LinearLayoutCompat ll_view_type;
+    private NewModel mViewModel;
     TextView tv_create_event,tv_view_calendar,tv_day_view,tv_month_view;
     ArrayList<Event_Details_DO> existingList = new ArrayList<>();
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
      View view = inflater.inflate(R.layout.calendar,container,false);
+        mViewModel = new ViewModelProvider(requireActivity()).get(NewModel.class);
         ll_view_type= view.findViewById(R.id.ll_view_type);
         tv_create_event = view.findViewById(R.id.tv_create_event);
         tv_view_calendar = view.findViewById(R.id.tv_view_calendar);
         tv_day_view = view.findViewById(R.id.tv_day_view);
         tv_month_view = view.findViewById(R.id.tv_month_view);
+        String data = "Meetings";
+        setViewModelData(data);
         loadCreateEvent();
         tv_view_calendar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,7 +78,9 @@ public class Meetings extends Fragment implements AsyncTaskCompleteListener,View
     }
 
 
-
+    private void setViewModelData(String data) {
+        mViewModel.setData(data);
+    }
     private void loadMonthView() {
 
         tv_month_view.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
@@ -83,6 +91,8 @@ public class Meetings extends Fragment implements AsyncTaskCompleteListener,View
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(null);
         ft.commit();
+        String data = "Month View";
+        setViewModelData(data);
     }
 
     private void loadWeekView() {
@@ -95,6 +105,8 @@ public class Meetings extends Fragment implements AsyncTaskCompleteListener,View
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(null);
         ft.commit();
+        String data = "Week View";
+        setViewModelData(data);
     }
 
     //    public ArrayList<Event_Details_DO> getExcisitingArryaList() {
@@ -127,6 +139,8 @@ public class Meetings extends Fragment implements AsyncTaskCompleteListener,View
 
         ll_view_type.setVisibility(View.GONE);
         ft.commit();
+        String data = "Create Event";
+        setViewModelData(data);
     }
 
     @Override

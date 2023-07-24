@@ -12,7 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.digicoffer.lauditor.NewModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.TimeSheets.Models.DateModel;
 import com.digicoffer.lauditor.TimeSheets.Models.WeekDateInfo;
@@ -27,6 +29,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class TimeSheets extends Fragment {
+    private NewModel mViewModel;
     TextView tv_aggregated_ts, tv_my_ts, tv_ns_timesheet, tv_submitted, tv_week, tv_month;
     LinearLayoutCompat ll_timesheet_type, ll_submitted_type;
     private static final int DIRECTION_PREVIOUS = -1;
@@ -43,6 +46,8 @@ public class TimeSheets extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.timesheet, container, false);
+        mViewModel = new ViewModelProvider(requireActivity()).get(NewModel.class);
+        mViewModel.setData("Time Sheets");
         ll_submitted_type = view.findViewById(R.id.ll_submitted_type);
         ll_timesheet_type = view.findViewById(R.id.ll_timesheet_type);
         tv_aggregated_ts = view.findViewById(R.id.tv_aggregated_ts);
@@ -166,6 +171,7 @@ public class TimeSheets extends Fragment {
         tv_my_ts.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
         tv_ns_timesheet.setText("Team Members");
         tv_submitted.setText("Projects");
+        mViewModel.setData("Time Sheets");
         if(tv_ns_timesheet.getText().toString().equals("Not Submitted")) {
             loadNsFragment(s,weekDateInfo);
         }else{

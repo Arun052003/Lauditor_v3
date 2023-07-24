@@ -61,6 +61,7 @@ import java.util.Locale;
 public class Groups extends Fragment implements AsyncTaskCompleteListener, ViewGroupsAdpater.InterfaceListener {
     RecyclerView rv_select_team_members, rv_view_groups,rv_activity_log;
     TextInputEditText et_search;
+
     AppCompatButton tv_from_date,tv_to_date;
     TextInputLayout tv_selected_members;
     private NewModel mViewModel;

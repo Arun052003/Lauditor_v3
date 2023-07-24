@@ -13,8 +13,10 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.digicoffer.lauditor.Matter.Models.MatterModel;
+import com.digicoffer.lauditor.NewModel;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.Constants;
 
@@ -26,6 +28,7 @@ public class Matter extends Fragment {
     private HorizontalScrollView scrollView;
     private TextView tv_legal_matter, tv_general_matter;
     private TextView tv_create, tv_view;
+    private NewModel mViewModel;
     public ArrayList<MatterModel> matter_arraylist;
     public LinearLayoutCompat create_matter_view;
 
@@ -33,6 +36,8 @@ public class Matter extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_matter, container, false);
+        mViewModel = new ViewModelProvider(requireActivity()).get(NewModel.class);
+        mViewModel.setData("Matter");
         Constants.MATTER_TYPE = "Legal";
         siv_matter_icon = view.findViewById(R.id.siv_matter_icon);
         create_matter_view = view.findViewById(R.id.create_matter_view);
@@ -134,6 +139,7 @@ public class Matter extends Fragment {
         tv_legal_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_green_background));
         tv_general_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_background));
         loadMatterInformation();
+        mViewModel.setData("Legal Matter");
     }
 
     private void loadGeneralMatter() {
@@ -141,6 +147,7 @@ public class Matter extends Fragment {
         tv_legal_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_left_background));
         tv_general_matter.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.button_right_green_count));
         loadMatterInformation();
+        mViewModel.setData("General Matter");
     }
 
     public void loadDocuments() {

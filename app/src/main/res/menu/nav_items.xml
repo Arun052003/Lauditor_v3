@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="match_parent" android:layout_width="wrap_content">
+    <group android:checkableBehavior="single">
+
+
+        <item
+            android:id="@+id/Dashboard"
+
+            android:title="Dashboard" />
+        <item
+            android:id="@+id/notifications"
+            android:title="Notifications">
+
+        </item>
+<!--        <item android:title="Relationships">-->
+<!--            <menu>-->
+<!--                <item-->
+<!--                    android:id="@+id/ClientRelationships"-->
+
+<!--                    android:title="Client Relationship" />-->
+
+
+<!--            </menu>-->
+<!--        </item>-->
+
+<!--        <item android:title="Chat">-->
+<!--            <menu>-->
+<!--                <item-->
+<!--                    android:id="@+id/relationship_contacts"-->
+
+<!--                    android:title="Relationship Chat" />-->
+<!--                <item-->
+<!--                    android:id="@+id/team_members"-->
+
+<!--                    android:title="Team Chat" />-->
+<!--            </menu>-->
+<!--        </item>-->
+
+<!--        <item android:title="">-->
+<!--            <menu>-->
+<!--                <item-->
+<!--                    android:id="@+id/Reminders"-->
+
+<!--                    android:title="Reminders" />-->
+<!--                <item-->
+<!--                    android:id="@+id/Notifications"-->
+
+<!--                    android:title="Notifications" />-->
+
+
+<!--                <item-->
+<!--                    android:id="@+id/Logout"-->
+
+<!--                    android:title="Logout" />-->
+
+                <item
+                    android:id="@+id/Version"
+
+                    android:title="" />
+
+<!--            </menu>-->
+<!--        </item>-->
+    </group>
+
+</menu>

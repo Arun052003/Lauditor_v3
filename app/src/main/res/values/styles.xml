@@ -10,7 +10,7 @@
     <style name="BlueDatePickerDialogTheme" parent="android:Theme.Material.Light.Dialog">
         <item name="android:datePickerStyle">@style/BlueDatePickerStyle</item>
     </style>
-
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="BlueDatePickerStyle" parent="android:Widget.Material.Light.DatePicker">
         <item name="android:colorAccent">@color/Blue_text_color</item>
     </style>

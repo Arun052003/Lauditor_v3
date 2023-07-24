@@ -48,51 +48,59 @@
             app:layout_constraintTop_toTopOf="parent">
 
         </TextView>
-        <ImageView
-            android:id="@+id/empty1"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+<!--        <ImageView-->
+<!--            android:id="@+id/empty1"-->
+<!--            android:layout_width="22dp"-->
+<!--            android:layout_height="22dp"-->
 
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
+<!--            app:layout_constraintHorizontal_chainStyle="spread_inside"-->
 
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="5:1"
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintDimensionRatio="5:1"-->
 
-            app:layout_constraintEnd_toStartOf="@id/empty2"
+<!--            app:layout_constraintEnd_toStartOf="@id/empty2"-->
+<!--            app:layout_constraintStart_toEndOf="@id/page_name"-->
+<!--            app:layout_constraintTop_toTopOf="parent">-->
+
+<!--        </ImageView>-->
+<!--        <ImageView-->
+<!--            android:id="@+id/empty2"-->
+<!--            android:layout_width="22dp"-->
+<!--            android:layout_height="22dp"-->
+
+<!--            app:layout_constraintHorizontal_chainStyle="spread_inside"-->
+
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintDimensionRatio="5:1"-->
+
+<!--            app:layout_constraintEnd_toStartOf="@id/empty3"-->
+<!--            app:layout_constraintStart_toEndOf="@id/empty3"-->
+<!--            app:layout_constraintTop_toTopOf="parent">-->
+
+<!--        </ImageView>-->
+<!--        <ImageView-->
+<!--            android:id="@+id/empty3"-->
+<!--            android:layout_width="22dp"-->
+<!--            android:layout_height="22dp"-->
+
+<!--            app:layout_constraintHorizontal_chainStyle="spread_inside"-->
+
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintDimensionRatio="5:1"-->
+
+<!--            app:layout_constraintEnd_toStartOf="@id/reminders"-->
+<!--            app:layout_constraintStart_toEndOf="@id/empty2"-->
+<!--            app:layout_constraintTop_toTopOf="parent">-->
+
+<!--        </ImageView>-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
             app:layout_constraintStart_toEndOf="@id/page_name"
-            app:layout_constraintTop_toTopOf="parent">
-
-        </ImageView>
-        <ImageView
-            android:id="@+id/empty2"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
-
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="5:1"
-
-            app:layout_constraintEnd_toStartOf="@id/empty3"
-            app:layout_constraintStart_toEndOf="@id/empty3"
-            app:layout_constraintTop_toTopOf="parent">
-
-        </ImageView>
-        <ImageView
-            android:id="@+id/empty3"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
-
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="5:1"
-
-            app:layout_constraintEnd_toStartOf="@id/reminders"
-            app:layout_constraintStart_toEndOf="@id/empty2"
-            app:layout_constraintTop_toTopOf="parent">
-
-        </ImageView>
+            app:layout_constraintTop_toTopOf="parent"
+            >
         <ImageView
             android:id="@+id/reminders"
             android:layout_width="22dp"
@@ -104,7 +112,7 @@
             app:layout_constraintDimensionRatio="5:1"
 
             app:layout_constraintEnd_toStartOf="@id/person_icon"
-            app:layout_constraintStart_toEndOf="@id/empty3"
+            app:layout_constraintStart_toEndOf="@id/page_name"
             app:layout_constraintTop_toTopOf="parent">
 
         </ImageView>
@@ -142,7 +150,7 @@
 
         </ImageView>
 
-
+        </LinearLayout>
         <!-- </LinearLayout>-->
 
 

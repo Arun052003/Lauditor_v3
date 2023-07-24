@@ -8,5 +8,5 @@
     <dimen name="small_size">10sp</dimen>
     <dimen name="thirty_dp">30dp</dimen>
     <dimen name="Fifty_dp">50dp</dimen>
-
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
 </resources>

@@ -48,6 +48,11 @@
             android:title="Notifications">
 
         </item>
+        <item
+            android:id="@+id/chat"
+            android:title="Messages">
+
+        </item>
 <!--        <item android:title="Relationships">-->
 <!--            <menu>-->
 <!--                <item-->

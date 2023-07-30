@@ -28,6 +28,7 @@ import com.digicoffer.lauditor.Calendar.Meetings;
 import com.digicoffer.lauditor.Calendar.Models.Event_Details_DO;
 import com.digicoffer.lauditor.Calendar.MonthlyCalendar;
 import com.digicoffer.lauditor.Calendar.WeeklyCalendar;
+import com.digicoffer.lauditor.Chat.Chat;
 import com.digicoffer.lauditor.ClientRelationships.ClientRelationship;
 import com.digicoffer.lauditor.Dashboard.Dashboard;
 import com.digicoffer.lauditor.Documents.Documents;
@@ -301,6 +302,9 @@ public class MainActivity extends AppCompatActivity implements MonthlyCalendar.E
                 }else if(itemId == R.id.members){
                     ll_bottom_menu.setVisibility(View.VISIBLE);
                     frag = new Members();
+                }else if(itemId == R.id.chat){
+                    ll_bottom_menu.setVisibility(View.VISIBLE);
+                    frag = new Chat();
                 }
 //                else if (itemId == R.id.CredentialDocuments) {
 //                    frag = new Credential_Docs();

@@ -110,4 +110,6 @@
     <string name="add_entity">Add Entity</string>
     <string name="client_team_members">Client Team Members</string>
     <string name="msg">Message</string>
+    <string name="client">Client</string>
+    <string name="teams">Teams</string>
 </resources>

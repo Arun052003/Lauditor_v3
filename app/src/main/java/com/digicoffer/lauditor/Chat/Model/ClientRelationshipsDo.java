@@ -11,6 +11,8 @@ public class ClientRelationshipsDo {
     String clientType;
     String client_id;
     String consent;
+    int recyclerview_position;
+    private int childCount;
     String created;
     JSONArray groups;
     String guid;
@@ -23,8 +25,24 @@ public class ClientRelationshipsDo {
     String name;
     private List<String> subItems;
 
+    public int getRecyclerview_position() {
+        return recyclerview_position;
+    }
+
+    public void setRecyclerview_position(int recyclerview_position) {
+        this.recyclerview_position = recyclerview_position;
+    }
+
     public List<String> getSubItems() {
         return subItems;
+    }
+
+    public int getChildCount() {
+        return childCount;
+    }
+
+    public void setChildCount(int childCount) {
+        this.childCount = childCount;
     }
 
     public void setSubItems(List<String> subItems) {

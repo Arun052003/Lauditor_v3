@@ -4,15 +4,22 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 <androidx.appcompat.widget.LinearLayoutCompat
+    android:id="@+id/ll_clients"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     android:layout_margin="5dp"
     android:padding="5dp"
+    android:orientation="vertical"
     android:background="@drawable/rectangular_white_background"
     app:layout_constraintTop_toTopOf="parent">
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_weight="1"
+    android:layout_margin="5dp">
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -47,17 +54,36 @@
         android:layout_weight="1"
         android:gravity="right"
         >
-    <ImageView
-        android:id="@+id/plus_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="3dp"
-        android:padding="5dp"
-        android:visibility="gone"
-       android:layout_gravity="right"
+        <ImageView
+            android:id="@+id/plus_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:padding="5dp"
+            android:visibility="gone"
+            android:layout_gravity="right"
 
-        android:src="@drawable/plus_icon" />
+            android:src="@drawable/plus_icon" />
     </LinearLayout>
+</LinearLayout>
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/ll_users"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+      android:layout_weight="1"
+        android:orientation="vertical"
+        >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_users"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/rectangular_white_background"
+
+            >
+
+        </androidx.recyclerview.widget.RecyclerView>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.appcompat.widget.LinearLayoutCompat>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

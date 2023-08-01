@@ -1,16 +1,20 @@
 package com.digicoffer.lauditor.Chat;
 
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +27,7 @@ import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.digicoffer.lauditor.Webservice.WebServiceHelper;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.google.android.material.textfield.TextInputEditText;
+import com.tuyenmonkey.mkloader.model.Line;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -102,6 +107,7 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
                 clientRelationshipsDo.setEditable(jsonObject.getBoolean("isEditable"));
                 clientRelationshipsDo.setMatterList(jsonObject.getJSONArray("matterList"));
                 clientRelationshipsDo.setName(jsonObject.getString("name"));
+//                clientRelationshipsDo.setExpanded(false);
                 if (clientRelationshipsDo.isAccepted()){
                     Clientlist.add(clientRelationshipsDo);
                 }
@@ -139,7 +145,46 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
     }
 
     @Override
-    public void view_users(JSONObject jsonObject,String UserName) {
+    public void view_users(JSONObject jsonObj, String UserName, ChatAdapter.MyViewHolder holder) throws JSONException {
+        Log.d("JSONOBJECT",jsonObj.toString());
+        final String jid = jsonObj.getString("uid");
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String currentJID = pref
+                .getString("xmpp_jid", null);
+        JSONArray user = jsonObj.getJSONArray("users");
+        Log.d("JSONOBJECT", String.valueOf(user.length()));
+//        int clickedPosition = new_holder.getAdapterPosition();
+//        if (clickedPosition >= 0 && clickedPosition < list_item.size()) {
+        // Get the clicked item's data
+//            ClientRelationshipsDo clickedItem = list_item.get(clickedPosition);
+        for (int i = 0; i < user.length(); i++) {
+            final JSONObject data = user.getJSONObject(i);
+            String id = data.getString("id");
+            View layout = LayoutInflater.from(getContext()).inflate(R.layout.item_sub, null);
+          TextView  tv_name_users = (TextView) layout.findViewById(R.id.tv_name);
+           LinearLayoutCompat ll_clients = (LinearLayoutCompat) layout.findViewById(R.id.ll_clients);
+            ll_clients.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+//                        move_message_fragment(data.getString("id"), data.getString("name"), jid);
+                    }
+                    catch (Exception e) {
+                        AndroidUtils.logMsg(e.getMessage());
+                    }
+                }
+            });
+//            new ChatHistoryTask(id, jid,tv_name_users).execute("");
+//            TextView tv_username = (TextView) layout.findViewById(R.id.tv_userName);
+            tv_name_users.setText(data.getString("name"));
+//            Log.d("MHolder",new_holder.toString());
+            holder.ll_users.addView(layout); // +1 to add it below the clicked item
+
+            // Increment clickedPosition by 1 to account for the newly added view
+//                clickedPosition++;
+        }
+//        }
+        Log.d("MHolder", String.valueOf(holder.ll_users.getChildCount()));
 
     }
 }

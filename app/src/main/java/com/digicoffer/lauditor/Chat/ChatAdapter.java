@@ -3,6 +3,10 @@ package com.digicoffer.lauditor.Chat;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,31 +17,49 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Chat.Model.ChatDo;
+import com.digicoffer.lauditor.Chat.Model.ChildDO;
 import com.digicoffer.lauditor.Chat.Model.ClientRelationshipsDo;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.digicoffer.lauditor.Webservice.WebServiceHelper;
 import com.digicoffer.lauditor.common.AndroidUtils;
+import com.digicoffer.lauditor.common.Constants;
+import com.tuyenmonkey.mkloader.model.Line;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> implements Filterable, View.OnClickListener, AsyncTaskCompleteListener {
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> implements Filterable, View.OnClickListener, AsyncTaskCompleteListener, ChildAdapter.EventListener {
     ArrayList<ClientRelationshipsDo> list_item = new ArrayList<ClientRelationshipsDo>();
     ArrayList<ClientRelationshipsDo> filtered_list  = new ArrayList <ClientRelationshipsDo>();
     private ChatAdapter.EventListener context;
+    ArrayList<ChildDO> child_list = new ArrayList<>();
     private Context frag_context;
+    LinearLayoutCompat ll_clients;
+    MyViewHolder new_holder;
+    int item_position =0;
+    private boolean isExpandable;
     ClientRelationshipsDo relationshipsDoRow;
     String User_Name = "";
+    TextView tv_name_users;
     Activity activity;
     AlertDialog progress_dialog;
 
@@ -48,12 +70,18 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         this.context = mcontext;
         this.frag_context = context;
         this.activity = activity;
+        isExpandable = false;
 
     }
 
     public interface EventListener {
-        void view_users(JSONObject jsonObject,String UserName);
+
+            void view_users (JSONObject jsonObject, String UserName,MyViewHolder holder) throws JSONException;
+
+
+
     }
+
     @Override
     public void onClick(View v) {
 
@@ -63,13 +91,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     public void onAsyncTaskComplete(HttpResultDo httpResult) {
         if (progress_dialog != null && progress_dialog.isShowing())
             AndroidUtils.dismiss_dialog(progress_dialog);
+        Log.d("SERVICECALLSTATUS",httpResult.getResult().toString());
         if (httpResult.getResult() == WebServiceHelper.ServiceCallStatus.Success) {
             try {
                 JSONObject result = new JSONObject(httpResult.getResponseContent());
                 if (httpResult.getRequestType() == "USERS_CHAT_LIST") {
                     if (!result.getBoolean("error")) {
                         JSONObject jsonObj = result.getJSONObject("data");
-                       if(relationshipsDoRow.getClientType().toUpperCase().equals("BUSINESS")||relationshipsDoRow.getClientType().toUpperCase().equals("PROFESSIONAL")){
+                        Log.d("JSONobj",relationshipsDoRow.getClientType().toString());
+                       if(relationshipsDoRow.getClientType().equals("Entity")){
 ////                        move_message_fragment(jsonObj);
                             User_Name = relationshipsDoRow.getName();
                             ViewUserList(jsonObj,User_Name);
@@ -90,10 +120,112 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     }
 
     private void ViewUserList(JSONObject jsonObj, String user_name)throws JSONException {
-        JSONArray user = jsonObj.getJSONArray("users");
 
+        try{
+            String uid = jsonObj.getString("uid");
+            JSONArray user = jsonObj.getJSONArray("users");
+            for (int i=0;i<user.length();i++){
+
+                ChildDO childDO = new ChildDO();
+                JSONObject jsonObject = user.getJSONObject(i);
+                childDO.setGuid(jsonObject.getString("guid"));
+                childDO.setName(jsonObject.getString("name"));
+                childDO.setId(jsonObject.getString("id"));
+                childDO.setUid(uid);
+                Log.d("Child_Position",String.valueOf(childDO.getChild_position()));
+                child_list.add(childDO);
+
+            }
+//            for (int j=0;j<filtered_list.size();j++)   {
+//                ChildDO childDO = child_list.get(i);
+//                for (int i=0;i<child_list.size();i++)      {
+//                   ClientRelationshipsDo clientRelationshipsDo = filtered_list.get(j);
+//                    Log.d("Matching",filtered_list.get(j).getGuid()+"_"+child_list.get(i).getGuid());
+//                   if(filtered_list.get(j).getGuid().equalsIgnoreCase(child_list.get(i).getUid())){
+
+                       RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(frag_context, LinearLayoutManager.VERTICAL, false);
+                       new_holder.rv_users.setLayoutManager(layoutManager);
+                       new_holder.rv_users.setHasFixedSize(true);
+                       ChildAdapter childRecyclerViewAdapter = new ChildAdapter(child_list, new_holder.rv_users.getContext(), this);
+                       new_holder.rv_users.setAdapter(childRecyclerViewAdapter);
+//                       notifyDataSetChanged();
+//                       new_holder.rv_users.notif
+//                   }
+//                }
+
+//            }
+
+//            context.view_users(jsonObj,user_name,new_holder);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+    class ChatHistoryTask extends AsyncTask<String, String, String> {
+        String XMPP_DOMAIN = "https://" + Constants.XMPP_DOMAIN + "/";
+        String url = "";
+        TextView tv_count;
+        ChatHistoryTask(String currentJID, String JID, TextView tv_count) {
+            super();
 
+            this.url = XMPP_DOMAIN + "unread/" + currentJID + File.separator + JID ;
+            this.tv_count = tv_count;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+//            progress_dialog = AndroidUtils.get_progress(getActivity());
+        }
+        @Override
+        protected String doInBackground(String... strings) {
+            String data = "";
+            data = requestUnreadCount(url);
+            return data;
+        }
+        protected void onPostExecute(String response) {
+//            AndroidUtils.showAlert(response, getContext());
+//            if (progress_dialog != null && progress_dialog.isShowing())
+//                AndroidUtils.dismiss_dialog(progress_dialog);
+            try {
+                JSONObject jsonResponse = new JSONObject(response);
+                if (!jsonResponse.getBoolean("error")) {
+                    tv_count.setText((jsonResponse.getJSONObject("data")).getString("count"));
+                }
+            } catch (Exception e) {
+                e.getMessage();
+            }
+
+        }
+    }
+    private String requestUnreadCount(String url) {
+        String data = "";
+        HttpURLConnection httpURLConnection = null;
+        try {
+            httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
+            httpURLConnection.setRequestProperty("Authorization", "Bearer " + Constants.TOKEN);
+            httpURLConnection.setRequestMethod("GET");
+            int status_code = httpURLConnection.getResponseCode();
+            if (status_code == 200) {
+                InputStream in = httpURLConnection.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(in);
+                int inputStreamData = inputStreamReader.read();
+                while (inputStreamData != -1) {
+                    char current = (char) inputStreamData;
+                    inputStreamData = inputStreamReader.read();
+                    data += current;
+                }
+            } else {
+                AndroidUtils.showAlert("Err connection, Please try again", frag_context);
+            }
+        } catch (Exception e) {
+            AndroidUtils.logMsg(e.getMessage());
+        } finally {
+            if (httpURLConnection != null) {
+                httpURLConnection.disconnect();
+            }
+        }
+        return data;
+    }
 
     @Override
     public Filter getFilter() {
@@ -141,61 +273,92 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ChatAdapter.MyViewHolder holder, int position) {
                 ClientRelationshipsDo clientRelationshipsDo = filtered_list.get(position);
+                clientRelationshipsDo.setRecyclerview_position(position);
+                filtered_list.set(position,clientRelationshipsDo);
+                boolean isExpandable = clientRelationshipsDo.isExpanded();
+//                for (int i=0;i<filtered_list.size();i++){
+//                    ClientRelationshipsDo clientRelationshipsDo1 = filtered_list.get(i);
+                    Log.d("Position", String.valueOf(clientRelationshipsDo.getRecyclerview_position())+String.valueOf(clientRelationshipsDo.getName()));
+//                }
+                new_holder = holder;
                 holder.tv_name.setText(clientRelationshipsDo.getName());
                 if (clientRelationshipsDo.getClientType().equalsIgnoreCase("Consumer")){
                     holder.plus_icon.setVisibility(View.GONE);
                 }else{
                     holder.plus_icon.setVisibility(View.VISIBLE);
                 }
+                holder.ll_users.setVisibility(isExpandable?View.VISIBLE:View.GONE);
+                if (isExpandable){
+                    holder.plus_icon.setImageResource(R.drawable.minus_icon);
+
+                }else{
+                    holder.plus_icon.setImageResource(R.drawable.plus_icon);
+                }
         holder.plus_icon.setOnClickListener(v -> {
+            child_list.clear();
+            if (child_list.size()==0){
+
+                holder.ll_users.setVisibility(View.GONE);
+
+
+            }else {
+                holder.ll_users.setVisibility(View.VISIBLE);
+            }
+
+            //            item_position = position;
             if (clientRelationshipsDo.isExpanded()) {
                 // If already expanded, remove the sub-items and update the button icon
                 clientRelationshipsDo.setExpanded(false);
-                holder.plus_icon.setImageResource(R.drawable.plus_icon);
-                removeSubItems(holder.itemView, clientRelationshipsDo);
-            } else {
+
+//                holder.plus_icon.setImageResource(R.drawable.plus_icon);
+
+            }
+            else {
                 // If not expanded, add the sub-items and update the button icon
                 clientRelationshipsDo.setExpanded(true);
-                holder.plus_icon.setImageResource(R.drawable.minus_icon);
-                addSubItems(holder.itemView, clientRelationshipsDo);
+//                holder.plus_icon.setImageResource(R.drawable.minus_icon);
+                relationshipsDoRow = clientRelationshipsDo;
+                callChatUsersListWebservice(clientRelationshipsDo.getId(),User_Name);
+
             }
+//
+//            clientRelationshipsDo.setExpanded(!clientRelationshipsDo.isExpanded());
+
+            notifyItemChanged(holder.getAdapterPosition());
+
+//            notifyDataSetChanged();
         });
     }
     private void callChatUsersListWebservice(String id,String User_Name) {
         progress_dialog = AndroidUtils.get_progress(activity);
         JSONObject postData = new JSONObject();
         try {
+            Log.d("Client_id",id.toString());
             WebServiceHelper.callHttpWebService(this, frag_context, WebServiceHelper.RestMethodType.GET, "relationship/" + id + "/users/notify", "USERS_CHAT_LIST", postData.toString());
         } catch (Exception e) {
             if (progress_dialog != null && progress_dialog.isShowing())
                 AndroidUtils.dismiss_dialog(progress_dialog);
         }
     }
-    private void addSubItems(View parentView, ClientRelationshipsDo mainItem) {
-        callChatUsersListWebservice(mainItem.getId(),User_Name);
-        // Inflate sub-item views and add them to the main item layout
-//        List<String> subItems = mainItem.getSubItems();
 
-    }
-    private void removeSubItems(View parentView, ClientRelationshipsDo mainItem) {
-        // Remove sub-item views from the main item layout
-        List<String> subItems = mainItem.getSubItems();
-        if (subItems != null && subItems.size() > 0) {
-            ((LinearLayout) parentView).removeViews(mainItem.getSubItems().size(), 2);
-        }
-    }
     @Override
     public int getItemCount() {
+//        notifyDataSetChanged();
         return filtered_list.size();
+
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tv_name;
         ImageView plus_icon;
+        LinearLayoutCompat ll_users;
+        RecyclerView rv_users;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_name = itemView.findViewById(R.id.tv_name);
             plus_icon  = itemView.findViewById(R.id.plus_icon);
+            ll_users = itemView.findViewById(R.id.ll_users);
+            rv_users = itemView.findViewById(R.id.rv_users);
         }
     }
 }

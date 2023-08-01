@@ -2,6 +2,7 @@ package com.digicoffer.lauditor.Chat;
 
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -16,16 +17,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Chat.Model.ChatDo;
+import com.digicoffer.lauditor.Chat.Model.ChildDO;
 import com.digicoffer.lauditor.Chat.Model.ClientRelationshipsDo;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.digicoffer.lauditor.Webservice.WebServiceHelper;
 import com.digicoffer.lauditor.common.AndroidUtils;
+import com.digicoffer.lauditor.common.Constants;
 import com.google.android.material.textfield.TextInputEditText;
 import com.tuyenmonkey.mkloader.model.Line;
 
@@ -33,12 +38,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
-public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatAdapter.EventListener  {
+public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatAdapter.EventListener {
     AlertDialog progress_dialog;
     RecyclerView rv_Clientrelationships;
     TextInputEditText et_Search;
+    AlertDialog ad_dialog;
     ArrayList<ClientRelationshipsDo> Clientlist = new ArrayList<ClientRelationshipsDo>();
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.client, container, false);
@@ -186,5 +197,106 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
 //        }
         Log.d("MHolder", String.valueOf(holder.ll_users.getChildCount()));
 
+    }
+
+    @Override
+    public void Message(ChildDO childDO) {
+        String jid = childDO.getUid();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String currentJID = pref
+                .getString("xmpp_jid", null);
+        if (childDO.getId()==""){
+
+            move_message_fragment("", childDO.getName(), jid);
+            new ChatHistoryTask(currentJID, jid).execute("");
+        }
+        else{
+            new ChatHistoryTask(childDO.getId(), jid).execute("");
+            move_message_fragment(childDO.getId(), childDO.getName(), jid);
+        }
+    }
+    private void move_message_fragment(String tmid, String name, String jid) {
+        try {
+            String xmpp_jid = tmid.equals("") ? jid : (jid+"_"+tmid);
+            MessagesList frag = new MessagesList();
+            Bundle bundle = new Bundle();
+            bundle.putString("EXTRA_CONTACT_JID", xmpp_jid);
+            bundle.putString("EXTRA_CONTACT_NAME", name);
+            frag.setArguments(bundle);
+            FragmentManager fragmentManager11 = getActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction11 = fragmentManager11.beginTransaction();
+            fragmentTransaction11.replace(R.id.id_framelayout, frag);
+            fragmentTransaction11.addToBackStack(null);
+            fragmentTransaction11.commit();
+            ad_dialog.dismiss();
+        } catch (Exception e) {
+            AndroidUtils.logMsg(e.getMessage());
+        }
+    }
+    class ChatHistoryTask extends AsyncTask<String, String, String> {
+        String XMPP_DOMAIN = "https://" + Constants.XMPP_DOMAIN + "/";
+        String url = "";
+        TextView tv_count;
+        ChatHistoryTask(String currentJID, String JID) {
+            super();
+
+            this.url = XMPP_DOMAIN + "unread/" + currentJID + File.separator + JID ;
+            this.tv_count = tv_count;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+//            progress_dialog = AndroidUtils.get_progress(getActivity());
+        }
+        @Override
+        protected String doInBackground(String... strings) {
+            String data = "";
+            data = requestUnreadCount(url);
+            return data;
+        }
+        protected void onPostExecute(String response) {
+//            AndroidUtils.showAlert(response, getContext());
+//            if (progress_dialog != null && progress_dialog.isShowing())
+//                AndroidUtils.dismiss_dialog(progress_dialog);
+            try {
+                JSONObject jsonResponse = new JSONObject(response);
+                if (!jsonResponse.getBoolean("error")) {
+                    tv_count.setText((jsonResponse.getJSONObject("data")).getString("count"));
+                }
+            } catch (Exception e) {
+                e.getMessage();
+            }
+
+        }
+    }
+    private String requestUnreadCount(String url) {
+        String data = "";
+        HttpURLConnection httpURLConnection = null;
+        try {
+            httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
+            httpURLConnection.setRequestProperty("Authorization", "Bearer " + Constants.TOKEN);
+            httpURLConnection.setRequestMethod("GET");
+            int status_code = httpURLConnection.getResponseCode();
+            if (status_code == 200) {
+                InputStream in = httpURLConnection.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(in);
+                int inputStreamData = inputStreamReader.read();
+                while (inputStreamData != -1) {
+                    char current = (char) inputStreamData;
+                    inputStreamData = inputStreamReader.read();
+                    data += current;
+                }
+            }
+            else {
+                AndroidUtils.showAlert("Err connection, Please try again", getContext());
+            }
+        } catch (Exception e) {
+            AndroidUtils.logMsg(e.getMessage());
+        } finally {
+            if (httpURLConnection != null) {
+                httpURLConnection.disconnect();
+            }
+        }
+        return data;
     }
 }

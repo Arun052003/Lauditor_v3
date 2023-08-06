@@ -22,7 +22,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.digicoffer.lauditor.Chat.Model.ChatDo;
 import com.digicoffer.lauditor.Chat.Model.ChildDO;
 import com.digicoffer.lauditor.Chat.Model.ClientRelationshipsDo;
 import com.digicoffer.lauditor.R;
@@ -32,7 +31,6 @@ import com.digicoffer.lauditor.Webservice.WebServiceHelper;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common.Constants;
 import com.google.android.material.textfield.TextInputEditText;
-import com.tuyenmonkey.mkloader.model.Line;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -155,69 +153,91 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
 
     }
 
-    @Override
-    public void view_users(JSONObject jsonObj, String UserName, ChatAdapter.MyViewHolder holder) throws JSONException {
-        Log.d("JSONOBJECT",jsonObj.toString());
-        final String jid = jsonObj.getString("uid");
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String currentJID = pref
-                .getString("xmpp_jid", null);
-        JSONArray user = jsonObj.getJSONArray("users");
-        Log.d("JSONOBJECT", String.valueOf(user.length()));
-//        int clickedPosition = new_holder.getAdapterPosition();
-//        if (clickedPosition >= 0 && clickedPosition < list_item.size()) {
-        // Get the clicked item's data
-//            ClientRelationshipsDo clickedItem = list_item.get(clickedPosition);
-        for (int i = 0; i < user.length(); i++) {
-            final JSONObject data = user.getJSONObject(i);
-            String id = data.getString("id");
-            View layout = LayoutInflater.from(getContext()).inflate(R.layout.item_sub, null);
-          TextView  tv_name_users = (TextView) layout.findViewById(R.id.tv_name);
-           LinearLayoutCompat ll_clients = (LinearLayoutCompat) layout.findViewById(R.id.ll_clients);
-            ll_clients.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-//                        move_message_fragment(data.getString("id"), data.getString("name"), jid);
-                    }
-                    catch (Exception e) {
-                        AndroidUtils.logMsg(e.getMessage());
-                    }
-                }
-            });
-//            new ChatHistoryTask(id, jid,tv_name_users).execute("");
-//            TextView tv_username = (TextView) layout.findViewById(R.id.tv_userName);
-            tv_name_users.setText(data.getString("name"));
-//            Log.d("MHolder",new_holder.toString());
-            holder.ll_users.addView(layout); // +1 to add it below the clicked item
-
-            // Increment clickedPosition by 1 to account for the newly added view
-//                clickedPosition++;
-        }
+//    @Override
+//    public void view_users(JSONObject jsonObj, String UserName, ChatAdapter.MyViewHolder holder) throws JSONException {
+//        Log.d("JSONOBJECT",jsonObj.toString());
+//        final String jid = jsonObj.getString("uid");
+//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+//        String currentJID = pref
+//                .getString("xmpp_jid", null);
+//        JSONArray user = jsonObj.getJSONArray("users");
+//        Log.d("JSONOBJECT", String.valueOf(user.length()));
+////        int clickedPosition = new_holder.getAdapterPosition();
+////        if (clickedPosition >= 0 && clickedPosition < list_item.size()) {
+//        // Get the clicked item's data
+////            ClientRelationshipsDo clickedItem = list_item.get(clickedPosition);
+//        for (int i = 0; i < user.length(); i++) {
+//            final JSONObject data = user.getJSONObject(i);
+//            String id = data.getString("id");
+//            View layout = LayoutInflater.from(getContext()).inflate(R.layout.item_sub, null);
+//          TextView  tv_name_users = (TextView) layout.findViewById(R.id.tv_name);
+//           LinearLayoutCompat ll_clients = (LinearLayoutCompat) layout.findViewById(R.id.ll_clients);
+//            ll_clients.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    try {
+////                        move_message_fragment(data.getString("id"), data.getString("name"), jid);
+//                    }
+//                    catch (Exception e) {
+//                        AndroidUtils.logMsg(e.getMessage());
+//                    }
+//                }
+//            });
+////            new ChatHistoryTask(id, jid,tv_name_users).execute("");
+////            TextView tv_username = (TextView) layout.findViewById(R.id.tv_userName);
+//            tv_name_users.setText(data.getString("name"));
+////            Log.d("MHolder",new_holder.toString());
+//            holder.ll_users.addView(layout); // +1 to add it below the clicked item
+//
+//            // Increment clickedPosition by 1 to account for the newly added view
+////                clickedPosition++;
 //        }
-        Log.d("MHolder", String.valueOf(holder.ll_users.getChildCount()));
-
-    }
+////        }
+//        Log.d("MHolder", String.valueOf(holder.ll_users.getChildCount()));
+//
+//    }
 
     @Override
     public void Message(ChildDO childDO) {
-        String jid = childDO.getUid();
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String currentJID = pref
-                .getString("xmpp_jid", null);
-        if (childDO.getId()==""){
+        try {
+            String jid = childDO.getUid();
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+            String currentJID = pref
+                    .getString("xmpp_jid", null);
+            Log.d("jid+currentJID",jid+"_"+currentJID);
+            if (childDO.getId() == ""||childDO.getId()==null) {
+                new ChatHistoryTask(currentJID, jid).execute("");
+                move_message_fragment("", childDO.getName(), jid);
 
-            move_message_fragment("", childDO.getName(), jid);
-            new ChatHistoryTask(currentJID, jid).execute("");
-        }
-        else{
-            new ChatHistoryTask(childDO.getId(), jid).execute("");
-            move_message_fragment(childDO.getId(), childDO.getName(), jid);
+            } else {
+                new ChatHistoryTask(childDO.getId(), jid).execute("");
+                move_message_fragment(childDO.getId(), childDO.getName(), jid);
+            }
+        } catch (Exception e) {
+            Log.d("Error:",e.getMessage());
+            e.printStackTrace();
         }
     }
+
+    @Override
+    public void view_users(String jid, String name) throws JSONException {
+        MessagesList frag = new MessagesList();
+        Bundle bundle = new Bundle();
+        bundle.putString("EXTRA_CONTACT_JID", jid);
+        bundle.putString("EXTRA_CONTACT_NAME", name);
+        frag.setArguments(bundle);
+        FragmentManager fragmentManager11 = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction11 = fragmentManager11.beginTransaction();
+        fragmentTransaction11.replace(R.id.id_framelayout, frag);
+        fragmentTransaction11.addToBackStack(null);
+        fragmentTransaction11.commit();
+//        ad_dialog.dismiss();
+    }
+
     private void move_message_fragment(String tmid, String name, String jid) {
         try {
             String xmpp_jid = tmid.equals("") ? jid : (jid+"_"+tmid);
+            Log.d("xmpp_jid",xmpp_jid);
             MessagesList frag = new MessagesList();
             Bundle bundle = new Bundle();
             bundle.putString("EXTRA_CONTACT_JID", xmpp_jid);

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Chat.Model.ChildDO;
 import com.digicoffer.lauditor.Chat.Model.ClientRelationshipsDo;
-import com.digicoffer.lauditor.Chat.Model.MessageDo;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
@@ -74,7 +74,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
     public interface EventListener {
         void  Message(ChildDO childDO);
-        void view_users(JSONObject jsonObject, String UserName, MyViewHolder holder) throws JSONException;
+        void view_users(String uid, String name) throws JSONException;
 
 
     }
@@ -112,7 +112,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         }
     }
 
-    private void move_message_consumer_fragment(JSONObject jsonObj) {
+    private void move_message_consumer_fragment(JSONObject jsonObj) throws JSONException{
+        String uid = jsonObj.getString("uid");
+        context.view_users(uid,relationshipsDoRow.getName());
     }
 
     private void ViewUserList(JSONObject jsonObj, String user_name) throws JSONException {
@@ -135,7 +137,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     childDO1.setId(jsonObject.getString("id"));
                     childDO1.setUid(uid);
                     child_list.add(childDO1);
-
                 }
 
 
@@ -321,7 +322,18 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
 //            notifyDataSetChanged();
         });
-
+        if (clientRelationshipsDo.getClientType().equalsIgnoreCase("Consumer")){
+            holder.ll_client_card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        context.view_users(clientRelationshipsDo.getGuid(), clientRelationshipsDo.getName());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
     }
 
     private void callChatUsersListWebservice(String id, String User_Name) {
@@ -347,6 +359,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         TextView tv_name;
         ImageView plus_icon;
         LinearLayoutCompat ll_users;
+        LinearLayout ll_client_card;
         RecyclerView rv_users;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -355,6 +368,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             plus_icon = itemView.findViewById(R.id.plus_icon);
             ll_users = itemView.findViewById(R.id.ll_users);
             rv_users = itemView.findViewById(R.id.rv_users);
+            ll_client_card = itemView.findViewById(R.id.ll_client_card);
         }
     }
 }

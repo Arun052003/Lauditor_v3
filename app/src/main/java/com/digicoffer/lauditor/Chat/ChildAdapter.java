@@ -72,6 +72,7 @@ public class ChildAdapter extends RecyclerView.Adapter<ChildAdapter.MyViewHolder
                 context.Message(childDO);
             }
         });
+
     }
 
 
@@ -82,11 +83,12 @@ public class ChildAdapter extends RecyclerView.Adapter<ChildAdapter.MyViewHolder
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tv_name;
-        LinearLayoutCompat ll_users;
+        LinearLayoutCompat ll_users,ll_clients;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_name = itemView.findViewById(R.id.tv_name);
             ll_users = itemView.findViewById(R.id.ll_clients);
+            ll_clients = itemView.findViewById(R.id.ll_clients);
         }
     }
 }

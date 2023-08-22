@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -43,18 +42,19 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatAdapter.EventListener {
+public class Clients extends Fragment implements AsyncTaskCompleteListener, ChatAdapter.EventListener {
     AlertDialog progress_dialog;
     RecyclerView rv_Clientrelationships;
     TextInputEditText et_Search;
     AlertDialog ad_dialog;
     ArrayList<ClientRelationshipsDo> Clientlist = new ArrayList<ClientRelationshipsDo>();
+
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.client, container, false);
         rv_Clientrelationships = view.findViewById(R.id.rv_clientrelationships);
         et_Search = view.findViewById(R.id.et_Search);
         callWebservice();
-   return view;
+        return view;
     }
 
     private void callWebservice() {
@@ -86,8 +86,7 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
                         JSONArray jsonArray = jsonObject.getJSONArray("relationships");
                         et_Search.setText("");
                         loadClientRelationshipsData(jsonArray);
-                    }
-                    else {
+                    } else {
                         AndroidUtils.showValidationALert("Alert", String.valueOf(result.get("msg")), getContext());
                     }
                 }
@@ -96,11 +95,12 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
             }
         }
     }
+
     private void loadClientRelationshipsData(JSONArray jsonArray) {
         try {
 
             Clientlist.clear();
-            for (int i=0;i<jsonArray.length();i++){
+            for (int i = 0; i < jsonArray.length(); i++) {
                 ClientRelationshipsDo clientRelationshipsDo = new ClientRelationshipsDo();
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 clientRelationshipsDo.setAdminName(jsonObject.getString("adminName"));
@@ -117,7 +117,7 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
                 clientRelationshipsDo.setMatterList(jsonObject.getJSONArray("matterList"));
                 clientRelationshipsDo.setName(jsonObject.getString("name"));
 //                clientRelationshipsDo.setExpanded(false);
-                if (clientRelationshipsDo.isAccepted()){
+                if (clientRelationshipsDo.isAccepted()) {
                     Clientlist.add(clientRelationshipsDo);
                 }
 
@@ -129,9 +129,10 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
 
         }
     }
+
     private void loadRecycleView() {
         rv_Clientrelationships.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        final ChatAdapter adapter = new ChatAdapter(Clientlist, this,getContext(),getActivity());
+        final ChatAdapter adapter = new ChatAdapter(Clientlist, this, getContext(), getActivity());
         Log.d("Client_list", String.valueOf(Clientlist.size()));
         rv_Clientrelationships.setAdapter(adapter);
         et_Search.addTextChangedListener(new TextWatcher() {
@@ -153,50 +154,6 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
 
     }
 
-//    @Override
-//    public void view_users(JSONObject jsonObj, String UserName, ChatAdapter.MyViewHolder holder) throws JSONException {
-//        Log.d("JSONOBJECT",jsonObj.toString());
-//        final String jid = jsonObj.getString("uid");
-//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
-//        String currentJID = pref
-//                .getString("xmpp_jid", null);
-//        JSONArray user = jsonObj.getJSONArray("users");
-//        Log.d("JSONOBJECT", String.valueOf(user.length()));
-////        int clickedPosition = new_holder.getAdapterPosition();
-////        if (clickedPosition >= 0 && clickedPosition < list_item.size()) {
-//        // Get the clicked item's data
-////            ClientRelationshipsDo clickedItem = list_item.get(clickedPosition);
-//        for (int i = 0; i < user.length(); i++) {
-//            final JSONObject data = user.getJSONObject(i);
-//            String id = data.getString("id");
-//            View layout = LayoutInflater.from(getContext()).inflate(R.layout.item_sub, null);
-//          TextView  tv_name_users = (TextView) layout.findViewById(R.id.tv_name);
-//           LinearLayoutCompat ll_clients = (LinearLayoutCompat) layout.findViewById(R.id.ll_clients);
-//            ll_clients.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    try {
-////                        move_message_fragment(data.getString("id"), data.getString("name"), jid);
-//                    }
-//                    catch (Exception e) {
-//                        AndroidUtils.logMsg(e.getMessage());
-//                    }
-//                }
-//            });
-////            new ChatHistoryTask(id, jid,tv_name_users).execute("");
-////            TextView tv_username = (TextView) layout.findViewById(R.id.tv_userName);
-//            tv_name_users.setText(data.getString("name"));
-////            Log.d("MHolder",new_holder.toString());
-//            holder.ll_users.addView(layout); // +1 to add it below the clicked item
-//
-//            // Increment clickedPosition by 1 to account for the newly added view
-////                clickedPosition++;
-//        }
-////        }
-//        Log.d("MHolder", String.valueOf(holder.ll_users.getChildCount()));
-//
-//    }
-
     @Override
     public void Message(ChildDO childDO) {
         try {
@@ -204,8 +161,8 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
             String currentJID = pref
                     .getString("xmpp_jid", null);
-            Log.d("jid+currentJID",jid+"_"+currentJID);
-            if (childDO.getId() == ""||childDO.getId()==null) {
+            Log.d("jid+currentJID", jid + "_" + currentJID);
+            if (childDO.getId() == "" || childDO.getId() == null) {
                 new ChatHistoryTask(currentJID, jid).execute("");
                 move_message_fragment("", childDO.getName(), jid);
 
@@ -214,7 +171,7 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
                 move_message_fragment(childDO.getId(), childDO.getName(), jid);
             }
         } catch (Exception e) {
-            Log.d("Error:",e.getMessage());
+            Log.d("Error:", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -236,8 +193,8 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
 
     private void move_message_fragment(String tmid, String name, String jid) {
         try {
-            String xmpp_jid = tmid.equals("") ? jid : (jid+"_"+tmid);
-            Log.d("xmpp_jid",xmpp_jid);
+            String xmpp_jid = tmid.equals("") ? jid : (jid + "_" + tmid);
+            Log.d("xmpp_jid", xmpp_jid);
             MessagesList frag = new MessagesList();
             Bundle bundle = new Bundle();
             bundle.putString("EXTRA_CONTACT_JID", xmpp_jid);
@@ -248,32 +205,37 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
             fragmentTransaction11.replace(R.id.id_framelayout, frag);
             fragmentTransaction11.addToBackStack(null);
             fragmentTransaction11.commit();
-            ad_dialog.dismiss();
+//            ad_dialog.dismiss();
         } catch (Exception e) {
             AndroidUtils.logMsg(e.getMessage());
         }
     }
+
     class ChatHistoryTask extends AsyncTask<String, String, String> {
         String XMPP_DOMAIN = "https://" + Constants.XMPP_DOMAIN + "/";
         String url = "";
         TextView tv_count;
+
         ChatHistoryTask(String currentJID, String JID) {
             super();
 
-            this.url = XMPP_DOMAIN + "unread/" + currentJID + File.separator + JID ;
+            this.url = XMPP_DOMAIN + "unread/" + currentJID + File.separator + JID;
             this.tv_count = tv_count;
         }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
 //            progress_dialog = AndroidUtils.get_progress(getActivity());
         }
+
         @Override
         protected String doInBackground(String... strings) {
             String data = "";
             data = requestUnreadCount(url);
             return data;
         }
+
         protected void onPostExecute(String response) {
 //            AndroidUtils.showAlert(response, getContext());
 //            if (progress_dialog != null && progress_dialog.isShowing())
@@ -289,6 +251,7 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
 
         }
     }
+
     private String requestUnreadCount(String url) {
         String data = "";
         HttpURLConnection httpURLConnection = null;
@@ -306,8 +269,7 @@ public class Clients extends Fragment implements AsyncTaskCompleteListener,ChatA
                     inputStreamData = inputStreamReader.read();
                     data += current;
                 }
-            }
-            else {
+            } else {
                 AndroidUtils.showAlert("Err connection, Please try again", getContext());
             }
         } catch (Exception e) {

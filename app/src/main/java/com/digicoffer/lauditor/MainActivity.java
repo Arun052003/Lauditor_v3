@@ -3,8 +3,10 @@ package com.digicoffer.lauditor;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -457,7 +460,27 @@ public class MainActivity extends AppCompatActivity implements MonthlyCalendar.E
     public void onEventDetailsPassed(ArrayList<Event_Details_DO> event_details_list, String calendar_Type) {
 
     }
-
+    @Override
+    public void onBackPressed() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//        closeSubMenusFab();
+        prefs.edit().remove("current_fragment").apply();
+//                .putString("current_fragment", getSupportFragmentManager().getFragments().get(0).getClass().getSimpleName()).apply();
+//        if (getSupportFragmentManager().getFragments().get(0) instanceof MessagesList)
+//            fb_chat.hide();
+//        else
+//            fb_chat.hide();
+        appbar.setVisibility(View.VISIBLE);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            if (getSupportFragmentManager().getFragments().get(0) instanceof Dashboard)
+                logout();
+            else
+                super.onBackPressed();
+        }
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (dtoggle.onOptionsItemSelected(item)) {

@@ -17,15 +17,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.digicoffer.lauditor.Chat.Model.MessageDo;
 import com.digicoffer.lauditor.Chat.Model.User;
+import com.digicoffer.lauditor.LoginActivity.LoginActivity;
+import com.digicoffer.lauditor.MainActivity;
 import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.chatservice.ChatConnection;
 import com.digicoffer.lauditor.chatservice.ChatConnectionService;
@@ -34,10 +39,14 @@ import com.digicoffer.lauditor.common.Constants;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -56,6 +65,8 @@ public class MessagesList extends Fragment {
     EditText mChatView;
     TextView tv_contactName;
     AlertDialog progress_dialog;
+    private static ChatConnection mConnection;
+    private static ChatConnectionService chatConnectionService;
     private String contactJid, contact_name, currentJid, current_contact_name;
     private BroadcastReceiver mBroadcastReceiver;
     MessageListAdapter adapter;
@@ -73,8 +84,9 @@ public class MessagesList extends Fragment {
         bt_sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (ChatConnectionService.getState().equals(ChatConnection.ConnectionState.CONNECTED)) {
-                    Log.d(TAG, "The client is connected to the server,Sending Message");
+                    Log.d(TAG, "The client is connected to the server,Sending Message - "+mChatView.getText());
                     //Send the message to the server
                     Intent intent = new Intent(ChatConnectionService.SEND_MESSAGE);
                     intent.putExtra(ChatConnectionService.BUNDLE_MESSAGE_BODY,
@@ -99,10 +111,10 @@ public class MessagesList extends Fragment {
                     chatMessage.setSender(user);
                     message_list.add(chatMessage);
                     mChatView.setText("");
-                    adapter.notifyDataSetChanged();
+//                    adapter.notifyDataSetChanged();
                     rv_messagesList.smoothScrollToPosition(message_list.size() - 1);
                     new ChatUnreadCountUpdateTask(currentJid, contactJid).execute("");
-
+//                    new ChatHistoryTask(currentJid + File.separator + contactJid).execute("");
                 } else {
                     Toast.makeText(getActivity(),
                             "Client not connected to server ,Message not sent! Please try after few seconds",
@@ -121,23 +133,15 @@ public class MessagesList extends Fragment {
         pref.edit().putString("CURRENTCHAT_JID", contactJid).commit();
         currentJid = jid;
         tv_contactName.setText(contact_name);
+//        if (mConnection == null) {
+//            mConnection = new ChatConnection(getContext());
+//        }
+//        if (chatConnectionService == null) {
+//            chatConnectionService = new ChatConnectionService();
+//        }
+//        new JsonTask().execute(Constants.base_URL + "user/create/");
 
         new ChatHistoryTask(currentJid + File.separator + contactJid).execute("");
-//        setTitle(contactJid);
-//        Message msg = new Message();
-//        msg.setMessage("Testing");
-//        msg.setViewType("SENT");
-//        User user = new User();
-//        user.setNickname("");
-//        msg.setSender(user);
-//        message_list.add(msg);
-//        msg = new Message();
-//        msg.setMessage("Testing11");
-//        msg.setViewType("RECEIVE");
-//        user = new User();
-//        user.setNickname(contact_name);
-//        msg.setSender(user);
-//        message_list.add(msg);
 
         return v;
     }
@@ -208,6 +212,13 @@ public class MessagesList extends Fragment {
         try {
             JSONObject jsonObject = new JSONObject(resp);
             JSONArray jsonArray = jsonObject.getJSONArray("data");
+            for (int i=0;i<jsonArray.length();i++){
+                JSONObject history = jsonArray.getJSONObject(i);
+                String message = history.getString("msg");
+                String timestamp = history.getString("timestamp");
+                Log.d("CHAT_HISTORY",message+"_"+timestamp);
+            }
+
             MessageDo chatMessage;
             User user;
             message_list.clear();
@@ -243,19 +254,21 @@ public class MessagesList extends Fragment {
 
     class ChatHistoryTask extends AsyncTask<String, String, String> {
         String XMPP_DOMAIN = "https://" + Constants.XMPP_DOMAIN + "/history/";
+
         String url = "";
         ChatHistoryTask(String url) {
 
             super();
 
             this.url = url + "@" + Constants.XMPP_DOMAIN;
+            Log.d("XMPP_DOMAIN",this.url);
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             new ChatUnreadCountUpdateTask(currentJid, contactJid).execute("");
-            progress_dialog = AndroidUtils.get_progress(getActivity());
+//            progress_dialog = AndroidUtils.get_progress(getActivity());
         }
 
         @Override
@@ -264,10 +277,12 @@ public class MessagesList extends Fragment {
             HttpURLConnection httpURLConnection = null;
             try {
                 httpURLConnection = (HttpURLConnection) new URL(XMPP_DOMAIN + url).openConnection();
+                Log.d("New_Data",XMPP_DOMAIN + url);
                 httpURLConnection.setRequestProperty("Authorization", "Bearer " + Constants.TOKEN);
                 httpURLConnection.setRequestMethod("GET");
 
                 int status_code = httpURLConnection.getResponseCode();
+
                 if (status_code == 200) {
                     InputStream in = httpURLConnection.getInputStream();
                     InputStreamReader inputStreamReader = new InputStreamReader(in);
@@ -278,6 +293,7 @@ public class MessagesList extends Fragment {
                         inputStreamData = inputStreamReader.read();
                         data += current;
                     }
+
 
                 } else {
                     AndroidUtils.showAlert("Err connection, Please try again", getContext());
@@ -296,6 +312,7 @@ public class MessagesList extends Fragment {
 //            AndroidUtils.showAlert(response, getContext());
             if (progress_dialog != null && progress_dialog.isShowing())
                 AndroidUtils.dismiss_dialog(progress_dialog);
+            Log.d("Response",response.toString());
             load_chat_history(response);
 
         }
@@ -309,6 +326,8 @@ public class MessagesList extends Fragment {
         ChatUnreadCountUpdateTask(String currentJID, String JID) {
             super();
             this.url = XMPP_DOMAIN + "unread-timestamp/" + currentJID + File.separator + JID ;
+            Log.d("Unread_count",this.url);
+            Log.d("TOKEN",Constants.TOKEN);
         }
 
         @Override
@@ -343,6 +362,7 @@ public class MessagesList extends Fragment {
             httpURLConnection.setRequestMethod("GET");
 
             int status_code = httpURLConnection.getResponseCode();
+            Log.d("REQUEST_COUNT", String.valueOf(status_code));
             if (status_code == 200) {
                 InputStream in = httpURLConnection.getInputStream();
                 InputStreamReader inputStreamReader = new InputStreamReader(in);
@@ -361,5 +381,35 @@ public class MessagesList extends Fragment {
             AndroidUtils.logMsg(e.getMessage());
         }
         return data;
+//        load_chat_history();
     }
+
+    private class JsonTask extends AsyncTask<String, String, String> {
+
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        protected String doInBackground(String... params) {
+
+
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+                mConnection.connect();
+
+            } catch (IOException | SmackException | XMPPException e) {
+                Log.d("Chat Error", "Something went wrong while connecting ,make sure the credentials are right and try again");
+                e.printStackTrace();
+                //Stop the service all together.
+                chatConnectionService.stopSelf();
+            }
+            return "";
+        }
+    }
+
+
+
 }

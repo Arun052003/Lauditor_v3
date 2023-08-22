@@ -4,6 +4,7 @@ import static android.app.Notification.DEFAULT_SOUND;
 import static android.app.Notification.DEFAULT_VIBRATE;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -22,6 +23,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.digicoffer.lauditor.LoginActivity.ConfirmationLogin;
 import com.digicoffer.lauditor.MainActivity;
+import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common.Constants;
 
@@ -90,8 +92,8 @@ public class ChatConnection implements ConnectionListener {
         if (jid != null) {
 //            mUsername = jid.split("@")[0];
 //            mServiceName = jid.split("@")[1];
-            mUsername = jid;
-            mServiceName = "digicoffer.com";
+            mUsername = jid+"@"+Constants.XMPP_DOMAIN;
+            mServiceName = Constants.XMPP_DOMAIN;//"digicoffer.com";
         } else {
             mUsername = "";
             mServiceName = "";
@@ -137,6 +139,7 @@ public class ChatConnection implements ConnectionListener {
 
     public void connect() throws IOException, XMPPException, SmackException {
         Log.d(TAG, "Connecting to server " + mServiceName);
+        Log.d(TAG, "Connecting to server " + mUsername);
 //        URL url = new URL("ec2-3-17-191-76.us-east-2.compute.amazonaws.com");
         try {
             SSLContext sslcontext = SSLContext.getInstance("TLS");
@@ -170,6 +173,7 @@ public class ChatConnection implements ConnectionListener {
             mConnection = new XMPPTCPConnection(conf);
         } catch (Exception e) {
             e.getMessage();
+            Log.d(TAG, "Connecting to server " + e.getMessage());
         }
         mConnection.addConnectionListener(this);
 
@@ -354,6 +358,7 @@ public class ChatConnection implements ConnectionListener {
         Log.d(TAG, "Sent the broadcast that we are authenticated");
     }
 
+    @SuppressLint("NotificationPermission")
     public void show_notification(String contact, String message, String subject) {
         String notification_type = "";
         String relationship_id = "";
@@ -456,7 +461,6 @@ public class ChatConnection implements ConnectionListener {
             title_notification = notify_details[1];
             penint = PendingIntent.getActivity(mApplicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         } else {
-
             Intent intent = new Intent(mApplicationContext, ConfirmationLogin.class);
             penint = PendingIntent.getActivity(mApplicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 

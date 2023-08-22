@@ -6,8 +6,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +25,7 @@ import com.digicoffer.lauditor.R;
 import com.digicoffer.lauditor.Webservice.AsyncTaskCompleteListener;
 import com.digicoffer.lauditor.Webservice.HttpResultDo;
 import com.digicoffer.lauditor.Webservice.WebServiceHelper;
+import com.digicoffer.lauditor.chatservice.ChatConnection;
 import com.digicoffer.lauditor.chatservice.ChatConnectionService;
 import com.digicoffer.lauditor.common.AndroidUtils;
 import com.digicoffer.lauditor.common.Constants;
@@ -30,9 +33,15 @@ import com.digicoffer.lauditor.common_adapters.CommonSpinnerAdapter;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
@@ -44,8 +53,10 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskComplet
     boolean isAllFieldsChecked = false;
     AlertDialog progress_dialog;
     Dialog ad_dialog;
+    private static ChatConnection mConnection;
+   private static ChatConnectionService chatConnectionService;
     TextView tv_forgot_password;
-
+    boolean isRecursionEnable = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,8 +65,10 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskComplet
         tet_password = findViewById(R.id.et_login_password);
         tv_forgot_password = findViewById(R.id.tv_forgotPassword);
        bt_login = findViewById(R.id.bt_login);
-//        tet_email.setText("rajendra.sai@digicoffer.com");
-//        tet_password.setText("Test@123");
+//       mConnection = (ChatConnection) getCallingActivity()
+//       chatConnectionService = (ChatConnectionService) getApplicationContext();
+        tet_email.setText(Constants.email);
+        tet_password.setText(Constants.password);
 //        Login();
        bt_login.setPressed(true);
         bt_login.setOnClickListener(new View.OnClickListener() {
@@ -153,25 +166,39 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskComplet
         dialog.setView(dialogLayout);
         dialog.show();
     }
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void save_xmpp_preference() {
 //        String email = Objects.requireNonNull(et_Prof_Biz.getText()).toString().trim();
 
         SharedPreferences prefs = getDefaultSharedPreferences(getApplicationContext());
         String uid = Constants.UID;
-        if (!Constants.USER_ID.toLowerCase().equals("admin"))
+        if (!Constants.ROLE.equalsIgnoreCase("admin"))
+        {
             uid = uid + "_" + Constants.USER_ID;
-        String existing_xmpp_jid = AndroidUtils.getSharedPreferenceStringData("xmpp_jid", this);
-        if (existing_xmpp_jid != null && !existing_xmpp_jid.equals(uid)) {
-            Intent i1 = new Intent(getApplicationContext(), ChatConnectionService.class);
-            stopService(i1);
         }
+
+//        String existing_xmpp_jid = AndroidUtils.getSharedPreferenceStringData("xmpp_jid", this);
+//        if (existing_xmpp_jid != null && !existing_xmpp_jid.equals(uid)) {
+//            Intent i1 = new Intent(getApplicationContext(), ChatConnectionService.class);
+//            stopService(i1);
+//        }
         prefs.edit()
                 .putString("xmpp_jid", uid)
                 .putString("xmpp_password", Constants.TOKEN)
                 .putBoolean("xmpp_logged_in", true)
                 .apply();
+//
+        if (mConnection == null) {
+            mConnection = new ChatConnection(this);
+        }
+        if (chatConnectionService == null) {
+            chatConnectionService = new ChatConnectionService();
+        }
+        new JsonTask().execute(Constants.base_URL + "user/create/");
+
     }
+
     @Override
     public void onAsyncTaskComplete(HttpResultDo httpResult) {
         if (progress_dialog != null && progress_dialog.isShowing())
@@ -266,5 +293,37 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskComplet
             AndroidUtils.showToast(httpResult.getResponseContent(),LoginActivity.this);
 //            ((TextView) findViewById(R.id.tv_response)).setText((httpResult.getResponseContent()));
         }
+    }
+
+
+    private class JsonTask extends AsyncTask<String, String, String> {
+
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        protected String doInBackground(String... params) {
+
+
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+                mConnection.connect();
+
+            } catch (IOException | SmackException | XMPPException e) {
+                Log.d("Chat Error", "Something went wrong while connecting ,make sure the credentials are right and try again");
+                e.printStackTrace();
+                //Stop the service all together.
+                chatConnectionService.stopSelf();
+            }
+            return "";
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

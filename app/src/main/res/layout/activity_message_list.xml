@@ -28,7 +28,9 @@
         app:layout_constraintBottom_toTopOf="@+id/view"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_contactName"></androidx.recyclerview.widget.RecyclerView>
+        app:layout_constraintTop_toTopOf="@id/tv_contactName">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
     <!-- A horizontal line between the chatbox and RecyclerView -->
     <View

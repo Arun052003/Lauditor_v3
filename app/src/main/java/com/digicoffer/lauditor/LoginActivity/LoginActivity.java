@@ -52,6 +52,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskComplet
     AppCompatButton bt_login;
     boolean isAllFieldsChecked = false;
     AlertDialog progress_dialog;
+
     Dialog ad_dialog;
     private static ChatConnection mConnection;
    private static ChatConnectionService chatConnectionService;
@@ -121,6 +122,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskComplet
     public void onClick(View view) {
 
     }
+
     private void firm_login(final ArrayList<FirmsDo> list) {
         MaterialAlertDialogBuilder builder = new  MaterialAlertDialogBuilder(LoginActivity.this,R.style.MaterialAlertDialog_Rounded);
         LayoutInflater inflater = getLayoutInflater();

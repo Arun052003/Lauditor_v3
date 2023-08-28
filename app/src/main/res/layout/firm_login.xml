@@ -12,10 +12,11 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/cardvieww"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_margin="30dp"
             app:cardCornerRadius="30dp"
             app:cardElevation="30dp"
+            android:padding="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -25,12 +26,11 @@
             <!--Layout for card Design-->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:gravity="center"
                 android:layout_gravity="center_horizontal"
                 android:background="@color/white"
-                android:orientation="vertical"
-                android:padding="24dp">
+                android:orientation="vertical">
 
                 <!--Logo for Lauditor Design-->
                 <include layout="@layout/logo_layout"/>
@@ -106,13 +106,6 @@
                     layout="@layout/submit_cancel"/>
                 <!--End of Submitions button layout-->
             </LinearLayout>
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-            <androidx.fragment.app.FragmentContainerView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/fragment_container"/>
             <!--End of design-->
         </androidx.cardview.widget.CardView>
         <!--End of card design-->

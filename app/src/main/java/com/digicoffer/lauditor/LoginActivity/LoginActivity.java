@@ -19,7 +19,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatSpinner;
-import androidx.fragment.app.FragmentManager;
 
 import com.digicoffer.lauditor.MainActivity;
 import com.digicoffer.lauditor.R;
@@ -163,7 +162,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskComplet
         /*  forget_psd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LoginActivity.this, reset_password_file.class));
+                startActivity(new Intent(LoginActivity.this, reset_password.class));
             }
         });  */
         bt_submit.setOnClickListener(new View.OnClickListener() {

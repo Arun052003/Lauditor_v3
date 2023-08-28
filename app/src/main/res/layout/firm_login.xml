@@ -91,7 +91,7 @@
 
                 <!--Forget password button-->
                 <TextView
-                    android:id="@+id/forgetpwd"
+                    android:id="@+id/forgetpassword"
                     android:layout_width="254dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -106,6 +106,13 @@
                     layout="@layout/submit_cancel"/>
                 <!--End of Submitions button layout-->
             </LinearLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <androidx.fragment.app.FragmentContainerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/fragment_container"/>
             <!--End of design-->
         </androidx.cardview.widget.CardView>
         <!--End of card design-->

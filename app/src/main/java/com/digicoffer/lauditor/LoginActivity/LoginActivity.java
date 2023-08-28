@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.fragment.app.FragmentManager;
 
 import com.digicoffer.lauditor.MainActivity;
 import com.digicoffer.lauditor.R;
@@ -41,7 +42,6 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
@@ -52,7 +52,6 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskComplet
     AppCompatButton bt_login;
     boolean isAllFieldsChecked = false;
     AlertDialog progress_dialog;
-
     Dialog ad_dialog;
     private static ChatConnection mConnection;
    private static ChatConnectionService chatConnectionService;

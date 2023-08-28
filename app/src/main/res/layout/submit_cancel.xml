@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="310dp"
-    android:layout_height="65dp"
+    android:layout_width="match_parent"
+    android:layout_height="90dp"
+    android:gravity="center"
+    android:layout_marginLeft="10dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_button"
     android:orientation="horizontal">
@@ -13,8 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         app:cardElevation="8dp"
-        app:cardCornerRadius="8dp"
-        android:layout_marginLeft="27dp">
+        app:cardCornerRadius="8dp">
 
         <!--Cancel button-->
 
